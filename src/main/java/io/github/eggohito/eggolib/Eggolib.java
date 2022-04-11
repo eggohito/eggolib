@@ -1,10 +1,12 @@
 package io.github.eggohito.eggolib;
 
+import io.github.eggohito.eggolib.command.ConcatCommand;
 import io.github.eggohito.eggolib.registry.factory.EggolibEntityActions;
 import io.github.eggohito.eggolib.registry.factory.EggolibEntityConditions;
 import io.github.eggohito.eggolib.registry.factory.EggolibItemConditions;
 import io.github.eggohito.eggolib.registry.factory.EggolibPowers;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
@@ -30,6 +32,11 @@ public class Eggolib implements ModInitializer {
                 }
             }
         );
+
+        // TODO: Finish implementing the 'concat' command (alias is not final)
+//        CommandRegistrationCallback.EVENT.register(
+//            (commandDispatcher, dedicated) -> ConcatCommand.register(commandDispatcher)
+//        );
 
         EggolibPowers.register();
         EggolibEntityActions.register();
