@@ -10,6 +10,7 @@ public class EggolibItemConditions {
 
     public static void register() {
         register(BlockItemCondition.getFactory());
+        register(ToolCondition.getFactory());
     }
 
     private static void register(ConditionFactory<ItemStack> conditionFactory) {
