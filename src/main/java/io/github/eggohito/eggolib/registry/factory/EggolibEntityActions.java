@@ -10,6 +10,7 @@ public class EggolibEntityActions {
 
     public static void register() {
         register(CalculateResourceAction.getFactory());
+        register(ChangeInsomniaTicksAction.getFactory());
     }
 
     private static void register(ActionFactory<Entity> actionFactory) {
