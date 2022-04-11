@@ -1,38 +1,35 @@
 {
   "schemaVersion": 1,
-  "id": "modid",
+  "id": "eggolib",
   "version": "${version}",
 
-  "name": "Example Mod",
-  "description": "This is an example description! Tell everyone what your mod is about!",
+  "name": "eggolib",
+  "description": "An extension to Apoli for funsies",
   "authors": [
-    "Me!"
+    "eggohito"
   ],
   "contact": {
-    "homepage": "https://fabricmc.net/",
-    "sources": "https://github.com/FabricMC/fabric-example-mod"
+    "homepage": "https://github.com/eggohito/eggolib",
+    "sources": "https://github.com/eggohito/eggolib"
   },
 
-  "license": "CC0-1.0",
-  "icon": "assets/modid/icon.png",
+  "license": "MIT",
+  "icon": "assets/eggolib/icon.png",
 
   "environment": "*",
   "entrypoints": {
     "main": [
-      "net.fabricmc.example.ExampleMod"
+      "io.github.eggohito.eggolib.Eggolib"
     ]
   },
   "mixins": [
-    "modid.mixins.json"
+    "eggolib.mixins.json"
   ],
 
   "depends": {
     "fabricloader": ">=0.13.3",
     "fabric": "*",
-    "minecraft": "1.18.x",
+    "minecraft": "1.18.1",
     "java": ">=17"
-  },
-  "suggests": {
-    "another-mod": "*"
   }
 }
