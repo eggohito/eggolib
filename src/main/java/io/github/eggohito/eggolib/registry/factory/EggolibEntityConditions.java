@@ -10,6 +10,7 @@ public class EggolibEntityConditions {
 
     public static void register() {
         register(PermissionLevelCondition.getFactory());
+        register(ScoreboardCondition.getFactory());
     }
 
     private static void register(ConditionFactory<Entity> conditionFactory) {
