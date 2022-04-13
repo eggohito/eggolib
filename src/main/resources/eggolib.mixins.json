@@ -6,8 +6,9 @@
     "mixins": [
         "BlockItemMixin",
         "EntityAccessor",
-        "PlayerEntityMixin",
-        "InventoryPowerAccessor"
+        "InventoryPowerAccessor",
+        "LivingEntityMixin",
+        "PlayerEntityMixin"
     ],
     "client": [],
     "server": [],
