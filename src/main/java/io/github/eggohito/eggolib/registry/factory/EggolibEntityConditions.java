@@ -9,6 +9,7 @@ import net.minecraft.util.registry.Registry;
 public class EggolibEntityConditions {
 
     public static void register() {
+        register(InGuiCondition.getFactory());
         register(PermissionLevelCondition.getFactory());
         register(ScoreboardCondition.getFactory());
     }
