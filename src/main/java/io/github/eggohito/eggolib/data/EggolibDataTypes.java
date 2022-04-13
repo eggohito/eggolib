@@ -1,6 +1,9 @@
-package io.github.eggohito.eggolib.util;
+package io.github.eggohito.eggolib.data;
 
 import io.github.apace100.calio.data.SerializableDataType;
+import io.github.eggohito.eggolib.util.InventoryUtils;
+import io.github.eggohito.eggolib.util.MathUtils;
+import io.github.eggohito.eggolib.util.ToolType;
 
 import java.util.EnumSet;
 

@@ -3,7 +3,7 @@ package io.github.eggohito.eggolib.condition.item;
 import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.eggohito.eggolib.Eggolib;
-import io.github.eggohito.eggolib.util.EggolibDataTypes;
+import io.github.eggohito.eggolib.data.EggolibDataTypes;
 import io.github.eggohito.eggolib.util.ToolType;
 import net.minecraft.item.*;
 

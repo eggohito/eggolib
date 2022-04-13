@@ -7,7 +7,7 @@ import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.eggohito.eggolib.Eggolib;
-import io.github.eggohito.eggolib.util.EggolibDataTypes;
+import io.github.eggohito.eggolib.data.EggolibDataTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 
