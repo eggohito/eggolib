@@ -14,7 +14,7 @@ public class EggolibEntityActions {
         register(CloseGuiAction.getFactory());
         register(DropItemAction.getFactory());
         register(ModifyInventoryAction.getFactory());
-        register(OpenInventoryPowerAction.getFactory());
+        register(OpenGuiAction.getFactory());
         register(ReplaceItemAction.getFactory());
     }
 
