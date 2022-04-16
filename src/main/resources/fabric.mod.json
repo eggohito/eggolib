@@ -20,6 +20,9 @@
   "entrypoints": {
     "main": [
       "io.github.eggohito.eggolib.Eggolib"
+    ],
+    "client": [
+      "io.github.eggohito.eggolib.EggolibClient"
     ]
   },
   "mixins": [
