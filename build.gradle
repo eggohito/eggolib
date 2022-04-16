@@ -31,6 +31,12 @@ repositories {
 		}
 	}
 	maven {
+		url = 'https://maven.jamieswhiteshirt.com/libs-release'
+		content {
+			includeGroup 'com.jamieswhiteshirt'
+		}
+	}
+	maven {
 		url = 'https://maven.shedaniel.me'
 	}
 	maven {
@@ -47,8 +53,14 @@ dependencies {
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
+	// Reach Entity Attributes by jamieswhiteshirt
+	modImplementation "com.jamieswhiteshirt:reach-entity-attributes:${project.reach_version}"
+
 	// Apoli by Apace100
 	modImplementation "com.github.apace100:apoli:${project.apoli_version}"
+
+	// Origins by Apace100
+	modImplementation "com.github.apace100:origins-fabric:${project.origins_version}"
 }
 
 processResources {
