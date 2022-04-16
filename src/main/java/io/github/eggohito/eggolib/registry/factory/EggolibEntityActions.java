@@ -16,6 +16,7 @@ public class EggolibEntityActions {
         register(ModifyInventoryAction.getFactory());
         register(OpenGuiAction.getFactory());
         register(ReplaceItemAction.getFactory());
+        register(SetPerspectiveAction.getFactory());
     }
 
     private static void register(ActionFactory<Entity> actionFactory) {
