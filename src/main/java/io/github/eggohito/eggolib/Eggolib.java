@@ -34,6 +34,7 @@ public class Eggolib implements ModInitializer {
 //        );
 
         EggolibBlockActions.register();
+        EggolibBlockConditions.register();
         EggolibEntityActions.register();
         EggolibEntityConditions.register();
         EggolibItemConditions.register();
