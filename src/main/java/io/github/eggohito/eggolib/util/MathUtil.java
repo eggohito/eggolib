@@ -11,8 +11,9 @@ public class MathUtil {
         MIN,
         MODULO,
         MULTIPLY,
+        SET,
         SUBTRACT,
-        SWAP;
+        SWAP
     }
 
     public static Pair<Integer, Integer> operate(int a, MathOperation mathOperation, int b) {
@@ -20,23 +21,25 @@ public class MathUtil {
             case ADD:
                 a = a + b;
                 break;
-            case SUBTRACT:
-                a = a - b;
-                break;
-            case MULTIPLY:
-                a = a * b;
-                break;
             case DIVIDE:
                 if (b != 0) a = Math.floorDiv(a, b);
                 break;
-            case MODULO:
-                if (b != 0) a = Math.floorMod(a, b);
+            case MAX:
+                a = Math.max(a, b);
                 break;
             case MIN:
                 a = Math.min(a, b);
                 break;
-            case MAX:
-                a = Math.max(a, b);
+            case MODULO:
+                if (b != 0) a = Math.floorMod(a, b);
+                break;
+            case MULTIPLY:
+                a = a * b;
+                break;
+            case SET:
+                a = b;
+            case SUBTRACT:
+                a = a - b;
                 break;
             case SWAP:
                 int a2 = a;
@@ -44,6 +47,7 @@ public class MathUtil {
                 b = a2;
                 break;
         }
+
         return new Pair<>(a, b);
     }
 }
