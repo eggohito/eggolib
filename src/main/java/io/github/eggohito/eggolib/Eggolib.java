@@ -1,9 +1,6 @@
 package io.github.eggohito.eggolib;
 
-import io.github.eggohito.eggolib.registry.factory.EggolibEntityActions;
-import io.github.eggohito.eggolib.registry.factory.EggolibEntityConditions;
-import io.github.eggohito.eggolib.registry.factory.EggolibItemConditions;
-import io.github.eggohito.eggolib.registry.factory.EggolibPowers;
+import io.github.eggohito.eggolib.registry.factory.*;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.util.Identifier;
@@ -36,10 +33,11 @@ public class Eggolib implements ModInitializer {
 //            (commandDispatcher, dedicated) -> ConcatCommand.register(commandDispatcher)
 //        );
 
-        EggolibPowers.register();
+        EggolibBlockActions.register();
         EggolibEntityActions.register();
         EggolibEntityConditions.register();
         EggolibItemConditions.register();
+        EggolibPowers.register();
 
         LOGGER.info(String.format("[eggolib] Eggolib %s has been initialized. Egg!", VERSION));
     }
