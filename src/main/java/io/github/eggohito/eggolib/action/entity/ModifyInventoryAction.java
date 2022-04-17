@@ -16,7 +16,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.EnderChestInventory;
 
-import static io.github.eggohito.eggolib.util.InventoryUtils.*;
+import static io.github.eggohito.eggolib.util.InventoryUtil.*;
 
 public class ModifyInventoryAction {
 

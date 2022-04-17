@@ -14,7 +14,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-public class InventoryUtils {
+public class InventoryUtil {
 
     public enum InventoryType {
         ENDER_CHEST,
