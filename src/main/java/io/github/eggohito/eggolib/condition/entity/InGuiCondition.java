@@ -25,10 +25,19 @@ public class InGuiCondition {
         Screen currentScreen = MinecraftClient.getInstance().currentScreen;
         if (currentScreen == null) return false;
 
-        if (data.isPresent("gui_types")) {
+        if (data.isPresent("gui_type") || data.isPresent("gui_types")) {
 
-            List<String> guiTypes = data.get("gui_types");
-            classStrings.addAll(guiTypes);
+            if (data.isPresent("gui_type")) {
+
+                String guiType = data.getString("gui_type");
+                classStrings.add(guiType);
+            }
+
+            if (data.isPresent("gui_types")) {
+
+                List<String> guiTypes = data.get("gui_types");
+                classStrings.addAll(guiTypes);
+            }
 
             Optional<ClassDataRegistry> optionalClassDataRegistry = ClassDataRegistry.get(ClassUtil.castClass(Screen.class));
             if (optionalClassDataRegistry.isPresent()) {
@@ -50,6 +59,7 @@ public class InGuiCondition {
         return new ConditionFactory<>(
             Eggolib.identifier("in_gui"),
             new SerializableData()
+                .add("gui_type", SerializableDataTypes.STRING, null)
                 .add("gui_types", SerializableDataTypes.STRINGS, null),
             InGuiCondition::condition
         );

@@ -13,11 +13,26 @@ public class ToolCondition {
 
     public static boolean condition(SerializableData.Instance data, ItemStack itemStack) {
 
+        EnumSet<ToolType> toolTypes = EnumSet.noneOf(ToolType.class);
+
+        if (data.isPresent("tool_type") || data.isPresent("tool_types")) {
+            if (data.isPresent("tool_type")) toolTypes.add(data.get("tool_type"));
+            if (data.isPresent("tool_types")) toolTypes.addAll(data.get("tool_types"));
+        }
+
+        else {
+            toolTypes.addAll(EnumSet.allOf(ToolType.class));
+        }
+
+        return (itemToolTypeMatches(toolTypes, itemStack) > 0);
+    }
+
+    private static int itemToolTypeMatches(EnumSet<ToolType> toolTypes, ItemStack itemStack) {
+
         int matches = 0;
 
-        EnumSet<ToolType> toolTypes = data.get("tool_types");
-        for (ToolType toolType: toolTypes) {
-            switch (toolType) {
+        for (ToolType tt : toolTypes) {
+            switch (tt) {
                 case AXE:
                     if (itemStack.getItem() instanceof AxeItem) matches++;
                     break;
@@ -39,14 +54,15 @@ public class ToolCondition {
             }
         }
 
-        return (matches > 0);
+        return matches;
     }
 
     public static ConditionFactory<ItemStack> getFactory() {
         return new ConditionFactory<>(
             Eggolib.identifier("tool"),
             new SerializableData()
-                .add("tool_types", EggolibDataTypes.TOOL_TYPE_SET, EnumSet.allOf(ToolType.class)),
+                .add("tool_type", EggolibDataTypes.TOOL_TYPE, null)
+                .add("tool_types", EggolibDataTypes.TOOL_TYPE_SET, null),
             ToolCondition::condition
         );
     }
