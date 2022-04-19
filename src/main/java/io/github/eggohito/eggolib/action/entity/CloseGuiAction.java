@@ -3,18 +3,18 @@ package io.github.eggohito.eggolib.action.entity;
 import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.eggohito.eggolib.Eggolib;
-import net.minecraft.client.MinecraftClient;
+import io.github.eggohito.eggolib.networking.EggolibPackets;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.network.ServerPlayerEntity;
 
 public class CloseGuiAction {
 
     public static void action(SerializableData.Instance data, Entity entity) {
         if (!(entity instanceof PlayerEntity)) return;
-
-        MinecraftClient.getInstance().execute(
-            () -> MinecraftClient.getInstance().setScreen(null)
-        );
+        ServerPlayNetworking.send((ServerPlayerEntity) entity, EggolibPackets.CLOSE_GUI_CLIENT, PacketByteBufs.empty());
     }
 
     public static ActionFactory<Entity> getFactory() {
