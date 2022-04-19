@@ -1,0 +1,4 @@
+{
+    "death.attack.eggolib.change_health.underflow": "%1$s died",
+    "death.attack.eggolib.change_health.underflow.player": "%1$s died whilst trying to run away from %2$s"
+}
