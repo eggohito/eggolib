@@ -18,7 +18,12 @@ public class EggolibClient implements ClientModInitializer {
         EggolibPacketsS2C.register();
         EggolibClassDataClient.registerAll();
 
-        ClientTickEvents.START_CLIENT_TICK.register(EggolibClient::getPlayerCurrentScreen);
+        ClientTickEvents.START_CLIENT_TICK.register(
+            minecraftClient -> {
+                getPlayerCurrentScreen(minecraftClient);
+                getPlayerCurrentPerspective(minecraftClient);
+            }
+        );
 
     }
 
@@ -36,6 +41,17 @@ public class EggolibClient implements ClientModInitializer {
                 buffer.writeString(minecraftClient.currentScreen.getClass().getName());
             }
             ClientPlayNetworking.send(EggolibPackets.GET_CURRENT_SCREEN_SERVER, buffer);
+        }
+
+    }
+
+    private static void getPlayerCurrentPerspective(MinecraftClient minecraftClient) {
+
+        if (minecraftClient.player != null) {
+            PacketByteBuf buffer = new PacketByteBuf(Unpooled.buffer());
+            buffer.writeInt(minecraftClient.player.getId());
+            buffer.writeString(minecraftClient.options.getPerspective().name());
+            ClientPlayNetworking.send(EggolibPackets.GET_PERSPECTIVE_SERVER, buffer);
         }
 
     }

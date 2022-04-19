@@ -15,23 +15,24 @@ public class PerspectiveCondition {
 
     public static boolean condition(SerializableData.Instance data, Entity entity) {
 
-        if (!(entity instanceof PlayerEntity)) return false;
+        if (!(entity instanceof PlayerEntity playerEntity)) return false;
 
         int matches = 0;
-        Perspective currentPerspective = MinecraftClient.getInstance().options.getPerspective();
+        String perspectiveString = Eggolib.playerCurrentPerspectiveHashMap.get(playerEntity);
+        Perspective perspectiveEnum = Enum.valueOf(Perspective.class, perspectiveString);
 
         if (data.isPresent("perspective") || data.isPresent("perspectives")) {
 
             if (data.isPresent("perspective")) {
 
                 Perspective perspective = data.get("perspective");
-                if (perspective == currentPerspective) matches++;
+                if (perspective == perspectiveEnum) matches++;
             }
 
             if (data.isPresent("perspectives")) {
 
                 EnumSet<Perspective> perspectives = data.get("perspectives");
-                if (perspectives.contains(currentPerspective)) matches++;
+                if (perspectives.contains(perspectiveEnum)) matches++;
             }
         }
 

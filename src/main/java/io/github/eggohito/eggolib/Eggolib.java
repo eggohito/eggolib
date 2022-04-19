@@ -20,6 +20,7 @@ public class Eggolib implements ModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger(Eggolib.class);
     public static String VERSION = "";
     public static HashMap<PlayerEntity, String> playerCurrentScreenHashMap = new HashMap<>();
+    public static HashMap<PlayerEntity, String> playerCurrentPerspectiveHashMap = new HashMap<>();
 
     @Override
     public void onInitialize() {
@@ -52,11 +53,20 @@ public class Eggolib implements ModInitializer {
 
         LOGGER.info("[{}] Version {} has been initialized! Egg!", MOD_ID, VERSION);
 
-        ServerPlayConnectionEvents.DISCONNECT.register(Eggolib::clearPlayerViewingScreenHashMap);
+        ServerPlayConnectionEvents.DISCONNECT.register(
+            (serverPlayNetworkHandler, minecraftServer) -> {
+                clearPlayerCurrentScreenHashMap();
+                clearPlayerCurrentPerspectiveHashMap();
+            }
+        );
     }
 
-    private static void clearPlayerViewingScreenHashMap(ServerPlayNetworkHandler serverPlayNetworkHandler, MinecraftServer minecraftServer) {
+    private static void clearPlayerCurrentScreenHashMap() {
         playerCurrentScreenHashMap.clear();
+    }
+
+    private static void clearPlayerCurrentPerspectiveHashMap() {
+        playerCurrentPerspectiveHashMap.clear();
     }
 
     public static Identifier identifier(String path) {

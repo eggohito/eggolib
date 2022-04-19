@@ -9,6 +9,8 @@ public class EggolibPackets {
 
     public static Identifier SET_PERSPECTIVE_CLIENT = Eggolib.identifier("set_perspective_client");
 
+    public static Identifier GET_PERSPECTIVE_SERVER = Eggolib.identifier("get_perspective_server");
+
     public static Identifier GET_CURRENT_SCREEN_SERVER = Eggolib.identifier("get_current_screen_server");
 
 }
