@@ -4,9 +4,15 @@ import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.eggohito.eggolib.Eggolib;
 import io.github.eggohito.eggolib.data.EggolibDataTypes;
+import io.github.eggohito.eggolib.networking.EggolibPackets;
+import io.netty.buffer.Unpooled;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.option.Perspective;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.server.network.ServerPlayerEntity;
 
 public class SetPerspectiveAction {
 
@@ -14,9 +20,13 @@ public class SetPerspectiveAction {
 
         if (!(entity instanceof PlayerEntity)) return;
 
-        MinecraftClient.getInstance().execute(
-            () -> MinecraftClient.getInstance().options.setPerspective(data.get("perspective"))
-        );
+        Perspective perspective = data.get("perspective");
+        PacketByteBuf buffer = new PacketByteBuf(Unpooled.buffer());
+
+        buffer.writeString(perspective.name());
+
+        ServerPlayNetworking.send((ServerPlayerEntity) entity, EggolibPackets.SET_PERSPECTIVE_CLIENT, buffer);
+
     }
 
     public static ActionFactory<Entity> getFactory() {
