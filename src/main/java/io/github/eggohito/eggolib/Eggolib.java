@@ -1,17 +1,25 @@
 package io.github.eggohito.eggolib;
 
+import io.github.eggohito.eggolib.networking.EggolibPacketsC2S;
 import io.github.eggohito.eggolib.registry.factory.*;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.HashMap;
 
 public class Eggolib implements ModInitializer {
 
     public static final String MOD_ID = "eggolib";
     public static final Logger LOGGER = LoggerFactory.getLogger(Eggolib.class);
     public static String VERSION = "";
+    public static HashMap<PlayerEntity, String> playerCurrentScreenHashMap = new HashMap<>();
 
     @Override
     public void onInitialize() {
@@ -33,6 +41,8 @@ public class Eggolib implements ModInitializer {
 //            (commandDispatcher, dedicated) -> ConcatCommand.register(commandDispatcher)
 //        );
 
+        EggolibPacketsC2S.register();
+
         EggolibBlockActions.register();
         EggolibBlockConditions.register();
         EggolibEntityActions.register();
@@ -40,7 +50,13 @@ public class Eggolib implements ModInitializer {
         EggolibItemConditions.register();
         EggolibPowers.register();
 
-        LOGGER.info(String.format("[eggolib] Eggolib %s has been initialized. Egg!", VERSION));
+        LOGGER.info("[{}] Version {} has been initialized! Egg!", MOD_ID, VERSION);
+
+        ServerPlayConnectionEvents.DISCONNECT.register(Eggolib::clearPlayerViewingScreenHashMap);
+    }
+
+    private static void clearPlayerViewingScreenHashMap(ServerPlayNetworkHandler serverPlayNetworkHandler, MinecraftServer minecraftServer) {
+        playerCurrentScreenHashMap.clear();
     }
 
     public static Identifier identifier(String path) {
