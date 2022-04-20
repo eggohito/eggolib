@@ -4,10 +4,13 @@ import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.eggohito.eggolib.Eggolib;
 import io.github.eggohito.eggolib.data.EggolibDataTypes;
-import net.minecraft.client.MinecraftClient;
+import io.github.eggohito.eggolib.networking.EggolibPackets;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.client.option.Perspective;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.util.EnumSet;
 
@@ -16,6 +19,8 @@ public class PerspectiveCondition {
     public static boolean condition(SerializableData.Instance data, Entity entity) {
 
         if (!(entity instanceof PlayerEntity playerEntity)) return false;
+
+        ServerPlayNetworking.send((ServerPlayerEntity) playerEntity, EggolibPackets.GET_CURRENT_PERSPECTIVE_CLIENT, PacketByteBufs.empty());
 
         int matches = 0;
         String perspectiveString = Eggolib.playerCurrentPerspectiveHashMap.get(playerEntity);

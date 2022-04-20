@@ -13,34 +13,28 @@ import net.minecraft.server.network.ServerPlayerEntity;
 public class EggolibPacketsC2S {
 
     public static void register() {
-        ServerPlayNetworking.registerGlobalReceiver(EggolibPackets.SEND_CURRENT_SCREEN_SERVER, EggolibPacketsC2S::sendCurrentScreen);
-        ServerPlayNetworking.registerGlobalReceiver(EggolibPackets.SEND_CURRENT_PERSPECTIVE_SERVER, EggolibPacketsC2S::sendCurrentPerspective);
+        ServerPlayNetworking.registerGlobalReceiver(EggolibPackets.SYNC_CURRENT_SCREEN_SERVER, EggolibPacketsC2S::syncCurrentScreen);
+        ServerPlayNetworking.registerGlobalReceiver(EggolibPackets.SYNC_CURRENT_PERSPECTIVE_SERVER, EggolibPacketsC2S::syncCurrentPerspective);
     }
 
-    private static void sendCurrentScreen(MinecraftServer minecraftServer, ServerPlayerEntity serverPlayerEntity, ServerPlayNetworkHandler serverPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
+    private static void syncCurrentScreen(MinecraftServer minecraftServer, ServerPlayerEntity serverPlayerEntity, ServerPlayNetworkHandler serverPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
 
         int entityId = packetByteBuf.readInt();
-        boolean isCurrentScreenNull = packetByteBuf.readBoolean();
         String currentScreenClassString = packetByteBuf.readString();
 
         minecraftServer.execute(
             () -> {
                 Entity entity = serverPlayerEntity.getWorld().getEntityById(entityId);
                 if (!(entity instanceof PlayerEntity playerEntity)) {
-                    Eggolib.LOGGER.warn("[{}] Tried getting the current screen of a non-PlayerEntity!", Eggolib.MOD_ID);
+//                    Eggolib.LOGGER.warn("[{}] Tried getting the current screen of a non-PlayerEntity!", Eggolib.MOD_ID);
                     return;
-                };
-                if (isCurrentScreenNull) {
-                    Eggolib.playerCurrentScreenHashMap.put(playerEntity, null);
                 }
-                else {
-                    Eggolib.playerCurrentScreenHashMap.put(playerEntity, currentScreenClassString);
-                }
+                Eggolib.playerCurrentScreenHashMap.put(playerEntity, currentScreenClassString);
             }
         );
     }
 
-    private static void sendCurrentPerspective(MinecraftServer minecraftServer, ServerPlayerEntity serverPlayerEntity, ServerPlayNetworkHandler serverPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
+    private static void syncCurrentPerspective(MinecraftServer minecraftServer, ServerPlayerEntity serverPlayerEntity, ServerPlayNetworkHandler serverPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
 
         int entityId = packetByteBuf.readInt();
         String perspectiveString = packetByteBuf.readString();
@@ -49,7 +43,7 @@ public class EggolibPacketsC2S {
             () -> {
                 Entity entity = serverPlayerEntity.getWorld().getEntityById(entityId);
                 if (!(entity instanceof PlayerEntity playerEntity)) {
-                    Eggolib.LOGGER.warn("[{}] Tried getting the current perspective of a non-PlayerEntity!", Eggolib.MOD_ID);
+//                    Eggolib.LOGGER.warn("[{}] Tried getting the current perspective of a non-PlayerEntity!", Eggolib.MOD_ID);
                     return;
                 }
                 Eggolib.playerCurrentPerspectiveHashMap.put(playerEntity, perspectiveString);

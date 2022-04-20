@@ -6,9 +6,13 @@ import io.github.apace100.calio.data.ClassDataRegistry;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.eggohito.eggolib.Eggolib;
+import io.github.eggohito.eggolib.networking.EggolibPackets;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -20,10 +24,12 @@ public class InScreenCondition {
 
         if (!(entity instanceof PlayerEntity playerEntity)) return false;
 
+        ServerPlayNetworking.send((ServerPlayerEntity) playerEntity, EggolibPackets.GET_CURRENT_SCREEN_CLIENT, PacketByteBufs.empty());
+
         List<String> screenClassStrings = new LinkedList<>();
         String currentScreenClassString = Eggolib.playerCurrentScreenHashMap.get(playerEntity);
 
-        if (currentScreenClassString == null) return false;
+        if (currentScreenClassString == null || currentScreenClassString.isEmpty()) return false;
 
         try {
             Class<?> currentScreenClass = Class.forName(currentScreenClassString);
