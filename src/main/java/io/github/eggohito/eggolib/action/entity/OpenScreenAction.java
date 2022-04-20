@@ -5,6 +5,7 @@ import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.power.InventoryPower;
 import io.github.apace100.apoli.power.Power;
 import io.github.apace100.apoli.power.PowerType;
+import io.github.apace100.apoli.power.PowerTypeRegistry;
 import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
@@ -18,29 +19,33 @@ import net.minecraft.screen.*;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.TranslatableText;
 
-public class OpenGuiAction {
+public class OpenScreenAction {
 
-    private enum GuiType {
-        POWER,
+    private enum PseudoScreen {
+        CRAFTING,
         ENDER_CHEST,
-        CRAFTING_TABLE
+        POWER
     }
 
     public static void action(SerializableData.Instance data, Entity entity) {
         if (!(entity instanceof PlayerEntity playerEntity)) return;
 
-        GuiType guiType = data.get("gui_type");
+        PseudoScreen pseudoScreen = data.get("screen");
 
-        switch (guiType) {
-            case POWER:
-                if (!data.isPresent("power")) return;
-                openInventoryPower(data, playerEntity);
+        switch (pseudoScreen) {
+            case CRAFTING:
+                openCraftingTable(data, playerEntity);
                 break;
             case ENDER_CHEST:
                 openEnderChest(data, playerEntity);
                 break;
-            case CRAFTING_TABLE:
-                openCraftingTable(data, playerEntity);
+            case POWER:
+                if (!data.isPresent("power")) {
+                    Eggolib.LOGGER.warn("[{}] No power referenced in the 'power' field of an '{}:open_screen' entity action type!",
+                        Eggolib.MOD_ID, Eggolib.MOD_ID);
+                    return;
+                };
+                openInventoryPower(data, playerEntity);
                 break;
         }
     }
@@ -67,6 +72,13 @@ public class OpenGuiAction {
         }
 
         if (valid) playerEntity.openHandledScreen(new SimpleNamedScreenHandlerFactory(containerScreen, containerTitle));
+        else {
+            Eggolib.LOGGER.warn(
+                "[{}] Cannot open the screen for the referenced power '{}'. It's not an instance of InventoryPower or EggolibInventoryPower!",
+                Eggolib.MOD_ID,
+                PowerTypeRegistry.getId(targetPowerType)
+            );
+        }
     }
 
     private static void openCraftingTable(SerializableData.Instance data, PlayerEntity playerEntity) {
@@ -108,11 +120,11 @@ public class OpenGuiAction {
 
     public static ActionFactory<Entity> getFactory() {
         return new ActionFactory<>(
-            Eggolib.identifier("open_gui"),
+            Eggolib.identifier("open_screen"),
             new SerializableData()
-                .add("gui_type", SerializableDataType.enumValue(GuiType.class), GuiType.POWER)
+                .add("screen", SerializableDataType.enumValue(PseudoScreen.class), PseudoScreen.POWER)
                 .add("power", ApoliDataTypes.POWER_TYPE, null),
-            OpenGuiAction::action
+            OpenScreenAction::action
         );
     }
 }

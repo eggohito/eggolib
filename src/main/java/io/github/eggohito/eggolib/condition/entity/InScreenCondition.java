@@ -14,7 +14,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-public class InGuiCondition {
+public class InScreenCondition {
 
     public static boolean condition(SerializableData.Instance data, Entity entity) {
 
@@ -27,18 +27,18 @@ public class InGuiCondition {
 
         try {
             Class<?> currentScreenClass = Class.forName(currentScreenClassString);
-            if (data.isPresent("gui_type") || data.isPresent("gui_types")) {
+            if (data.isPresent("screen") || data.isPresent("screens")) {
 
-                if (data.isPresent("gui_type")) {
+                if (data.isPresent("screen")) {
 
-                    String guiType = data.getString("gui_type");
-                    screenClassStrings.add(guiType);
+                    String screenField = data.getString("screen");
+                    screenClassStrings.add(screenField);
                 }
 
-                if (data.isPresent("gui_types")) {
+                if (data.isPresent("screens")) {
 
-                    List<String> guiTypes = data.get("gui_types");
-                    screenClassStrings.addAll(guiTypes);
+                    List<String> screensField = data.get("screens");
+                    screenClassStrings.addAll(screensField);
                 }
 
                 Optional<ClassDataRegistry> optionalClassDataRegistry = ClassDataRegistry.get(ClassUtil.castClass(Screen.class));
@@ -64,11 +64,11 @@ public class InGuiCondition {
 
     public static ConditionFactory<Entity> getFactory() {
         return new ConditionFactory<>(
-            Eggolib.identifier("in_gui"),
+            Eggolib.identifier("in_screen"),
             new SerializableData()
-                .add("gui_type", SerializableDataTypes.STRING, null)
-                .add("gui_types", SerializableDataTypes.STRINGS, null),
-            InGuiCondition::condition
+                .add("screen", SerializableDataTypes.STRING, null)
+                .add("screens", SerializableDataTypes.STRINGS, null),
+            InScreenCondition::condition
         );
     }
 }

@@ -12,11 +12,11 @@ public class EggolibEntityActions {
         register(CalculateResourceAction.getFactory());
         register(ChangeHealthAction.getFactory());
         register(ChangeInsomniaTicksAction.getFactory());
-        register(CloseGuiAction.getFactory());
+        register(CloseScreenAction.getFactory());
         register(DropItemAction.getFactory());
         register(LoopAction.getFactory());
         register(ModifyInventoryAction.getFactory());
-        register(OpenGuiAction.getFactory());
+        register(OpenScreenAction.getFactory());
         register(ReplaceItemAction.getFactory());
         register(SetPerspectiveAction.getFactory());
     }

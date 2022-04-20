@@ -10,7 +10,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-public class CloseGuiAction {
+public class CloseScreenAction {
 
     public static void action(SerializableData.Instance data, Entity entity) {
         if (!(entity instanceof PlayerEntity)) return;
@@ -19,9 +19,9 @@ public class CloseGuiAction {
 
     public static ActionFactory<Entity> getFactory() {
         return new ActionFactory<>(
-            Eggolib.identifier("close_gui"),
+            Eggolib.identifier("close_screen"),
             new SerializableData(),
-            CloseGuiAction::action
+            CloseScreenAction::action
         );
     }
 }
