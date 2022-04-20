@@ -33,8 +33,11 @@ public class EggolibClassDataClient {
         inGameScreen.addMapping("command_block", CommandBlockScreen.class);
         inGameScreen.addMapping("crafting", CraftingScreen.class);
         inGameScreen.addMapping("creative_inventory", CreativeInventoryScreen.class);
+        inGameScreen.addMapping("death", DeathScreen.class);
         inGameScreen.addMapping("enchantment", EnchantmentScreen.class);
         inGameScreen.addMapping("furnace", FurnaceScreen.class);
+        inGameScreen.addMapping("game_menu", GameMenuScreen.class);
+        inGameScreen.addMapping("gamemode_selection", GameModeSelectionScreen.class);
         inGameScreen.addMapping("generic_3x3_container", Generic3x3ContainerScreen.class);
         inGameScreen.addMapping("generic_container", GenericContainerScreen.class);
         inGameScreen.addMapping("grindstone", GrindstoneScreen.class);
