@@ -40,7 +40,7 @@ public class EggolibClient implements ClientModInitializer {
                 buffer.writeBoolean(false);
                 buffer.writeString(minecraftClient.currentScreen.getClass().getName());
             }
-            ClientPlayNetworking.send(EggolibPackets.GET_CURRENT_SCREEN_SERVER, buffer);
+            ClientPlayNetworking.send(EggolibPackets.SEND_CURRENT_SCREEN_SERVER, buffer);
         }
 
     }
@@ -51,7 +51,7 @@ public class EggolibClient implements ClientModInitializer {
             PacketByteBuf buffer = new PacketByteBuf(Unpooled.buffer());
             buffer.writeInt(minecraftClient.player.getId());
             buffer.writeString(minecraftClient.options.getPerspective().name());
-            ClientPlayNetworking.send(EggolibPackets.GET_PERSPECTIVE_SERVER, buffer);
+            ClientPlayNetworking.send(EggolibPackets.SEND_CURRENT_PERSPECTIVE_SERVER, buffer);
         }
 
     }

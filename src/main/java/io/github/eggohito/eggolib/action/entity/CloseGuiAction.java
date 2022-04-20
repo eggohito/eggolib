@@ -14,7 +14,7 @@ public class CloseGuiAction {
 
     public static void action(SerializableData.Instance data, Entity entity) {
         if (!(entity instanceof PlayerEntity)) return;
-        ServerPlayNetworking.send((ServerPlayerEntity) entity, EggolibPackets.CLOSE_GUI_CLIENT, PacketByteBufs.empty());
+        ServerPlayNetworking.send((ServerPlayerEntity) entity, EggolibPackets.CLOSE_SCREEN_CLIENT, PacketByteBufs.empty());
     }
 
     public static ActionFactory<Entity> getFactory() {

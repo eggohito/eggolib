@@ -59,6 +59,7 @@ public class Eggolib implements ModInitializer {
                 clearPlayerCurrentPerspectiveHashMap();
             }
         );
+
     }
 
     private static void clearPlayerCurrentScreenHashMap() {

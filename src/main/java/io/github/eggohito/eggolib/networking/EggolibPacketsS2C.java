@@ -1,6 +1,5 @@
 package io.github.eggohito.eggolib.networking;
 
-import io.github.eggohito.eggolib.Eggolib;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
@@ -17,13 +16,13 @@ public class EggolibPacketsS2C {
     public static void register() {
         ClientPlayConnectionEvents.INIT.register(
             (clientPlayNetworkHandler, minecraftClient) -> {
-                ClientPlayNetworking.registerReceiver(EggolibPackets.CLOSE_GUI_CLIENT, EggolibPacketsS2C::closeGui);
+                ClientPlayNetworking.registerReceiver(EggolibPackets.CLOSE_SCREEN_CLIENT, EggolibPacketsS2C::closeScreen);
                 ClientPlayNetworking.registerReceiver(EggolibPackets.SET_PERSPECTIVE_CLIENT, EggolibPacketsS2C::setPerspective);
             }
         );
     }
 
-    private static void closeGui(MinecraftClient minecraftClient, ClientPlayNetworkHandler clientPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
+    private static void closeScreen(MinecraftClient minecraftClient, ClientPlayNetworkHandler clientPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
         minecraftClient.execute(
             () -> minecraftClient.setScreen(null)
         );

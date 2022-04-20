@@ -42,7 +42,7 @@ public class InGuiCondition {
                 }
 
                 Optional<ClassDataRegistry> optionalClassDataRegistry = ClassDataRegistry.get(ClassUtil.castClass(Screen.class));
-                if (optionalClassDataRegistry.isPresent() && currentScreenClass != null) {
+                if (optionalClassDataRegistry.isPresent()) {
 
                     ClassDataRegistry<? extends Screen> classDataRegistry = optionalClassDataRegistry.get();
                     return screenClassStrings
