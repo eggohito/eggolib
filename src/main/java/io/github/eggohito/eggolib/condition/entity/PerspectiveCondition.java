@@ -19,6 +19,8 @@ public class PerspectiveCondition {
 
         int matches = 0;
         String perspectiveString = Eggolib.playerCurrentPerspectiveHashMap.get(playerEntity);
+        if (perspectiveString == null) return false;
+
         Perspective perspectiveEnum = Enum.valueOf(Perspective.class, perspectiveString);
 
         if (data.isPresent("perspective") || data.isPresent("perspectives")) {
