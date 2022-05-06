@@ -4,9 +4,12 @@ import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.eggohito.eggolib.Eggolib;
 import io.github.eggohito.eggolib.data.EggolibDataTypes;
+import io.github.eggohito.eggolib.mixin.ClientPlayerEntityAccessor;
 import io.github.eggohito.eggolib.networking.EggolibPackets;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.option.Perspective;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -19,33 +22,35 @@ public class PerspectiveCondition {
     public static boolean condition(SerializableData.Instance data, Entity entity) {
 
         if (!(entity instanceof PlayerEntity playerEntity)) return false;
+        if (Eggolib.playerCurrentPerspectiveHashMap.isEmpty()) initCurrentPerspective(playerEntity);
 
-        ServerPlayNetworking.send((ServerPlayerEntity) playerEntity, EggolibPackets.GET_CURRENT_PERSPECTIVE_CLIENT, PacketByteBufs.empty());
+        String currentPerspectiveString = Eggolib.playerCurrentPerspectiveHashMap.get(playerEntity);
+        if (currentPerspectiveString == null || currentPerspectiveString.isEmpty()) return false;
 
-        int matches = 0;
-        String perspectiveString = Eggolib.playerCurrentPerspectiveHashMap.get(playerEntity);
-        if (perspectiveString == null) return false;
+        EnumSet<Perspective> perspectives = EnumSet.noneOf(Perspective.class);
+        Perspective currentPerspective = Enum.valueOf(Perspective.class, currentPerspectiveString);
 
-        Perspective perspectiveEnum = Enum.valueOf(Perspective.class, perspectiveString);
+        if (data.isPresent("perspective")) perspectives.add(data.get("perspective"));
+        if (data.isPresent("perspectives")) perspectives.addAll(data.get("perspectives"));
 
-        if (data.isPresent("perspective") || data.isPresent("perspectives")) {
+        return !perspectives.isEmpty() && perspectives.contains(currentPerspective);
 
-            if (data.isPresent("perspective")) {
+    }
 
-                Perspective perspective = data.get("perspective");
-                if (perspective == perspectiveEnum) matches++;
-            }
+    private static void initCurrentPerspective(PlayerEntity playerEntity) {
 
-            if (data.isPresent("perspectives")) {
-
-                EnumSet<Perspective> perspectives = data.get("perspectives");
-                if (perspectives.contains(perspectiveEnum)) matches++;
-            }
+        if (playerEntity instanceof ClientPlayerEntity clientPlayerEntity) {
+            MinecraftClient minecraftClient = ((ClientPlayerEntityAccessor) clientPlayerEntity).getClient();
+            Eggolib.playerCurrentPerspectiveHashMap.put(
+                clientPlayerEntity,
+                minecraftClient.options.getPerspective() == null ? null : minecraftClient.options.getPerspective().name()
+            );
         }
 
-        else return true;
+        else if (playerEntity instanceof ServerPlayerEntity serverPlayerEntity) {
+            ServerPlayNetworking.send(serverPlayerEntity, EggolibPackets.GET_CURRENT_PERSPECTIVE_CLIENT, PacketByteBufs.empty());
+        }
 
-        return (matches > 0);
     }
 
     public static ConditionFactory<Entity> getFactory() {

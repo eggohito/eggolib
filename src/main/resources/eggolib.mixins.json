@@ -5,12 +5,17 @@
     "compatibilityLevel": "JAVA_17",
     "mixins": [
         "BlockItemMixin",
+        "ClassDataRegistryAccessor",
         "EntityAccessor",
         "InventoryPowerAccessor",
         "LivingEntityMixin",
         "PlayerEntityMixin"
     ],
-    "client": [],
+    "client": [
+        "ClientPlayerEntityAccessor",
+        "GameOptionsMixin",
+        "MinecraftClientMixin"
+    ],
     "server": [],
     "injectors": {
         "defaultRequire": 1

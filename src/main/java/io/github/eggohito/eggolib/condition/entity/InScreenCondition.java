@@ -6,14 +6,19 @@ import io.github.apace100.calio.data.ClassDataRegistry;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.eggohito.eggolib.Eggolib;
+import io.github.eggohito.eggolib.mixin.ClassDataRegistryAccessor;
+import io.github.eggohito.eggolib.mixin.ClientPlayerEntityAccessor;
 import io.github.eggohito.eggolib.networking.EggolibPackets;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -24,48 +29,66 @@ public class InScreenCondition {
 
         if (!(entity instanceof PlayerEntity playerEntity)) return false;
 
-        ServerPlayNetworking.send((ServerPlayerEntity) playerEntity, EggolibPackets.GET_CURRENT_SCREEN_CLIENT, PacketByteBufs.empty());
+        if (Eggolib.playerCurrentScreenHashMap.isEmpty()) initCurrentScreen(playerEntity);
 
-        List<String> screenClassStrings = new LinkedList<>();
         String currentScreenClassString = Eggolib.playerCurrentScreenHashMap.get(playerEntity);
-
         if (currentScreenClassString == null || currentScreenClassString.isEmpty()) return false;
 
+        List<String> screenClassStrings = new LinkedList<>();
+        Optional<ClassDataRegistry> optionalInGameScreen = ClassDataRegistry.get(ClassUtil.castClass(Screen.class));
+
+        if (data.isPresent("screen")) screenClassStrings.add(data.getString("screen"));
+        if (data.isPresent("screens")) screenClassStrings.addAll(data.get("screens"));
+
         try {
+
             Class<?> currentScreenClass = Class.forName(currentScreenClassString);
-            if (data.isPresent("screen") || data.isPresent("screens")) {
+            if (optionalInGameScreen.isPresent()) {
 
-                if (data.isPresent("screen")) {
+                ClassDataRegistry<?> inGameScreen = optionalInGameScreen.get();
 
-                    String screenField = data.getString("screen");
-                    screenClassStrings.add(screenField);
-                }
-
-                if (data.isPresent("screens")) {
-
-                    List<String> screensField = data.get("screens");
-                    screenClassStrings.addAll(screensField);
-                }
-
-                Optional<ClassDataRegistry> optionalClassDataRegistry = ClassDataRegistry.get(ClassUtil.castClass(Screen.class));
-                if (optionalClassDataRegistry.isPresent()) {
-
-                    ClassDataRegistry<? extends Screen> classDataRegistry = optionalClassDataRegistry.get();
+                if (!screenClassStrings.isEmpty()) {
                     return screenClassStrings
                         .stream()
-                        .map(classDataRegistry::mapStringToClass)
+                        .map(inGameScreen::mapStringToClass)
                         .filter(Optional::isPresent)
                         .map(Optional::get)
                         .anyMatch(classString -> classString.isAssignableFrom(currentScreenClass));
                 }
+
+                else {
+                    HashMap<String, Class<?>> inGameScreenMappings = ((ClassDataRegistryAccessor) inGameScreen).getMappings();
+                    return inGameScreenMappings.containsValue(currentScreenClass);
+                }
+
             }
+
+            return false;
+
         }
 
         catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
 
-        return true;
+        return false;
+
+    }
+
+    private static void initCurrentScreen(PlayerEntity playerEntity) {
+
+        if (playerEntity instanceof ClientPlayerEntity clientPlayerEntity) {
+            MinecraftClient minecraftClient = ((ClientPlayerEntityAccessor) clientPlayerEntity).getClient();
+            Eggolib.playerCurrentScreenHashMap.put(
+                playerEntity,
+                minecraftClient.currentScreen == null ? null : minecraftClient.currentScreen.getClass().getName()
+            );
+        }
+
+        else if (playerEntity instanceof ServerPlayerEntity serverPlayerEntity) {
+            ServerPlayNetworking.send(serverPlayerEntity, EggolibPackets.GET_CURRENT_SCREEN_CLIENT, PacketByteBufs.empty());
+        }
+
     }
 
     public static ConditionFactory<Entity> getFactory() {
