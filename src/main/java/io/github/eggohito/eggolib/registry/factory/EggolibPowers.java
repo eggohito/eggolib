@@ -9,7 +9,7 @@ public class EggolibPowers {
 
     public static void register() {
         register(EggolibInventoryPower.getFactory());
-        register(EggolibPreventItemUsePower.getFactory());
+        register(PreventBlockPlacePower.getFactory());
     }
 
     private static void register(PowerFactory<?> serializer) {
