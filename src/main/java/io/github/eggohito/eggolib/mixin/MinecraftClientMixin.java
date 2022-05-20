@@ -20,7 +20,7 @@ public abstract class MinecraftClientMixin {
     private void eggolib$getCurrentScreen(Screen screen, CallbackInfo ci) {
 
         if (this.player == null) return;
-        Eggolib.playerCurrentScreenHashMap.put(this.player, screen == null ? null : screen.getClass().getName());
+        Eggolib.PLAYERS_CURRENT_SCREEN.put(this.player, screen == null ? null : screen.getClass().getName());
 
     }
 

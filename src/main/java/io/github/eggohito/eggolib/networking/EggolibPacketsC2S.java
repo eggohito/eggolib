@@ -29,7 +29,7 @@ public class EggolibPacketsC2S {
 //                    Eggolib.LOGGER.warn("[{}] Tried getting the current screen of a non-PlayerEntity!", Eggolib.MOD_ID);
                     return;
                 }
-                Eggolib.playerCurrentScreenHashMap.put(playerEntity, currentScreenClassString);
+                Eggolib.PLAYERS_CURRENT_SCREEN.put(playerEntity, currentScreenClassString);
             }
         );
     }
@@ -46,7 +46,7 @@ public class EggolibPacketsC2S {
 //                    Eggolib.LOGGER.warn("[{}] Tried getting the current perspective of a non-PlayerEntity!", Eggolib.MOD_ID);
                     return;
                 }
-                Eggolib.playerCurrentPerspectiveHashMap.put(playerEntity, perspectiveString);
+                Eggolib.PLAYERS_CURRENT_PERSPECTIVE.put(playerEntity, perspectiveString);
             }
         );
 

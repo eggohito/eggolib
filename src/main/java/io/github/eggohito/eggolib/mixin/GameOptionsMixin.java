@@ -19,7 +19,7 @@ public class GameOptionsMixin {
     private void eggolib$getCurrentPerspective(Perspective perspective, CallbackInfo ci) {
 
         if (this.client.player == null) return;
-        Eggolib.playerCurrentPerspectiveHashMap.put(this.client.player, perspective == null ? null : perspective.name());
+        Eggolib.PLAYERS_CURRENT_PERSPECTIVE.put(this.client.player, perspective == null ? null : perspective.name());
 
     }
 

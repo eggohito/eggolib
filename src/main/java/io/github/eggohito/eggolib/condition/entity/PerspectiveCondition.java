@@ -22,9 +22,9 @@ public class PerspectiveCondition {
     public static boolean condition(SerializableData.Instance data, Entity entity) {
 
         if (!(entity instanceof PlayerEntity playerEntity)) return false;
-        if (Eggolib.playerCurrentPerspectiveHashMap.isEmpty()) initCurrentPerspective(playerEntity);
+        if (Eggolib.PLAYERS_CURRENT_PERSPECTIVE.isEmpty()) initCurrentPerspective(playerEntity);
 
-        String currentPerspectiveString = Eggolib.playerCurrentPerspectiveHashMap.get(playerEntity);
+        String currentPerspectiveString = Eggolib.PLAYERS_CURRENT_PERSPECTIVE.get(playerEntity);
         if (currentPerspectiveString == null || currentPerspectiveString.isEmpty()) return false;
 
         EnumSet<Perspective> perspectives = EnumSet.noneOf(Perspective.class);
@@ -33,7 +33,7 @@ public class PerspectiveCondition {
         if (data.isPresent("perspective")) perspectives.add(data.get("perspective"));
         if (data.isPresent("perspectives")) perspectives.addAll(data.get("perspectives"));
 
-        return !perspectives.isEmpty() && perspectives.contains(currentPerspective);
+        return perspectives.isEmpty() || perspectives.contains(currentPerspective);
 
     }
 
@@ -41,7 +41,7 @@ public class PerspectiveCondition {
 
         if (playerEntity instanceof ClientPlayerEntity clientPlayerEntity) {
             MinecraftClient minecraftClient = ((ClientPlayerEntityAccessor) clientPlayerEntity).getClient();
-            Eggolib.playerCurrentPerspectiveHashMap.put(
+            Eggolib.PLAYERS_CURRENT_PERSPECTIVE.put(
                 clientPlayerEntity,
                 minecraftClient.options.getPerspective() == null ? null : minecraftClient.options.getPerspective().name()
             );

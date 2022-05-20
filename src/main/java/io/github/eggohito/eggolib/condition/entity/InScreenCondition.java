@@ -18,24 +18,23 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class InScreenCondition {
+
+    private static final String CURRENT_SCREEN_CLASS_NOT_FOUND = "Could not find the screen class for the provided screen class name!";
 
     public static boolean condition(SerializableData.Instance data, Entity entity) {
 
         if (!(entity instanceof PlayerEntity playerEntity)) return false;
 
-        if (Eggolib.playerCurrentScreenHashMap.isEmpty()) initCurrentScreen(playerEntity);
+        if (Eggolib.PLAYERS_CURRENT_SCREEN.isEmpty()) initCurrentScreen(playerEntity);
 
-        String currentScreenClassString = Eggolib.playerCurrentScreenHashMap.get(playerEntity);
+        String currentScreenClassString = Eggolib.PLAYERS_CURRENT_SCREEN.get(playerEntity);
         if (currentScreenClassString == null || currentScreenClassString.isEmpty()) return false;
 
         List<String> screenClassStrings = new LinkedList<>();
-        Optional<ClassDataRegistry> optionalInGameScreen = ClassDataRegistry.get(ClassUtil.castClass(Screen.class));
+        Optional<ClassDataRegistry> inGameScreenCDR$temp = ClassDataRegistry.get(ClassUtil.castClass(Screen.class));
 
         if (data.isPresent("screen")) screenClassStrings.add(data.getString("screen"));
         if (data.isPresent("screens")) screenClassStrings.addAll(data.get("screens"));
@@ -43,22 +42,23 @@ public class InScreenCondition {
         try {
 
             Class<?> currentScreenClass = Class.forName(currentScreenClassString);
-            if (optionalInGameScreen.isPresent()) {
+            Eggolib.WARNINGS.remove(CURRENT_SCREEN_CLASS_NOT_FOUND);
+            if (inGameScreenCDR$temp.isPresent()) {
 
-                ClassDataRegistry<?> inGameScreen = optionalInGameScreen.get();
+                ClassDataRegistry<?> inGameScreenCDR = inGameScreenCDR$temp.get();
 
                 if (!screenClassStrings.isEmpty()) {
                     return screenClassStrings
                         .stream()
-                        .map(inGameScreen::mapStringToClass)
+                        .map(inGameScreenCDR::mapStringToClass)
                         .filter(Optional::isPresent)
                         .map(Optional::get)
-                        .anyMatch(classString -> classString.isAssignableFrom(currentScreenClass));
+                        .anyMatch(inGameScreenClass -> inGameScreenClass.isAssignableFrom(currentScreenClass));
                 }
 
                 else {
-                    HashMap<String, Class<?>> inGameScreenMappings = ((ClassDataRegistryAccessor) inGameScreen).getMappings();
-                    return inGameScreenMappings.containsValue(currentScreenClass);
+                    HashMap<String, Class<?>> inGameScreenClasses = ((ClassDataRegistryAccessor) inGameScreenCDR).getMappings();
+                    return inGameScreenClasses.containsValue(currentScreenClass);
                 }
 
             }
@@ -68,7 +68,7 @@ public class InScreenCondition {
         }
 
         catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            Eggolib.warnOnce(CURRENT_SCREEN_CLASS_NOT_FOUND);
         }
 
         return false;
@@ -79,7 +79,7 @@ public class InScreenCondition {
 
         if (playerEntity instanceof ClientPlayerEntity clientPlayerEntity) {
             MinecraftClient minecraftClient = ((ClientPlayerEntityAccessor) clientPlayerEntity).getClient();
-            Eggolib.playerCurrentScreenHashMap.put(
+            Eggolib.PLAYERS_CURRENT_SCREEN.put(
                 playerEntity,
                 minecraftClient.currentScreen == null ? null : minecraftClient.currentScreen.getClass().getName()
             );

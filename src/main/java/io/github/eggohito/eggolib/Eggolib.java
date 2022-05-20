@@ -10,6 +10,7 @@ import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Eggolib implements ModInitializer {
@@ -17,8 +18,9 @@ public class Eggolib implements ModInitializer {
     public static final String MOD_ID = "eggolib";
     public static final Logger LOGGER = LoggerFactory.getLogger(Eggolib.class);
     public static String VERSION = "";
-    public static HashMap<PlayerEntity, String> playerCurrentScreenHashMap = new HashMap<>();
-    public static HashMap<PlayerEntity, String> playerCurrentPerspectiveHashMap = new HashMap<>();
+    public static ArrayList<String> WARNINGS = new ArrayList<>();
+    public static HashMap<PlayerEntity, String> PLAYERS_CURRENT_SCREEN = new HashMap<>();
+    public static HashMap<PlayerEntity, String> PLAYERS_CURRENT_PERSPECTIVE = new HashMap<>();
 
     @Override
     public void onInitialize() {
@@ -53,10 +55,19 @@ public class Eggolib implements ModInitializer {
 
         ServerPlayConnectionEvents.DISCONNECT.register(
             (serverPlayNetworkHandler, minecraftServer) -> {
-                playerCurrentScreenHashMap.clear();
-                playerCurrentPerspectiveHashMap.clear();
+                PLAYERS_CURRENT_SCREEN.clear();
+                PLAYERS_CURRENT_PERSPECTIVE.clear();
             }
         );
+
+    }
+
+    public static void warnOnce(String warning) {
+
+        if (WARNINGS.contains(warning)) return;
+
+        WARNINGS.add(warning);
+        Eggolib.LOGGER.warn(warning);
 
     }
 
