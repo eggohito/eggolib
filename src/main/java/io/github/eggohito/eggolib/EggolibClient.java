@@ -14,7 +14,7 @@ public class EggolibClient implements ClientModInitializer {
         EggolibPacketsS2C.register();
         EggolibClassDataClient.register();
 
-        //  Add Origins' screen classes to Eggolib's class data registry
+        //  Add Origins' screen classes to Eggolib's screen class data registry if it's loaded
         FabricLoader.getInstance().getModContainer("origins").ifPresent(EggolibOriginsCompat::init);
 
     }
