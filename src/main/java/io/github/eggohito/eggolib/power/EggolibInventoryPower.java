@@ -38,10 +38,11 @@ public class EggolibInventoryPower extends Power implements Active, Inventory {
     private final ScreenHandlerFactory containerScreen;
     private final Predicate<ItemStack> dropOnDeathFilter;
 
+    private final boolean recoverable;
     private final boolean shouldDropOnDeath;
     private final int containerSize;
 
-    public EggolibInventoryPower(PowerType<?> powerType, LivingEntity livingEntity, String containerTitle, ContainerType containerType, boolean shouldDropOnDeath, Predicate<ItemStack> dropOnDeathFilter) {
+    public EggolibInventoryPower(PowerType<?> powerType, LivingEntity livingEntity, String containerTitle, ContainerType containerType, boolean shouldDropOnDeath, Predicate<ItemStack> dropOnDeathFilter, boolean recoverable) {
         super(powerType, livingEntity);
         switch (containerType) {
             case DOUBLE_CHEST:
@@ -69,11 +70,12 @@ public class EggolibInventoryPower extends Power implements Active, Inventory {
         this.containerTitle = new TranslatableText(containerTitle);
         this.shouldDropOnDeath = shouldDropOnDeath;
         this.dropOnDeathFilter = dropOnDeathFilter;
+        this.recoverable = recoverable;
     }
 
     @Override
     public void onLost() {
-        dropItemsOnLost();
+        if (recoverable) dropItemsOnLost();
     }
 
     @Override
@@ -205,7 +207,8 @@ public class EggolibInventoryPower extends Power implements Active, Inventory {
                 .add("container_type", SerializableDataType.enumValue(ContainerType.class), ContainerType.DROPPER)
                 .add("drop_on_death", SerializableDataTypes.BOOLEAN, false)
                 .add("drop_on_death_filter", ApoliDataTypes.ITEM_CONDITION, null)
-                .add("key", ApoliDataTypes.BACKWARDS_COMPATIBLE_KEY, new Active.Key()),
+                .add("key", ApoliDataTypes.BACKWARDS_COMPATIBLE_KEY, new Active.Key())
+                .add("recoverable", SerializableDataTypes.BOOLEAN, true),
             data -> (powerType, livingEntity) -> {
                 EggolibInventoryPower eggolibInventoryPower = new EggolibInventoryPower(
                     powerType,
@@ -213,7 +216,8 @@ public class EggolibInventoryPower extends Power implements Active, Inventory {
                     data.getString("title"),
                     data.get("container_type"),
                     data.getBoolean("drop_on_death"),
-                    data.isPresent("drop_on_death_filter") ? data.get("drop_on_death_filter") : itemStack -> true
+                    data.isPresent("drop_on_death_filter") ? data.get("drop_on_death_filter") : itemStack -> true,
+                    data.getBoolean("recoverable")
                 );
                 eggolibInventoryPower.setKey(data.get("key"));
                 return eggolibInventoryPower;
