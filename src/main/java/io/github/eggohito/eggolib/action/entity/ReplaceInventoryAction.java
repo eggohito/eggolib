@@ -18,7 +18,7 @@ import net.minecraft.inventory.EnderChestInventory;
 
 import static io.github.eggohito.eggolib.util.InventoryUtil.*;
 
-public class DropItemAction {
+public class ReplaceInventoryAction {
 
     public static void action(SerializableData.Instance data, Entity entity) {
         if (!(entity instanceof PlayerEntity playerEntity)) return;
@@ -28,11 +28,11 @@ public class DropItemAction {
         switch (inventoryType) {
             case ENDER_CHEST:
                 EnderChestInventory enderChestInventory = playerEntity.getEnderChestInventory();
-                drop(data, playerEntity, enderChestInventory);
+                replace(data, playerEntity, enderChestInventory);
                 break;
             case PLAYER:
                 PlayerInventory playerInventory = playerEntity.getInventory();
-                drop(data, playerEntity, playerInventory);
+                replace(data, playerEntity, playerInventory);
                 break;
             case POWER:
                 if (!data.isPresent("power")) return;
@@ -41,26 +41,26 @@ public class DropItemAction {
                 Power targetPower = PowerHolderComponent.KEY.get(playerEntity).getPower(targetPowerType);
 
                 if (targetPower instanceof EggolibInventoryPower eggolibInventoryPower) {
-                    drop(data, playerEntity, eggolibInventoryPower);
+                    replace(data, playerEntity, eggolibInventoryPower);
                 }
                 else if (targetPower instanceof InventoryPower inventoryPower) {
-                    drop(data, playerEntity, inventoryPower);
+                    replace(data, playerEntity, inventoryPower);
                 }
         }
     }
 
     public static ActionFactory<Entity> getFactory() {
         return new ActionFactory<>(
-            Eggolib.identifier("drop_item"),
+            Eggolib.identifier("replace_inventory"),
             new SerializableData()
                 .add("inventory_type", EggolibDataTypes.INVENTORY_TYPE, InventoryType.PLAYER)
                 .add("entity_action", ApoliDataTypes.ENTITY_ACTION, null)
+                .add("item_action", ApoliDataTypes.ITEM_ACTION, null)
                 .add("item_condition", ApoliDataTypes.ITEM_CONDITION, null)
                 .add("slots", SerializableDataTypes.INTS, null)
                 .add("power", ApoliDataTypes.POWER_TYPE, null)
-                .add("throw_randomly", SerializableDataTypes.BOOLEAN, false)
-                .add("retain_ownership", SerializableDataTypes.BOOLEAN, true),
-            DropItemAction::action
+                .add("stack", SerializableDataTypes.ITEM_STACK),
+            ReplaceInventoryAction::action
         );
     }
 }
