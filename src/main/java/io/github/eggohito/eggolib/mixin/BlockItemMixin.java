@@ -15,6 +15,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.List;
+
 @Mixin(BlockItem.class)
 public class BlockItemMixin {
 
@@ -23,16 +25,27 @@ public class BlockItemMixin {
 
         PlayerEntity playerEntity = context.getPlayer();
         ItemStack itemStack = context.getStack();
-        BlockPos blockPos = context.getBlockPos();
+        BlockPos hitPos = ((ItemUsageContextAccessor) context).callGetHitResult().getBlockPos();
         Direction direction = context.getSide();
         Hand hand = context.getHand();
 
         if (playerEntity != null) {
+
             PowerHolderComponent phc = PowerHolderComponent.KEY.get(playerEntity);
-            for (PreventBlockPlacePower pbpp : phc.getPowers(PreventBlockPlacePower.class)) {
-                if (pbpp.doesApply(blockPos, direction, itemStack, hand)) cir.setReturnValue(pbpp.executeAction(hand));
+
+            List<PreventBlockPlacePower> filteredPreventBlockPlacePowers = phc
+                .getPowers(PreventBlockPlacePower.class)
+                .stream()
+                .filter(preventBlockPlacePower -> preventBlockPlacePower.doesPrevent(hitPos, direction, itemStack, hand))
+                .toList();
+
+            if (filteredPreventBlockPlacePowers.size() > 0) {
+                filteredPreventBlockPlacePowers.forEach(preventBlockPlacePower -> preventBlockPlacePower.executeActions(hand, hitPos, direction));
+                cir.setReturnValue(false);
             }
+
         }
+
     }
 
 }

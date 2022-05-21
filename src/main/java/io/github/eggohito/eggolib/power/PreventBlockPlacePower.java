@@ -18,6 +18,7 @@ import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
+import org.apache.commons.lang3.tuple.Triple;
 
 import java.util.EnumSet;
 import java.util.function.Consumer;
@@ -26,33 +27,42 @@ import java.util.function.Predicate;
 public class PreventBlockPlacePower extends InteractionPower {
 
     private final Consumer<Entity> entityAction;
-    private final EnumSet<Direction> directions;
+    private final Consumer<Triple<World, BlockPos, Direction>> blockAction;
     private final Predicate<CachedBlockPosition> blockCondition;
+    private final EnumSet<Direction> directions;
 
-    public PreventBlockPlacePower(PowerType<?> powerType, LivingEntity livingEntity, EnumSet<Hand> hands, ActionResult actionResult, Predicate<ItemStack> itemCondition, Consumer<Pair<World, ItemStack>> heldItemAction, ItemStack resultItem, Consumer<Pair<World, ItemStack>> resultItemAction, Predicate<CachedBlockPosition> blockCondition, EnumSet<Direction> directions, Consumer<Entity> entityAction) {
+    public PreventBlockPlacePower(PowerType<?> powerType, LivingEntity livingEntity, EnumSet<Hand> hands, ActionResult actionResult, Predicate<ItemStack> itemCondition, Consumer<Pair<World, ItemStack>> heldItemAction, ItemStack resultItem, Consumer<Pair<World, ItemStack>> resultItemAction, Predicate<CachedBlockPosition> blockCondition, EnumSet<Direction> directions, Consumer<Entity> entityAction, Consumer<Triple<World, BlockPos, Direction>> blockAction) {
         super(powerType, livingEntity, hands, actionResult, itemCondition, heldItemAction, resultItem, resultItemAction);
         this.blockCondition = blockCondition;
         this.directions = directions;
         this.entityAction = entityAction;
+        this.blockAction = blockAction;
     }
 
-    public boolean doesApply(BlockPos blockPos, Direction direction, ItemStack itemStack, Hand hand) {
+    public boolean doesPrevent(BlockPos blockPos, Direction direction, ItemStack itemStack, Hand hand) {
+
         if (!shouldExecute(hand, itemStack)) return false;
         if (!directions.contains(direction)) return false;
+
         return blockCondition == null || blockCondition.test(new CachedBlockPosition(entity.world, blockPos, true));
+
     }
 
-    public boolean executeAction(Hand hand) {
+    public void executeActions(Hand hand, BlockPos blockPos, Direction direction) {
+
         if (entityAction != null) entityAction.accept(entity);
+        if (blockAction != null) blockAction.accept(Triple.of(entity.world, blockPos, direction));
         performActorItemStuff(this, (PlayerEntity) entity, hand);
-        return false;
+
     }
 
     public static PowerFactory<?> getFactory() {
+
         return new PowerFactory<>(
             Eggolib.identifier("prevent_block_place"),
             new SerializableData()
                 .add("entity_action", ApoliDataTypes.ENTITY_ACTION, null)
+                .add("block_action", ApoliDataTypes.BLOCK_ACTION, null)
                 .add("item_condition", ApoliDataTypes.ITEM_CONDITION, null)
                 .add("block_condition", ApoliDataTypes.BLOCK_CONDITION, null)
                 .add("directions", SerializableDataTypes.DIRECTION_SET, EnumSet.allOf(Direction.class))
@@ -71,9 +81,11 @@ public class PreventBlockPlacePower extends InteractionPower {
                 data.get("result_item_action"),
                 data.get("block_condition"),
                 data.get("directions"),
-                data.get("entity_action")
+                data.get("entity_action"),
+                data.get("block_action")
             )
         ).allowCondition();
+
     }
 
 }
