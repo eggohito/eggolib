@@ -8,6 +8,7 @@ import net.minecraft.util.registry.Registry;
 public class EggolibPowers {
 
     public static void register() {
+        register(ActionOnBlockPlacePower.getFactory());
         register(EggolibInventoryPower.getFactory());
         register(PreventBlockPlacePower.getFactory());
     }
