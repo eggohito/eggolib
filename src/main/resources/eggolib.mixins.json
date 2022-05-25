@@ -8,6 +8,7 @@
         "ClassDataRegistryAccessor",
         "EntityAccessor",
         "InventoryPowerAccessor",
+        "ItemSlotArgumentTypeAccessor",
         "ItemUsageContextAccessor",
         "LivingEntityMixin",
         "PlayerEntityMixin"

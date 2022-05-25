@@ -12,54 +12,48 @@ import io.github.eggohito.eggolib.Eggolib;
 import io.github.eggohito.eggolib.power.EggolibInventoryPower;
 import io.github.eggohito.eggolib.data.EggolibDataTypes;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.EnderChestInventory;
 
 import static io.github.eggohito.eggolib.util.InventoryUtil.*;
 
 public class ModifyInventoryAction {
 
     public static void action(SerializableData.Instance data, Entity entity) {
-        if (!(entity instanceof PlayerEntity playerEntity)) return;
 
         InventoryType inventoryType = data.get("inventory_type");
 
         switch (inventoryType) {
-            case ENDER_CHEST:
-                EnderChestInventory enderChestInventory = playerEntity.getEnderChestInventory();
-                modify(data, playerEntity, enderChestInventory);
-                break;
-            case PLAYER:
-                PlayerInventory playerInventory = playerEntity.getInventory();
-                modify(data, playerEntity, playerInventory);
+            case INVENTORY:
+                modifyInventory(data, entity, null);
                 break;
             case POWER:
-                if (!data.isPresent("power")) return;
+                if (!data.isPresent("power") || !(entity instanceof LivingEntity livingEntity)) return;
 
                 PowerType<?> targetPowerType = data.get("power");
-                Power targetPower = PowerHolderComponent.KEY.get(playerEntity).getPower(targetPowerType);
+                Power targetPower = PowerHolderComponent.KEY.get(livingEntity).getPower(targetPowerType);
 
-                if (targetPower instanceof EggolibInventoryPower eggolibInventoryPower) {
-                    modify(data, playerEntity, eggolibInventoryPower);
-                }
-                else if (targetPower instanceof InventoryPower inventoryPower) {
-                    modify(data, playerEntity, inventoryPower);
-                }
+                if (targetPower instanceof InventoryPower || targetPower instanceof EggolibInventoryPower) modifyInventory(data, livingEntity, targetPower);
+                break;
         }
+
     }
 
     public static ActionFactory<Entity> getFactory() {
+
         return new ActionFactory<>(
             Eggolib.identifier("modify_inventory"),
             new SerializableData()
-                .add("inventory_type", EggolibDataTypes.INVENTORY_TYPE, InventoryType.PLAYER)
+                .add("inventory_type", EggolibDataTypes.INVENTORY_TYPE, InventoryType.INVENTORY)
                 .add("entity_action", ApoliDataTypes.ENTITY_ACTION, null)
                 .add("item_action", ApoliDataTypes.ITEM_ACTION)
                 .add("item_condition", ApoliDataTypes.ITEM_CONDITION, null)
-                .add("slots", SerializableDataTypes.INTS, null)
+                .add("slot", EggolibDataTypes.ITEM_SLOT, null)
+                .add("slots", EggolibDataTypes.ITEM_SLOTS, null)
                 .add("power", ApoliDataTypes.POWER_TYPE, null),
             ModifyInventoryAction::action
         );
+
     }
+
 }

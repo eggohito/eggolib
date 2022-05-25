@@ -9,58 +9,52 @@ import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.eggohito.eggolib.Eggolib;
-import io.github.eggohito.eggolib.power.EggolibInventoryPower;
 import io.github.eggohito.eggolib.data.EggolibDataTypes;
+import io.github.eggohito.eggolib.power.EggolibInventoryPower;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.EnderChestInventory;
+import net.minecraft.entity.LivingEntity;
 
-import static io.github.eggohito.eggolib.util.InventoryUtil.*;
+import static io.github.eggohito.eggolib.util.InventoryUtil.InventoryType;
+import static io.github.eggohito.eggolib.util.InventoryUtil.replaceInventory;
 
 public class ReplaceInventoryAction {
 
     public static void action(SerializableData.Instance data, Entity entity) {
-        if (!(entity instanceof PlayerEntity playerEntity)) return;
 
         InventoryType inventoryType = data.get("inventory_type");
 
         switch (inventoryType) {
-            case ENDER_CHEST:
-                EnderChestInventory enderChestInventory = playerEntity.getEnderChestInventory();
-                replace(data, playerEntity, enderChestInventory);
-                break;
-            case PLAYER:
-                PlayerInventory playerInventory = playerEntity.getInventory();
-                replace(data, playerEntity, playerInventory);
+            case INVENTORY:
+                replaceInventory(data, entity, null);
                 break;
             case POWER:
-                if (!data.isPresent("power")) return;
+                if (!data.isPresent("power") || !(entity instanceof LivingEntity livingEntity)) return;
 
                 PowerType<?> targetPowerType = data.get("power");
-                Power targetPower = PowerHolderComponent.KEY.get(playerEntity).getPower(targetPowerType);
+                Power targetPower = PowerHolderComponent.KEY.get(livingEntity).getPower(targetPowerType);
 
-                if (targetPower instanceof EggolibInventoryPower eggolibInventoryPower) {
-                    replace(data, playerEntity, eggolibInventoryPower);
-                }
-                else if (targetPower instanceof InventoryPower inventoryPower) {
-                    replace(data, playerEntity, inventoryPower);
-                }
+                if (targetPower instanceof InventoryPower || targetPower instanceof EggolibInventoryPower) replaceInventory(data, livingEntity, targetPower);
+                break;
         }
+
     }
 
     public static ActionFactory<Entity> getFactory() {
+
         return new ActionFactory<>(
             Eggolib.identifier("replace_inventory"),
             new SerializableData()
-                .add("inventory_type", EggolibDataTypes.INVENTORY_TYPE, InventoryType.PLAYER)
+                .add("inventory_type", EggolibDataTypes.INVENTORY_TYPE, InventoryType.INVENTORY)
                 .add("entity_action", ApoliDataTypes.ENTITY_ACTION, null)
                 .add("item_action", ApoliDataTypes.ITEM_ACTION, null)
                 .add("item_condition", ApoliDataTypes.ITEM_CONDITION, null)
-                .add("slots", SerializableDataTypes.INTS, null)
+                .add("slot", EggolibDataTypes.ITEM_SLOT, null)
+                .add("slots", EggolibDataTypes.ITEM_SLOTS, null)
                 .add("power", ApoliDataTypes.POWER_TYPE, null)
                 .add("stack", SerializableDataTypes.ITEM_STACK),
             ReplaceInventoryAction::action
         );
+
     }
+
 }
