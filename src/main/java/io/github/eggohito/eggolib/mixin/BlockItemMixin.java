@@ -28,26 +28,25 @@ public class BlockItemMixin {
         PlayerEntity playerEntity = context.getPlayer();
         ItemStack itemStack = context.getStack();
         BlockPos hitPos = ((ItemUsageContextAccessor) context).callGetHitResult().getBlockPos();
+        BlockPos placementPos = context.getBlockPos();
         Direction direction = context.getSide();
         Hand hand = context.getHand();
 
         if (playerEntity == null) return;
 
-        List<PreventBlockPlacePower> filteredPreventBlockPlacePowers = PowerHolderComponent.KEY
-            .get(playerEntity)
-            .getPowers(PreventBlockPlacePower.class)
+        List<PreventBlockPlacePower> filteredPreventBlockPlacePowers = PowerHolderComponent
+            .getPowers(playerEntity, PreventBlockPlacePower.class)
             .stream()
-            .filter(preventBlockPlacePower -> preventBlockPlacePower.doesPrevent(hitPos, direction, itemStack, hand))
+            .filter(pbpp -> pbpp.doesPrevent(hand, hitPos, placementPos, direction, itemStack))
             .toList();
 
-        if (filteredPreventBlockPlacePowers.size() > 0) {
-            filteredPreventBlockPlacePowers.forEach(preventBlockPlacePower -> preventBlockPlacePower.executeActions(hand, hitPos, direction));
-            cir.setReturnValue(false);
-        }
+        if (filteredPreventBlockPlacePowers.size() == 0) return;
+        filteredPreventBlockPlacePowers.forEach(pbpp -> pbpp.executeActions(hand, hitPos, placementPos, direction));
+        cir.setReturnValue(false);
 
     }
 
-    @Inject(method = "place(Lnet/minecraft/item/ItemPlacementContext;)Lnet/minecraft/util/ActionResult;", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/item/BlockItem;postPlacement(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/world/World;Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/item/ItemStack;Lnet/minecraft/block/BlockState;)Z"), cancellable = true)
+    @Inject(method = "place(Lnet/minecraft/item/ItemPlacementContext;)Lnet/minecraft/util/ActionResult;", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemPlacementContext;getBlockPos()Lnet/minecraft/util/math/BlockPos;"))
     private void eggolib$actionOnBlockPlace(ItemPlacementContext context, CallbackInfoReturnable<ActionResult> cir) {
 
         PlayerEntity playerEntity = context.getPlayer();
@@ -59,18 +58,14 @@ public class BlockItemMixin {
 
         if (playerEntity == null) return;
 
-        List<ActionOnBlockPlacePower> filteredActionOnBlockPlacePowers = PowerHolderComponent.KEY
-            .get(playerEntity)
-            .getPowers(ActionOnBlockPlacePower.class)
+        List<ActionOnBlockPlacePower> filteredActionOnBlockPlacePowers = PowerHolderComponent
+            .getPowers(playerEntity, ActionOnBlockPlacePower.class)
             .stream()
-            .filter(actionOnBlockPlacePower -> actionOnBlockPlacePower.shouldExecute(hand, hitPos, direction, itemStack))
+            .filter(aobpp -> aobpp.shouldExecute(hand, hitPos, placementPos, direction, itemStack))
             .toList();
 
-        if (filteredActionOnBlockPlacePowers.size() > 0) {
-            filteredActionOnBlockPlacePowers.forEach(
-                actionOnBlockPlacePower -> actionOnBlockPlacePower.executeActions(hand, placementPos, direction)
-            );
-        }
+        if (filteredActionOnBlockPlacePowers.size() == 0) return;
+        filteredActionOnBlockPlacePowers.forEach(aobpp -> aobpp.executeActions(hand, hitPos, placementPos, direction));
 
     }
 
