@@ -4,7 +4,6 @@ import io.github.apace100.apoli.power.InventoryPower;
 import io.github.apace100.apoli.power.Power;
 import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import io.github.apace100.calio.data.SerializableData;
-import io.github.apace100.calio.util.ArgumentWrapper;
 import io.github.eggohito.eggolib.mixin.ItemSlotArgumentTypeAccessor;
 import io.github.eggohito.eggolib.power.EggolibInventoryPower;
 import net.minecraft.command.argument.ItemSlotArgumentType;
@@ -228,16 +227,16 @@ public class InventoryUtil {
         Set<Integer> itemSlots = new HashSet<>();
 
         if (data.isPresent("slots")) {
-            List<ArgumentWrapper<Integer>> slotNames = data.get("slots");
-            itemSlots.addAll(slotNames.stream().map(ArgumentWrapper::get).toList());
+            List<EggolibArgumentWrapper<Integer>> slotNames = data.get("slots");
+            itemSlots.addAll(slotNames.stream().map(EggolibArgumentWrapper::get).toList());
         }
         if (data.isPresent("slot")) {
-            ArgumentWrapper<Integer> slotName = data.get("slot");
+            EggolibArgumentWrapper<Integer> slotName = data.get("slot");
             itemSlots.add(slotName.get());
         }
 
         if (itemSlots.isEmpty()) {
-            Map<String, Integer> slotNamesAndIds = ((ItemSlotArgumentTypeAccessor) new ItemSlotArgumentType()).getMappings();
+            Map<String, Integer> slotNamesAndIds = ((ItemSlotArgumentTypeAccessor) new ItemSlotArgumentType()).getSlotNamesToSlotCommandId();
             itemSlots.addAll(slotNamesAndIds.values());
         }
 
