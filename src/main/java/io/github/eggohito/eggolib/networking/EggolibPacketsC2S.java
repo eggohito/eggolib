@@ -2,6 +2,7 @@ package io.github.eggohito.eggolib.networking;
 
 import io.github.eggohito.eggolib.Eggolib;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -24,29 +25,31 @@ public class EggolibPacketsC2S {
 
         minecraftServer.execute(
             () -> {
+
                 Entity entity = serverPlayerEntity.getWorld().getEntityById(entityId);
-                if (!(entity instanceof PlayerEntity playerEntity)) {
-//                    Eggolib.LOGGER.warn("[{}] Tried getting the current screen of a non-PlayerEntity!", Eggolib.MOD_ID);
-                    return;
-                }
+                if (!(entity instanceof PlayerEntity playerEntity)) return;
+
                 Eggolib.PLAYERS_CURRENT_SCREEN.put(playerEntity, currentScreenClassString);
+
             }
+
         );
+
     }
 
     private static void syncCurrentPerspective(MinecraftServer minecraftServer, ServerPlayerEntity serverPlayerEntity, ServerPlayNetworkHandler serverPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
 
         int entityId = packetByteBuf.readInt();
-        String perspectiveString = packetByteBuf.readString();
+        String eggolibPerspectiveString = packetByteBuf.readString();
 
         minecraftServer.execute(
             () -> {
+
                 Entity entity = serverPlayerEntity.getWorld().getEntityById(entityId);
-                if (!(entity instanceof PlayerEntity playerEntity)) {
-//                    Eggolib.LOGGER.warn("[{}] Tried getting the current perspective of a non-PlayerEntity!", Eggolib.MOD_ID);
-                    return;
-                }
-                Eggolib.PLAYERS_CURRENT_PERSPECTIVE.put(playerEntity, perspectiveString);
+                if (!(entity instanceof PlayerEntity playerEntity)) return;
+
+                Eggolib.PLAYERS_CURRENT_PERSPECTIVE.put(playerEntity, eggolibPerspectiveString);
+
             }
         );
 

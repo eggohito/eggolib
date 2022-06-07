@@ -6,11 +6,11 @@ import io.github.eggohito.eggolib.Eggolib;
 import io.github.eggohito.eggolib.data.EggolibDataTypes;
 import io.github.eggohito.eggolib.mixin.ClientPlayerEntityAccessor;
 import io.github.eggohito.eggolib.networking.EggolibPackets;
+import io.github.eggohito.eggolib.util.EggolibPerspective;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.option.Perspective;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -24,27 +24,43 @@ public class PerspectiveCondition {
         if (!(entity instanceof PlayerEntity playerEntity)) return false;
         if (Eggolib.PLAYERS_CURRENT_PERSPECTIVE.isEmpty()) initCurrentPerspective(playerEntity);
 
-        String currentPerspectiveString = Eggolib.PLAYERS_CURRENT_PERSPECTIVE.get(playerEntity);
-        if (currentPerspectiveString == null || currentPerspectiveString.isEmpty()) return false;
+        String currentEggolibPerspectiveString = Eggolib.PLAYERS_CURRENT_PERSPECTIVE.get(playerEntity);
+        if (currentEggolibPerspectiveString == null || currentEggolibPerspectiveString.isEmpty()) return false;
 
-        EnumSet<Perspective> perspectives = EnumSet.noneOf(Perspective.class);
-        Perspective currentPerspective = Enum.valueOf(Perspective.class, currentPerspectiveString);
+        EnumSet<EggolibPerspective> eggolibPerspectives = EnumSet.noneOf(EggolibPerspective.class);
+        EggolibPerspective currentEggolibPerspective = Enum.valueOf(EggolibPerspective.class, currentEggolibPerspectiveString);
 
-        if (data.isPresent("perspective")) perspectives.add(data.get("perspective"));
-        if (data.isPresent("perspectives")) perspectives.addAll(data.get("perspectives"));
+        if (data.isPresent("perspective")) eggolibPerspectives.add(data.get("perspective"));
+        if (data.isPresent("perspectives")) eggolibPerspectives.addAll(data.get("perspectives"));
 
-        return perspectives.isEmpty() || perspectives.contains(currentPerspective);
+        return !eggolibPerspectives.isEmpty() && eggolibPerspectives.contains(currentEggolibPerspective);
 
     }
 
     private static void initCurrentPerspective(PlayerEntity playerEntity) {
 
         if (playerEntity instanceof ClientPlayerEntity clientPlayerEntity) {
+
             MinecraftClient minecraftClient = ((ClientPlayerEntityAccessor) clientPlayerEntity).getClient();
+            EggolibPerspective currentEggolibPerspective = null;
+
+            switch (minecraftClient.options.getPerspective()) {
+                case FIRST_PERSON:
+                    currentEggolibPerspective = EggolibPerspective.FIRST_PERSON;
+                    break;
+                case THIRD_PERSON_BACK:
+                    currentEggolibPerspective = EggolibPerspective.THIRD_PERSON_BACK;
+                    break;
+                case THIRD_PERSON_FRONT:
+                    currentEggolibPerspective = EggolibPerspective.THIRD_PERSON_FRONT;
+                    break;
+            }
+
             Eggolib.PLAYERS_CURRENT_PERSPECTIVE.put(
                 clientPlayerEntity,
-                minecraftClient.options.getPerspective() == null ? null : minecraftClient.options.getPerspective().name()
+                currentEggolibPerspective.toString()
             );
+
         }
 
         else if (playerEntity instanceof ServerPlayerEntity serverPlayerEntity) {

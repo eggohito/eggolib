@@ -19,9 +19,9 @@ public class EggolibDataTypes {
 
     public static final SerializableDataType<EnumSet<ToolType>> TOOL_TYPE_SET = SerializableDataType.enumSet(ToolType.class, TOOL_TYPE);
 
-    public static final SerializableDataType<Perspective> PERSPECTIVE = SerializableDataType.enumValue(Perspective.class);
+    public static final SerializableDataType<EggolibPerspective> PERSPECTIVE = SerializableDataType.enumValue(EggolibPerspective.class);
 
-    public static final SerializableDataType<EnumSet<Perspective>> PERSPECTIVE_SET = SerializableDataType.enumSet(Perspective.class, PERSPECTIVE);
+    public static final SerializableDataType<EnumSet<EggolibPerspective>> PERSPECTIVE_SET = SerializableDataType.enumSet(EggolibPerspective.class, PERSPECTIVE);
 
     public static final SerializableDataType<EggolibArgumentWrapper<Integer>> ITEM_SLOT = EggolibSerializableDataType.argumentType(ItemSlotArgumentType.itemSlot());
 

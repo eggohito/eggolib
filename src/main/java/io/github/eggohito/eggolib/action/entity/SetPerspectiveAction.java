@@ -5,6 +5,7 @@ import io.github.apace100.calio.data.SerializableData;
 import io.github.eggohito.eggolib.Eggolib;
 import io.github.eggohito.eggolib.data.EggolibDataTypes;
 import io.github.eggohito.eggolib.networking.EggolibPackets;
+import io.github.eggohito.eggolib.util.EggolibPerspective;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.client.MinecraftClient;
@@ -18,14 +19,14 @@ public class SetPerspectiveAction {
 
     public static void action(SerializableData.Instance data, Entity entity) {
 
-        if (!(entity instanceof PlayerEntity)) return;
+        if (!(entity instanceof ServerPlayerEntity serverPlayerEntity)) return;
 
-        Perspective perspective = data.get("perspective");
+        EggolibPerspective eggolibPerspective = data.get("perspective");
         PacketByteBuf buffer = new PacketByteBuf(Unpooled.buffer());
 
-        buffer.writeString(perspective.name());
+        buffer.writeString(eggolibPerspective.toString());
 
-        ServerPlayNetworking.send((ServerPlayerEntity) entity, EggolibPackets.SET_PERSPECTIVE_CLIENT, buffer);
+        ServerPlayNetworking.send(serverPlayerEntity, EggolibPackets.SET_PERSPECTIVE_CLIENT, buffer);
 
     }
 
