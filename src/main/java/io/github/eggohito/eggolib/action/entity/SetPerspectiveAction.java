@@ -8,10 +8,7 @@ import io.github.eggohito.eggolib.networking.EggolibPackets;
 import io.github.eggohito.eggolib.util.EggolibPerspective;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.option.Perspective;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 
@@ -26,7 +23,7 @@ public class SetPerspectiveAction {
 
         buffer.writeString(eggolibPerspective.toString());
 
-        ServerPlayNetworking.send(serverPlayerEntity, EggolibPackets.SET_PERSPECTIVE_CLIENT, buffer);
+        ServerPlayNetworking.send(serverPlayerEntity, EggolibPackets.CHANGE_PERSPECTIVE_CLIENT, buffer);
 
     }
 

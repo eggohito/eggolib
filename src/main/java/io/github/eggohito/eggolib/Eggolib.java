@@ -19,8 +19,8 @@ public class Eggolib implements ModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger(Eggolib.class);
     public static String VERSION = "";
     public static ArrayList<String> WARNINGS = new ArrayList<>();
-    public static HashMap<PlayerEntity, String> PLAYERS_CURRENT_SCREEN = new HashMap<>();
-    public static HashMap<PlayerEntity, String> PLAYERS_CURRENT_PERSPECTIVE = new HashMap<>();
+    public static HashMap<PlayerEntity, Boolean> PLAYERS_IN_SCREEN = new HashMap<>();
+    public static HashMap<PlayerEntity, String> PLAYERS_PERSPECTIVE = new HashMap<>();
 
     @Override
     public void onInitialize() {
@@ -55,8 +55,8 @@ public class Eggolib implements ModInitializer {
 
         ServerPlayConnectionEvents.DISCONNECT.register(
             (serverPlayNetworkHandler, minecraftServer) -> {
-                PLAYERS_CURRENT_SCREEN.clear();
-                PLAYERS_CURRENT_PERSPECTIVE.clear();
+                PLAYERS_IN_SCREEN.clear();
+                PLAYERS_PERSPECTIVE.clear();
             }
         );
 

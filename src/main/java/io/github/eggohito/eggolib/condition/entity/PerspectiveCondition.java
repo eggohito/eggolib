@@ -10,7 +10,6 @@ import io.github.eggohito.eggolib.util.EggolibPerspective;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -22,9 +21,9 @@ public class PerspectiveCondition {
     public static boolean condition(SerializableData.Instance data, Entity entity) {
 
         if (!(entity instanceof PlayerEntity playerEntity)) return false;
-        if (Eggolib.PLAYERS_CURRENT_PERSPECTIVE.isEmpty()) initCurrentPerspective(playerEntity);
+        if (Eggolib.PLAYERS_PERSPECTIVE.get(playerEntity) == null) initializePerspective(playerEntity);
 
-        String currentEggolibPerspectiveString = Eggolib.PLAYERS_CURRENT_PERSPECTIVE.get(playerEntity);
+        String currentEggolibPerspectiveString = Eggolib.PLAYERS_PERSPECTIVE.get(playerEntity);
         if (currentEggolibPerspectiveString == null || currentEggolibPerspectiveString.isEmpty()) return false;
 
         EnumSet<EggolibPerspective> eggolibPerspectives = EnumSet.noneOf(EggolibPerspective.class);
@@ -37,11 +36,11 @@ public class PerspectiveCondition {
 
     }
 
-    private static void initCurrentPerspective(PlayerEntity playerEntity) {
+    private static void initializePerspective(PlayerEntity playerEntity) {
 
-        if (playerEntity instanceof ClientPlayerEntity clientPlayerEntity) {
+        if (playerEntity.world.isClient) {
 
-            MinecraftClient minecraftClient = ((ClientPlayerEntityAccessor) clientPlayerEntity).getClient();
+            MinecraftClient minecraftClient = ((ClientPlayerEntityAccessor) playerEntity).getClient();
             EggolibPerspective currentEggolibPerspective = null;
 
             switch (minecraftClient.options.getPerspective()) {
@@ -56,16 +55,18 @@ public class PerspectiveCondition {
                     break;
             }
 
-            Eggolib.PLAYERS_CURRENT_PERSPECTIVE.put(
-                clientPlayerEntity,
+            Eggolib.PLAYERS_PERSPECTIVE.put(
+                playerEntity,
                 currentEggolibPerspective.toString()
             );
 
         }
 
-        else if (playerEntity instanceof ServerPlayerEntity serverPlayerEntity) {
-            ServerPlayNetworking.send(serverPlayerEntity, EggolibPackets.GET_CURRENT_PERSPECTIVE_CLIENT, PacketByteBufs.empty());
-        }
+        else ServerPlayNetworking.send(
+            (ServerPlayerEntity) playerEntity,
+            EggolibPackets.CHECK_PERSPECTIVE_CLIENT,
+            PacketByteBufs.empty()
+        );
 
     }
 

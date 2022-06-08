@@ -15,8 +15,7 @@
     ],
     "client": [
         "ClientPlayerEntityAccessor",
-        "GameOptionsMixin",
-        "MinecraftClientMixin"
+        "GameOptionsMixin"
     ],
     "server": [],
     "injectors": {
