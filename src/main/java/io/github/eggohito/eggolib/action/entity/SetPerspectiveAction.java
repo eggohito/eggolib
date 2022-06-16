@@ -56,7 +56,7 @@ public class SetPerspectiveAction {
 
             ServerPlayNetworking.send(
                 (ServerPlayerEntity) playerEntity,
-                EggolibPackets.CHANGE_PERSPECTIVE_CLIENT,
+                EggolibPackets.Client.SET_PERSPECTIVE,
                 buffer
             );
 
@@ -72,4 +72,5 @@ public class SetPerspectiveAction {
             SetPerspectiveAction::action
         );
     }
+
 }

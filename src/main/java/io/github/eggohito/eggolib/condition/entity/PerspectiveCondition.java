@@ -64,7 +64,7 @@ public class PerspectiveCondition {
 
         else ServerPlayNetworking.send(
             (ServerPlayerEntity) playerEntity,
-            EggolibPackets.CHECK_PERSPECTIVE_CLIENT,
+            EggolibPackets.Client.GET_PERSPECTIVE,
             PacketByteBufs.empty()
         );
 
@@ -79,4 +79,5 @@ public class PerspectiveCondition {
             PerspectiveCondition::condition
         );
     }
+
 }

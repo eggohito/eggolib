@@ -13,11 +13,11 @@ import net.minecraft.server.network.ServerPlayerEntity;
 public class EggolibPacketsC2S {
 
     public static void register() {
-        ServerPlayNetworking.registerGlobalReceiver(EggolibPackets.CHECK_SCREEN_SERVER, EggolibPacketsC2S::checkScreenServer);
-        ServerPlayNetworking.registerGlobalReceiver(EggolibPackets.CHECK_PERSPECTIVE_SERVER, EggolibPacketsC2S::checkPerspectiveServer);
+        ServerPlayNetworking.registerGlobalReceiver(EggolibPackets.Server.GET_SCREEN, EggolibPacketsC2S::getScreen);
+        ServerPlayNetworking.registerGlobalReceiver(EggolibPackets.Server.GET_PERSPECTIVE, EggolibPacketsC2S::getPerspective);
     }
 
-    private static void checkScreenServer(MinecraftServer minecraftServer, ServerPlayerEntity serverPlayerEntity, ServerPlayNetworkHandler serverPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
+    private static void getScreen(MinecraftServer minecraftServer, ServerPlayerEntity serverPlayerEntity, ServerPlayNetworkHandler serverPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
 
         int entityId = packetByteBuf.readInt();
         boolean matches = packetByteBuf.readBoolean();
@@ -36,7 +36,7 @@ public class EggolibPacketsC2S {
 
     }
 
-    private static void checkPerspectiveServer(MinecraftServer minecraftServer, ServerPlayerEntity serverPlayerEntity, ServerPlayNetworkHandler serverPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
+    private static void getPerspective(MinecraftServer minecraftServer, ServerPlayerEntity serverPlayerEntity, ServerPlayNetworkHandler serverPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
 
         int entityId = packetByteBuf.readInt();
         String eggolibPerspectiveString = packetByteBuf.readString();

@@ -2,7 +2,6 @@ package io.github.eggohito.eggolib.networking;
 
 import io.github.apace100.calio.ClassUtil;
 import io.github.apace100.calio.data.ClassDataRegistry;
-import io.github.eggohito.eggolib.Eggolib;
 import io.github.eggohito.eggolib.mixin.ClassDataRegistryAccessor;
 import io.github.eggohito.eggolib.util.EggolibPerspective;
 import io.netty.buffer.Unpooled;
@@ -22,27 +21,27 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
+@Environment(EnvType.CLIENT)
 public class EggolibPacketsS2C {
 
-    @Environment(EnvType.CLIENT)
     public static void register() {
         ClientPlayConnectionEvents.INIT.register(
             (clientPlayNetworkHandler, minecraftClient) -> {
-                ClientPlayNetworking.registerReceiver(EggolibPackets.CLOSE_SCREEN_CLIENT, EggolibPacketsS2C::closeScreen);
-                ClientPlayNetworking.registerReceiver(EggolibPackets.CHANGE_PERSPECTIVE_CLIENT, EggolibPacketsS2C::changePerspective);
-                ClientPlayNetworking.registerReceiver(EggolibPackets.CHECK_SCREEN_CLIENT, EggolibPacketsS2C::checkScreenClient);
-                ClientPlayNetworking.registerReceiver(EggolibPackets.CHECK_PERSPECTIVE_CLIENT, EggolibPacketsS2C::checkPerspectiveClient);
+                ClientPlayNetworking.registerReceiver(EggolibPackets.Client.SET_SCREEN, EggolibPacketsS2C::setScreen);
+                ClientPlayNetworking.registerReceiver(EggolibPackets.Client.SET_PERSPECTIVE, EggolibPacketsS2C::setPerspective);
+                ClientPlayNetworking.registerReceiver(EggolibPackets.Client.GET_SCREEN, EggolibPacketsS2C::getScreen);
+                ClientPlayNetworking.registerReceiver(EggolibPackets.Client.GET_PERSPECTIVE, EggolibPacketsS2C::getPerspective);
             }
         );
     }
 
-    private static void closeScreen(MinecraftClient minecraftClient, ClientPlayNetworkHandler clientPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
+    private static void setScreen(MinecraftClient minecraftClient, ClientPlayNetworkHandler clientPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
         minecraftClient.execute(
             () -> minecraftClient.setScreen(null)
         );
     }
 
-    private static void changePerspective(MinecraftClient minecraftClient, ClientPlayNetworkHandler clientPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
+    private static void setPerspective(MinecraftClient minecraftClient, ClientPlayNetworkHandler clientPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
 
         String eggolibPerspectiveString = packetByteBuf.readString();
         EggolibPerspective eggolibPerspective = Enum.valueOf(EggolibPerspective.class, eggolibPerspectiveString);
@@ -69,7 +68,7 @@ public class EggolibPacketsS2C {
 
     }
 
-    private static void checkScreenClient(MinecraftClient minecraftClient, ClientPlayNetworkHandler clientPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
+    private static void getScreen(MinecraftClient minecraftClient, ClientPlayNetworkHandler clientPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
 
         int j = packetByteBuf.readInt();
         Set<String> screenClassStrings = new HashSet<>();
@@ -113,7 +112,7 @@ public class EggolibPacketsS2C {
                 buffer.writeBoolean(matches);
 
                 ClientPlayNetworking.send(
-                    EggolibPackets.CHECK_SCREEN_SERVER,
+                    EggolibPackets.Server.GET_SCREEN,
                     buffer
                 );
 
@@ -122,7 +121,7 @@ public class EggolibPacketsS2C {
 
     }
 
-    private static void checkPerspectiveClient(MinecraftClient minecraftClient, ClientPlayNetworkHandler clientPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
+    private static void getPerspective(MinecraftClient minecraftClient, ClientPlayNetworkHandler clientPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
 
         minecraftClient.execute(
             () -> {
@@ -147,7 +146,7 @@ public class EggolibPacketsS2C {
                 buffer.writeInt(minecraftClient.player.getId());
                 buffer.writeString(eggolibPerspective.toString());
 
-                ClientPlayNetworking.send(EggolibPackets.CHECK_PERSPECTIVE_SERVER, buffer);
+                ClientPlayNetworking.send(EggolibPackets.Server.GET_PERSPECTIVE, buffer);
 
             }
         );

@@ -71,7 +71,7 @@ public class InScreenCondition {
             buffer.writeBoolean(matches);
 
             ClientPlayNetworking.send(
-                EggolibPackets.CHECK_SCREEN_SERVER,
+                EggolibPackets.Server.GET_SCREEN,
                 buffer
             );
 
@@ -88,7 +88,7 @@ public class InScreenCondition {
 
             ServerPlayNetworking.send(
                 (ServerPlayerEntity) playerEntity,
-                EggolibPackets.CHECK_SCREEN_CLIENT,
+                EggolibPackets.Client.GET_SCREEN,
                 buffer
             );
 
@@ -108,4 +108,5 @@ public class InScreenCondition {
             InScreenCondition::condition
         );
     }
+
 }
