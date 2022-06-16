@@ -52,7 +52,7 @@ public class InventoryUtil {
 
         else {
             if (power instanceof InventoryPower inventoryPower) {
-                slots.removeIf(slot -> slot < 0 || slot > inventoryPower.size() || slot == inventoryPower.size() - 1);
+                slots.removeIf(slot -> slot < 0 || slot >= inventoryPower.size());
                 slots
                     .stream()
                     .filter(slot -> !inventoryPower.getStack(slot).isEmpty())
@@ -64,7 +64,7 @@ public class InventoryUtil {
                     );
             }
             else if (power instanceof EggolibInventoryPower eggolibInventoryPower) {
-                slots.removeIf(slot -> slot < 0 || slot > eggolibInventoryPower.size() || slot == eggolibInventoryPower.size() - 1);
+                slots.removeIf(slot -> slot < 0 || slot >= eggolibInventoryPower.size());
                 slots
                     .stream()
                     .filter(slot -> !eggolibInventoryPower.getStack(slot).isEmpty())
@@ -100,7 +100,7 @@ public class InventoryUtil {
 
         else {
             if (power instanceof InventoryPower inventoryPower) {
-                slots.removeIf(slot -> slot < 0 || slot > inventoryPower.size() || slot == inventoryPower.size() - 1);
+                slots.removeIf(slot -> slot < 0 || slot >= inventoryPower.size());
                 slots
                     .stream()
                     .filter(slot -> itemCondition == null || itemCondition.test(inventoryPower.getStack(slot)))
@@ -112,7 +112,7 @@ public class InventoryUtil {
                     );
             }
             else if (power instanceof EggolibInventoryPower eggolibInventoryPower) {
-                slots.removeIf(slot -> slot < 0 || slot > eggolibInventoryPower.size() || slot == eggolibInventoryPower.size() - 1);
+                slots.removeIf(slot -> slot < 0 || slot >= eggolibInventoryPower.size());
                 slots
                     .stream()
                     .filter(slot -> itemCondition == null || itemCondition.test(eggolibInventoryPower.getStack(slot)))
@@ -151,7 +151,7 @@ public class InventoryUtil {
 
         else {
             if (power instanceof InventoryPower inventoryPower) {
-                slots.removeIf(slot -> slot < 0 || slot > inventoryPower.size() || slot == inventoryPower.size() - 1);
+                slots.removeIf(slot -> slot < 0 || slot >= inventoryPower.size());
                 slots
                     .stream()
                     .filter(slot -> !inventoryPower.getStack(slot).isEmpty())
@@ -165,7 +165,7 @@ public class InventoryUtil {
                     );
             }
             else if (power instanceof EggolibInventoryPower eggolibInventoryPower) {
-                slots.removeIf(slot -> slot < 0 || slot > eggolibInventoryPower.size() || slot == eggolibInventoryPower.size() - 1);
+                slots.removeIf(slot -> slot < 0 || slot >= eggolibInventoryPower.size());
                 slots
                     .stream()
                     .filter(slot -> !eggolibInventoryPower.getStack(slot).isEmpty())
