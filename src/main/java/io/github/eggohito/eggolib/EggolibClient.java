@@ -11,6 +11,7 @@ public class EggolibClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
 
+        //  Register the packets and the class data registries
         EggolibPacketsS2C.register();
         EggolibClassDataClient.register();
 
