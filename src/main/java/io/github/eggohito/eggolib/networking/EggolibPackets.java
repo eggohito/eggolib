@@ -5,6 +5,8 @@ import net.minecraft.util.Identifier;
 
 public class EggolibPackets {
 
+    public static Identifier HANDSHAKE = Eggolib.identifier("handshake");
+
     public static class Client {
 
         public static Identifier SET_SCREEN = Eggolib.identifier("client.set_screen");
