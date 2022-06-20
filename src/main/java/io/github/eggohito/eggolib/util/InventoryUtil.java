@@ -6,10 +6,10 @@ import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.eggohito.eggolib.mixin.ItemSlotArgumentTypeAccessor;
 import io.github.eggohito.eggolib.power.EggolibInventoryPower;
-import net.minecraft.command.argument.ItemSlotArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.StackReference;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
@@ -236,7 +236,7 @@ public class InventoryUtil {
         }
 
         if (itemSlots.isEmpty()) {
-            Map<String, Integer> slotNamesAndIds = ((ItemSlotArgumentTypeAccessor) new ItemSlotArgumentType()).getSlotNamesToSlotCommandId();
+            Map<String, Integer> slotNamesAndIds = ItemSlotArgumentTypeAccessor.getSlotMappings();
             itemSlots.addAll(slotNamesAndIds.values());
         }
 
