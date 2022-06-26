@@ -7,9 +7,11 @@ import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import me.shedaniel.autoconfig.serializer.PartitioningSerializer;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +21,7 @@ import java.util.HashMap;
 public class Eggolib implements ModInitializer {
 
     public static EggolibConfig config;
+    public static MinecraftServer minecraftServer;
 
     public static final String MOD_ID = "eggolib";
     public static final Logger LOGGER = LoggerFactory.getLogger(Eggolib.class);
@@ -31,6 +34,8 @@ public class Eggolib implements ModInitializer {
 
     @Override
     public void onInitialize() {
+
+        ServerLifecycleEvents.SERVER_STARTED.register(server -> minecraftServer = server);
 
         //  Get the semantic version of the mod
         FabricLoader.getInstance().getModContainer(MOD_ID).ifPresent(
@@ -72,11 +77,13 @@ public class Eggolib implements ModInitializer {
         EggolibPacketsC2S.register();
 
         //  Register the action/condition/power type factories
+        EggolibBiEntityActions.register();
         EggolibBlockActions.register();
         EggolibBlockConditions.register();
         EggolibDamageConditions.register();
         EggolibEntityActions.register();
         EggolibEntityConditions.register();
+        EggolibItemActions.register();
         EggolibItemConditions.register();
         EggolibPowers.register();
 

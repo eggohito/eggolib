@@ -1,9 +1,14 @@
 package io.github.eggohito.eggolib.data;
 
+import io.github.apace100.calio.ClassUtil;
+import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
+import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.eggohito.eggolib.util.EggolibArgumentWrapper;
 import io.github.eggohito.eggolib.util.*;
 import net.minecraft.command.argument.ItemSlotArgumentType;
+import net.minecraft.scoreboard.ScoreboardPlayerScore;
+import net.minecraft.util.Pair;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -25,5 +30,22 @@ public class EggolibDataTypes {
     public static final SerializableDataType<EggolibArgumentWrapper<Integer>> ITEM_SLOT = EggolibSerializableDataType.argumentType(ItemSlotArgumentType.itemSlot());
 
     public static final SerializableDataType<List<EggolibArgumentWrapper<Integer>>> ITEM_SLOTS = SerializableDataType.list(ITEM_SLOT);
+
+    public static final SerializableDataType<Pair<String, String>> SCOREBOARD = SerializableDataType.compound(
+        ClassUtil.castClass(Pair.class),
+        new SerializableData()
+            .add("name", SerializableDataTypes.STRING)
+            .add("objective", SerializableDataTypes.STRING),
+        data -> new Pair<>(data.getString("name"), data.getString("objective")),
+        (serializableData, nameAndObjective) -> {
+
+            SerializableData.Instance instance = serializableData.new Instance();
+            instance.set("name", nameAndObjective.getLeft());
+            instance.set("objective", nameAndObjective.getRight());
+
+            return instance;
+
+        }
+    );
 
 }
