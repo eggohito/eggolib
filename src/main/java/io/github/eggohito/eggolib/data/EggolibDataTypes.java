@@ -3,7 +3,6 @@ package io.github.eggohito.eggolib.data;
 import io.github.apace100.calio.data.SerializableDataType;
 import io.github.eggohito.eggolib.util.EggolibArgumentWrapper;
 import io.github.eggohito.eggolib.util.*;
-import net.minecraft.client.option.Perspective;
 import net.minecraft.command.argument.ItemSlotArgumentType;
 
 import java.util.EnumSet;
@@ -11,7 +10,7 @@ import java.util.List;
 
 public class EggolibDataTypes {
 
-    public static final SerializableDataType<MathUtil.MathOperation> MATH_OPERATION = SerializableDataType.enumValue(MathUtil.MathOperation.class);
+    public static final SerializableDataType<EggolibMathUtil.MathOperation> MATH_OPERATION = SerializableDataType.enumValue(EggolibMathUtil.MathOperation.class);
 
     public static final SerializableDataType<InventoryUtil.InventoryType> INVENTORY_TYPE = SerializableDataType.enumValue(InventoryUtil.InventoryType.class);
 

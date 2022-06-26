@@ -2,7 +2,7 @@ package io.github.eggohito.eggolib.util;
 
 import net.minecraft.util.Pair;
 
-public class MathUtil {
+public class EggolibMathUtil {
 
     public enum MathOperation {
         ADD,

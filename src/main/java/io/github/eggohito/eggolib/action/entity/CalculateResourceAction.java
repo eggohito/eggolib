@@ -10,12 +10,12 @@ import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.eggohito.eggolib.Eggolib;
 import io.github.eggohito.eggolib.data.EggolibDataTypes;
-import io.github.eggohito.eggolib.util.MathUtil;
+import io.github.eggohito.eggolib.util.EggolibMathUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Pair;
 
-import static io.github.eggohito.eggolib.util.MathUtil.*;
+import static io.github.eggohito.eggolib.util.EggolibMathUtil.*;
 
 public class CalculateResourceAction {
 
@@ -47,7 +47,7 @@ public class CalculateResourceAction {
         if (sourcePower instanceof VariableIntPower sourceResource) b = sourceResource.getValue();
         else if (sourcePower instanceof CooldownPower sourceCooldown) b = sourceCooldown.getRemainingTicks();
 
-        return MathUtil.operate(a, mathOperation, b);
+        return EggolibMathUtil.operate(a, mathOperation, b);
     }
 
     private static void syncPowers(Power targetPower, Power sourcePower, Pair<Integer, Integer> result) {
