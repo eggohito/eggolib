@@ -1,6 +1,6 @@
 package io.github.eggohito.eggolib.util;
 
-public enum ToolType {
+public enum EggolibToolType {
     AXE,
     HOE,
     PICKAXE,
