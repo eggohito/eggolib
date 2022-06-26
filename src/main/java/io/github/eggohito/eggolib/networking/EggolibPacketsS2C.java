@@ -64,10 +64,10 @@ public class EggolibPacketsS2C {
     private static CompletableFuture<PacketByteBuf> handleHandshake(MinecraftClient minecraftClient, ClientLoginNetworkHandler clientLoginNetworkHandler, PacketByteBuf packetByteBuf, Consumer<GenericFutureListener<? extends Future<? super Void>>> genericFutureListenerConsumer) {
 
         PacketByteBuf buffer = PacketByteBufs.create();
-        buffer.writeInt(Eggolib.SEMVER.length);
+        buffer.writeInt(Eggolib.semanticVersion.length);
 
-        for (int i = 0; i < Eggolib.SEMVER.length; i++) {
-            buffer.writeInt(Eggolib.SEMVER[i]);
+        for (int i = 0; i < Eggolib.semanticVersion.length; i++) {
+            buffer.writeInt(Eggolib.semanticVersion[i]);
         }
 
         return CompletableFuture.completedFuture(buffer);

@@ -31,7 +31,7 @@ import net.minecraft.text.TranslatableText;
 public class EggolibPacketsC2S {
 
     public static void register() {
-        if (Eggolib.CONFIG.server.performVersionCheck) {
+        if (Eggolib.config.server.performVersionCheck) {
             ServerLoginConnectionEvents.QUERY_START.register(EggolibPacketsC2S::handshake);
             ServerLoginNetworking.registerGlobalReceiver(EggolibPackets.HANDSHAKE, EggolibPacketsC2S::handleHandshakeReply);
         }
@@ -50,11 +50,11 @@ public class EggolibPacketsC2S {
             int clientSemVerLength = packetByteBuf.readInt();
             int[] clientSemVer = new int[clientSemVerLength];
 
-            boolean mismatch = clientSemVerLength != Eggolib.SEMVER.length;
+            boolean mismatch = clientSemVerLength != Eggolib.semanticVersion.length;
 
             for (int i = 0; i < clientSemVerLength; i++) {
                 clientSemVer[i] = packetByteBuf.readInt();
-                if (i < clientSemVerLength - 1 && clientSemVer[i] != Eggolib.SEMVER[i]) mismatch = true;
+                if (i < clientSemVerLength - 1 && clientSemVer[i] != Eggolib.semanticVersion[i]) mismatch = true;
             }
 
             if (mismatch) {
@@ -66,13 +66,13 @@ public class EggolibPacketsC2S {
                     if (i < clientSemVerLength - 1) clientVersionString.append(".");
                 }
 
-                serverLoginNetworkHandler.disconnect(new TranslatableText("disconnect.eggolib.version_mismatch", Eggolib.VERSION, clientVersionString));
+                serverLoginNetworkHandler.disconnect(new TranslatableText("disconnect.eggolib.version_mismatch", Eggolib.version, clientVersionString));
 
             }
 
         }
 
-        else serverLoginNetworkHandler.disconnect(new TranslatableText("disconnect.eggolib.missing", Eggolib.VERSION));
+        else serverLoginNetworkHandler.disconnect(new TranslatableText("disconnect.eggolib.missing", Eggolib.version));
 
     }
 
@@ -87,7 +87,7 @@ public class EggolibPacketsC2S {
                 Entity entity = serverPlayerEntity.getWorld().getEntityById(entityId);
                 if (!(entity instanceof PlayerEntity playerEntity)) return;
 
-                Eggolib.PLAYERS_IN_SCREEN.put(playerEntity, matches);
+                Eggolib.playersInScreen.put(playerEntity, matches);
 
             }
 
@@ -106,7 +106,7 @@ public class EggolibPacketsC2S {
                 Entity entity = serverPlayerEntity.getWorld().getEntityById(entityId);
                 if (!(entity instanceof PlayerEntity playerEntity)) return;
 
-                Eggolib.PLAYERS_PERSPECTIVE.put(playerEntity, eggolibPerspectiveString);
+                Eggolib.playersPerspective.put(playerEntity, eggolibPerspectiveString);
 
             }
         );

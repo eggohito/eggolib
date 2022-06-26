@@ -18,16 +18,16 @@ import java.util.HashMap;
 
 public class Eggolib implements ModInitializer {
 
-    public static EggolibConfig CONFIG;
+    public static EggolibConfig config;
 
     public static final String MOD_ID = "eggolib";
     public static final Logger LOGGER = LoggerFactory.getLogger(Eggolib.class);
 
-    public static String VERSION = "";
-    public static int[] SEMVER;
+    public static String version = "";
+    public static int[] semanticVersion;
 
-    public static HashMap<PlayerEntity, Boolean> PLAYERS_IN_SCREEN = new HashMap<>();
-    public static HashMap<PlayerEntity, String> PLAYERS_PERSPECTIVE = new HashMap<>();
+    public static HashMap<PlayerEntity, Boolean> playersInScreen = new HashMap<>();
+    public static HashMap<PlayerEntity, String> playersPerspective = new HashMap<>();
 
     @Override
     public void onInitialize() {
@@ -36,20 +36,20 @@ public class Eggolib implements ModInitializer {
         FabricLoader.getInstance().getModContainer(MOD_ID).ifPresent(
             modContainer -> {
 
-                VERSION = modContainer.getMetadata().getVersion().getFriendlyString();
+                version = modContainer.getMetadata().getVersion().getFriendlyString();
 
-                if (VERSION.contains("+")) {
-                    VERSION = VERSION.split("\\+")[0];
+                if (version.contains("+")) {
+                    version = version.split("\\+")[0];
                 }
-                if (VERSION.contains("-")) {
-                    VERSION = VERSION.split("-")[0];
+                if (version.contains("-")) {
+                    version = version.split("-")[0];
                 }
 
-                String[] splitVersion = VERSION.split("\\.");
-                SEMVER = new int[splitVersion.length];
+                String[] splitVersion = version.split("\\.");
+                semanticVersion = new int[splitVersion.length];
 
-                for (int i = 0; i < SEMVER.length; i++) {
-                    SEMVER[i] = Integer.parseInt(splitVersion[i]);
+                for (int i = 0; i < semanticVersion.length; i++) {
+                    semanticVersion[i] = Integer.parseInt(splitVersion[i]);
                 }
 
             }
@@ -62,10 +62,10 @@ public class Eggolib implements ModInitializer {
 
         //  Register the partitioned config
         AutoConfig.register(EggolibConfig.class, PartitioningSerializer.wrap(GsonConfigSerializer::new));
-        CONFIG = AutoConfig.getConfigHolder(EggolibConfig.class).getConfig();
+        config = AutoConfig.getConfigHolder(EggolibConfig.class).getConfig();
 
         Eggolib.LOGGER.warn(
-            String.format("[%1$s] Should %1$s perform a version check? %2$s", MOD_ID, CONFIG.server.performVersionCheck ? "Yes." : "No.")
+            String.format("[%1$s] Should %1$s perform a version check? %2$s", MOD_ID, config.server.performVersionCheck ? "Yes." : "No.")
         );
 
         //  Register the packets
@@ -80,12 +80,12 @@ public class Eggolib implements ModInitializer {
         EggolibItemConditions.register();
         EggolibPowers.register();
 
-        LOGGER.info("[{}] Version {} has been initialized! Egg!", MOD_ID, VERSION);
+        LOGGER.info("[{}] Version {} has been initialized! Egg!", MOD_ID, version);
 
         ServerPlayConnectionEvents.DISCONNECT.register(
             (serverPlayNetworkHandler, minecraftServer) -> {
-                PLAYERS_IN_SCREEN.clear();
-                PLAYERS_PERSPECTIVE.clear();
+                playersInScreen.clear();
+                playersPerspective.clear();
             }
         );
 
