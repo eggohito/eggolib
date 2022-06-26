@@ -1,79 +1,52 @@
 package io.github.eggohito.eggolib.mixin;
 
-import io.github.apace100.apoli.access.ModifiableFoodEntity;
-import io.github.apace100.apoli.component.PowerHolderComponent;
-import io.github.apace100.apoli.power.ModifyDamageDealtPower;
-import io.github.apace100.apoli.power.ModifyDamageTakenPower;
-import io.github.apace100.apoli.power.ModifyProjectileDamagePower;
+import io.github.eggohito.eggolib.util.EggolibMiscUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.Pair;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(value = LivingEntity.class, priority = 2000)
-public abstract class LivingEntityMixin extends Entity implements ModifiableFoodEntity {
+@Mixin(value = LivingEntity.class, priority = 500)
+public abstract class LivingEntityMixin extends Entity {
 
     public LivingEntityMixin(EntityType<?> type, World world) {
         super(type, world);
     }
 
+    @Unique
     private boolean eggolib$modifiedDamage;
 
     @ModifyVariable(method = "damage", at = @At("HEAD"), argsOnly = true)
     private float eggolib$modifyDamageStuff(float originalValue, DamageSource source, float amount) {
 
-        float newValue = originalValue;
         LivingEntity thisAsLiving = (LivingEntity) (Object) this;
+        Pair<Float, Boolean> modifiedDamage = new Pair<>(originalValue, false);
 
-        if (!(thisAsLiving instanceof PlayerEntity)) {
-
-            if (source.getAttacker() != null && !source.isProjectile()) {
-                newValue = PowerHolderComponent.modify(
-                    source.getAttacker(),
-                    ModifyDamageDealtPower.class,
-                    originalValue,
-                    mddp -> mddp.doesApply(source, originalValue, thisAsLiving),
-                    mddp -> mddp.executeActions(thisAsLiving)
-                );
-            }
-
-            if (source.getAttacker() != null && source.isProjectile()) {
-                newValue = PowerHolderComponent.modify(
-                    source.getAttacker(),
-                    ModifyProjectileDamagePower.class,
-                    originalValue,
-                    mpdp -> mpdp.doesApply(source, originalValue, thisAsLiving),
-                    mpdp -> mpdp.executeActions(thisAsLiving)
-                );
-            }
-
-            float intermediateValue = newValue;
-
-            newValue = PowerHolderComponent.modify(
+        if (!(thisAsLiving instanceof PlayerEntity)) modifiedDamage = EggolibMiscUtil
+            .modifyDamage(
                 thisAsLiving,
-                ModifyDamageTakenPower.class,
-                intermediateValue,
-                mdtp -> mdtp.doesApply(source, intermediateValue),
-                mdtp -> mdtp.executeActions(source.getAttacker())
+                source.getAttacker(),
+                source,
+                originalValue
             );
-        }
 
-        eggolib$modifiedDamage = newValue != originalValue;
+        eggolib$modifiedDamage = modifiedDamage.getRight();
+        return modifiedDamage.getLeft();
 
-        return newValue;
     }
 
     @Inject(method = "damage", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;isSleeping()Z"), cancellable = true)
     private void eggolib$preventHitIfDamageIsZero(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
-        if (eggolib$modifiedDamage && amount == 0.0F) {
-            cir.setReturnValue(false);
-        }
+        if (eggolib$modifiedDamage && amount <= 0F) cir.setReturnValue(false);
     }
+
 }

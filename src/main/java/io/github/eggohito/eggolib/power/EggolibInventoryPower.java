@@ -157,16 +157,13 @@ public class EggolibInventoryPower extends Power implements Active, Inventory {
         return containerScreen;
     }
 
-    public boolean shouldDropOnDeath() {
-        return shouldDropOnDeath;
-    }
-
     public boolean shouldDropOnDeath(ItemStack stack) {
         return shouldDropOnDeath && dropOnDeathFilter.test(stack);
     }
 
     public void dropItemsOnDeath() {
         if (!(entity instanceof PlayerEntity playerEntity)) return;
+        if (!shouldDropOnDeath) return;
         for (int i = 0; i < containerSize; i++) {
             ItemStack currentItemStack = getStack(i);
             if (!currentItemStack.isEmpty() && shouldDropOnDeath(currentItemStack)) {
