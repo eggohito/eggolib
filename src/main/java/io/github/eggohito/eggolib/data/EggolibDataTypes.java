@@ -12,7 +12,7 @@ public class EggolibDataTypes {
 
     public static final SerializableDataType<EggolibMathUtil.MathOperation> MATH_OPERATION = SerializableDataType.enumValue(EggolibMathUtil.MathOperation.class);
 
-    public static final SerializableDataType<InventoryUtil.InventoryType> INVENTORY_TYPE = SerializableDataType.enumValue(InventoryUtil.InventoryType.class);
+    public static final SerializableDataType<EggolibInventoryUtil.InventoryType> INVENTORY_TYPE = SerializableDataType.enumValue(EggolibInventoryUtil.InventoryType.class);
 
     public static final SerializableDataType<EggolibToolType> TOOL_TYPE = SerializableDataType.enumValue(EggolibToolType.class);
 

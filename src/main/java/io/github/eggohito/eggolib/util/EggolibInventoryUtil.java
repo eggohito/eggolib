@@ -20,7 +20,7 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-public class InventoryUtil {
+public class EggolibInventoryUtil {
 
     public enum InventoryType {
         INVENTORY,

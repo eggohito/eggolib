@@ -14,7 +14,7 @@ import io.github.eggohito.eggolib.data.EggolibDataTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 
-import static io.github.eggohito.eggolib.util.InventoryUtil.*;
+import static io.github.eggohito.eggolib.util.EggolibInventoryUtil.*;
 
 public class DropInventoryAction {
 

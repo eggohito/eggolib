@@ -14,8 +14,8 @@ import io.github.eggohito.eggolib.power.EggolibInventoryPower;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 
-import static io.github.eggohito.eggolib.util.InventoryUtil.InventoryType;
-import static io.github.eggohito.eggolib.util.InventoryUtil.replaceInventory;
+import static io.github.eggohito.eggolib.util.EggolibInventoryUtil.InventoryType;
+import static io.github.eggohito.eggolib.util.EggolibInventoryUtil.replaceInventory;
 
 public class ReplaceInventoryAction {
 

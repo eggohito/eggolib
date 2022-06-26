@@ -7,15 +7,13 @@ import io.github.apace100.apoli.power.Power;
 import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import io.github.apace100.calio.data.SerializableData;
-import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.eggohito.eggolib.Eggolib;
 import io.github.eggohito.eggolib.power.EggolibInventoryPower;
 import io.github.eggohito.eggolib.data.EggolibDataTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
 
-import static io.github.eggohito.eggolib.util.InventoryUtil.*;
+import static io.github.eggohito.eggolib.util.EggolibInventoryUtil.*;
 
 public class ModifyInventoryAction {
 
