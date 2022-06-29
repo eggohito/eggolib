@@ -21,9 +21,9 @@ public class PerspectiveCondition {
     public static boolean condition(SerializableData.Instance data, Entity entity) {
 
         if (!(entity instanceof PlayerEntity playerEntity)) return false;
-        if (Eggolib.playersPerspective.get(playerEntity) == null) initializePerspective(playerEntity);
+        if (Eggolib.PLAYERS_PERSPECTIVE.get(playerEntity) == null) initializePerspective(playerEntity);
 
-        String currentEggolibPerspectiveString = Eggolib.playersPerspective.get(playerEntity);
+        String currentEggolibPerspectiveString = Eggolib.PLAYERS_PERSPECTIVE.get(playerEntity);
         if (currentEggolibPerspectiveString == null || currentEggolibPerspectiveString.isEmpty()) return false;
 
         EnumSet<EggolibPerspective> eggolibPerspectives = EnumSet.noneOf(EggolibPerspective.class);
@@ -55,7 +55,7 @@ public class PerspectiveCondition {
                     break;
             }
 
-            Eggolib.playersPerspective.put(
+            Eggolib.PLAYERS_PERSPECTIVE.put(
                 playerEntity,
                 currentEggolibPerspective.toString()
             );

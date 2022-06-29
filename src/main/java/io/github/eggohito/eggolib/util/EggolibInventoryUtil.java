@@ -32,11 +32,11 @@ public class EggolibInventoryUtil {
     private static Predicate<ItemStack> itemCondition;
     private static ActionFactory<Pair<World, ItemStack>>.Instance itemAction;
 
-    public static void modifyInventory(SerializableData.Instance data, Entity entity, Power power) {
+    public static void modifyInventory(SerializableData.Instance data, Entity entity, Power targetPower) {
 
         getFields(data);
 
-        if (power == null) {
+        if (targetPower == null) {
             slots
                 .stream()
                 .filter(slot -> entity.getStackReference(slot) != StackReference.EMPTY)
@@ -49,42 +49,41 @@ public class EggolibInventoryUtil {
                 );
         }
 
-        else {
-            if (power instanceof InventoryPower inventoryPower) {
-                slots.removeIf(slot -> slot < 0 || slot >= inventoryPower.size());
-                slots
-                    .stream()
-                    .filter(slot -> !inventoryPower.getStack(slot).isEmpty())
-                    .filter(slot -> itemCondition == null || itemCondition.test(inventoryPower.getStack(slot)))
-                    .forEach(slot -> {
-                            if (entityAction != null) entityAction.accept(entity);
-                            itemAction.accept(new Pair<>(entity.world, inventoryPower.getStack(slot)));
-                        }
-                    );
-            }
-            else if (power instanceof EggolibInventoryPower eggolibInventoryPower) {
-                slots.removeIf(slot -> slot < 0 || slot >= eggolibInventoryPower.size());
-                slots
-                    .stream()
-                    .filter(slot -> !eggolibInventoryPower.getStack(slot).isEmpty())
-                    .filter(slot -> itemCondition == null || itemCondition.test(eggolibInventoryPower.getStack(slot)))
-                    .forEach(slot -> {
-                            if (entityAction != null) entityAction.accept(entity);
-                            itemAction.accept(new Pair<>(entity.world, eggolibInventoryPower.getStack(slot)));
-                        }
-                    );
-            }
+        else if (targetPower instanceof InventoryPower inventoryPower) {
+            slots.removeIf(slot -> slot < 0 || slot >= inventoryPower.size());
+            slots
+                .stream()
+                .filter(slot -> !inventoryPower.getStack(slot).isEmpty())
+                .filter(slot -> itemCondition == null || itemCondition.test(inventoryPower.getStack(slot)))
+                .forEach(slot -> {
+                        if (entityAction != null) entityAction.accept(entity);
+                        itemAction.accept(new Pair<>(entity.world, inventoryPower.getStack(slot)));
+                    }
+                );
+        }
+
+        else if (targetPower instanceof EggolibInventoryPower eggolibInventoryPower) {
+            slots.removeIf(slot -> slot < 0 || slot >= eggolibInventoryPower.size());
+            slots
+                .stream()
+                .filter(slot -> !eggolibInventoryPower.getStack(slot).isEmpty())
+                .filter(slot -> itemCondition == null || itemCondition.test(eggolibInventoryPower.getStack(slot)))
+                .forEach(slot -> {
+                        if (entityAction != null) entityAction.accept(entity);
+                        itemAction.accept(new Pair<>(entity.world, eggolibInventoryPower.getStack(slot)));
+                    }
+                );
         }
 
     }
 
-    public static void replaceInventory(SerializableData.Instance data, Entity entity, Power power) {
+    public static void replaceInventory(SerializableData.Instance data, Entity entity, Power targetPower) {
 
         getFields(data);
 
         ItemStack replacementStack = data.get("stack");
 
-        if (power == null) {
+        if (targetPower == null) {
             slots
                 .stream()
                 .filter(slot -> entity.getStackReference(slot) != StackReference.EMPTY)
@@ -97,43 +96,42 @@ public class EggolibInventoryUtil {
                 );
         }
 
-        else {
-            if (power instanceof InventoryPower inventoryPower) {
-                slots.removeIf(slot -> slot < 0 || slot >= inventoryPower.size());
-                slots
-                    .stream()
-                    .filter(slot -> itemCondition == null || itemCondition.test(inventoryPower.getStack(slot)))
-                    .forEach(slot -> {
-                            if (entityAction != null) entityAction.accept(entity);
-                            inventoryPower.setStack(slot, replacementStack.copy());
-                            if (itemAction != null) itemAction.accept(new Pair<>(entity.world, inventoryPower.getStack(slot)));
-                        }
-                    );
-            }
-            else if (power instanceof EggolibInventoryPower eggolibInventoryPower) {
-                slots.removeIf(slot -> slot < 0 || slot >= eggolibInventoryPower.size());
-                slots
-                    .stream()
-                    .filter(slot -> itemCondition == null || itemCondition.test(eggolibInventoryPower.getStack(slot)))
-                    .forEach(slot -> {
-                            if (entityAction != null) entityAction.accept(entity);
-                            eggolibInventoryPower.setStack(slot, replacementStack.copy());
-                            if (itemAction != null) itemAction.accept(new Pair<>(entity.world, eggolibInventoryPower.getStack(slot)));
-                        }
-                    );
-            }
+        else if (targetPower instanceof InventoryPower inventoryPower) {
+            slots.removeIf(slot -> slot < 0 || slot >= inventoryPower.size());
+            slots
+                .stream()
+                .filter(slot -> itemCondition == null || itemCondition.test(inventoryPower.getStack(slot)))
+                .forEach(slot -> {
+                        if (entityAction != null) entityAction.accept(entity);
+                        inventoryPower.setStack(slot, replacementStack.copy());
+                        if (itemAction != null) itemAction.accept(new Pair<>(entity.world, inventoryPower.getStack(slot)));
+                    }
+                );
+        }
+
+        else if (targetPower instanceof EggolibInventoryPower eggolibInventoryPower) {
+            slots.removeIf(slot -> slot < 0 || slot >= eggolibInventoryPower.size());
+            slots
+                .stream()
+                .filter(slot -> itemCondition == null || itemCondition.test(eggolibInventoryPower.getStack(slot)))
+                .forEach(slot -> {
+                        if (entityAction != null) entityAction.accept(entity);
+                        eggolibInventoryPower.setStack(slot, replacementStack.copy());
+                        if (itemAction != null) itemAction.accept(new Pair<>(entity.world, eggolibInventoryPower.getStack(slot)));
+                    }
+                );
         }
 
     }
 
-    public static void dropInventory(SerializableData.Instance data, Entity entity, Power power) {
+    public static void dropInventory(SerializableData.Instance data, Entity entity, Power targetPower) {
 
         getFields(data);
 
         boolean throwRandomly = data.getBoolean("throw_randomly");
         boolean retainOwnership = data.getBoolean("retain_ownership");
 
-        if (power == null) {
+        if (targetPower == null) {
             slots
                 .stream()
                 .filter(slot -> entity.getStackReference(slot) != StackReference.EMPTY)
@@ -148,35 +146,34 @@ public class EggolibInventoryUtil {
                 );
         }
 
-        else {
-            if (power instanceof InventoryPower inventoryPower) {
-                slots.removeIf(slot -> slot < 0 || slot >= inventoryPower.size());
-                slots
-                    .stream()
-                    .filter(slot -> !inventoryPower.getStack(slot).isEmpty())
-                    .filter(slot -> itemCondition == null || itemCondition.test(inventoryPower.getStack(slot)))
-                    .forEach(slot -> {
-                            if (entityAction != null) entityAction.accept(entity);
-                            if (itemAction != null) itemAction.accept(new Pair<>(entity.world, inventoryPower.getStack(slot)));
-                            throwItem(entity, inventoryPower.getStack(slot), throwRandomly, retainOwnership);
-                            inventoryPower.setStack(slot, ItemStack.EMPTY);
-                        }
-                    );
-            }
-            else if (power instanceof EggolibInventoryPower eggolibInventoryPower) {
-                slots.removeIf(slot -> slot < 0 || slot >= eggolibInventoryPower.size());
-                slots
-                    .stream()
-                    .filter(slot -> !eggolibInventoryPower.getStack(slot).isEmpty())
-                    .filter(slot -> itemCondition == null || itemCondition.test(eggolibInventoryPower.getStack(slot)))
-                    .forEach(slot -> {
-                            if (entityAction != null) entityAction.accept(entity);
-                            if (itemAction != null) itemAction.accept(new Pair<>(entity.world, eggolibInventoryPower.getStack(slot)));
-                            throwItem(entity, eggolibInventoryPower.getStack(slot), throwRandomly, retainOwnership);
-                            eggolibInventoryPower.setStack(slot, ItemStack.EMPTY);
-                        }
-                    );
-            }
+        else if (targetPower instanceof InventoryPower inventoryPower) {
+            slots.removeIf(slot -> slot < 0 || slot >= inventoryPower.size());
+            slots
+                .stream()
+                .filter(slot -> !inventoryPower.getStack(slot).isEmpty())
+                .filter(slot -> itemCondition == null || itemCondition.test(inventoryPower.getStack(slot)))
+                .forEach(slot -> {
+                        if (entityAction != null) entityAction.accept(entity);
+                        if (itemAction != null) itemAction.accept(new Pair<>(entity.world, inventoryPower.getStack(slot)));
+                        throwItem(entity, inventoryPower.getStack(slot), throwRandomly, retainOwnership);
+                        inventoryPower.setStack(slot, ItemStack.EMPTY);
+                    }
+                );
+        }
+
+        else if (targetPower instanceof EggolibInventoryPower eggolibInventoryPower) {
+            slots.removeIf(slot -> slot < 0 || slot >= eggolibInventoryPower.size());
+            slots
+                .stream()
+                .filter(slot -> !eggolibInventoryPower.getStack(slot).isEmpty())
+                .filter(slot -> itemCondition == null || itemCondition.test(eggolibInventoryPower.getStack(slot)))
+                .forEach(slot -> {
+                        if (entityAction != null) entityAction.accept(entity);
+                        if (itemAction != null) itemAction.accept(new Pair<>(entity.world, eggolibInventoryPower.getStack(slot)));
+                        throwItem(entity, eggolibInventoryPower.getStack(slot), throwRandomly, retainOwnership);
+                        eggolibInventoryPower.setStack(slot, ItemStack.EMPTY);
+                    }
+                );
         }
 
     }

@@ -34,7 +34,7 @@ public abstract class GameOptionsMixin {
                 break;
         }
 
-        Eggolib.playersPerspective.put(this.client.player, eggolibPerspective.toString());
+        Eggolib.PLAYERS_PERSPECTIVE.put(this.client.player, eggolibPerspective.toString());
 
     }
 

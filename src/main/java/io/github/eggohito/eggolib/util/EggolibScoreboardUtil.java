@@ -12,6 +12,8 @@ public class EggolibScoreboardUtil {
         String name = nameAndObjective.getLeft();
         String objective = nameAndObjective.getRight();
 
+        if (Eggolib.minecraftServer == null) return 0;
+
         Scoreboard scoreboard = Eggolib.minecraftServer.getScoreboard();
         ScoreboardObjective scoreboardObjective = scoreboard.getObjective(objective);
 

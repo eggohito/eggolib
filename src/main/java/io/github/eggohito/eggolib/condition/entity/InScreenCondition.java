@@ -94,8 +94,8 @@ public class InScreenCondition {
 
         }
 
-        if (Eggolib.playersInScreen.get(playerEntity) == null) return false;
-        else return Eggolib.playersInScreen.get(playerEntity);
+        if (Eggolib.PLAYERS_IN_SCREEN.get(playerEntity) == null) return false;
+        else return Eggolib.PLAYERS_IN_SCREEN.get(playerEntity);
 
     }
 

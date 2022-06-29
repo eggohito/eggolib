@@ -4,20 +4,21 @@ import io.github.apace100.calio.ClassUtil;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.calio.data.SerializableDataTypes;
-import io.github.eggohito.eggolib.util.EggolibArgumentWrapper;
 import io.github.eggohito.eggolib.util.*;
 import net.minecraft.command.argument.ItemSlotArgumentType;
-import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.util.Pair;
 
 import java.util.EnumSet;
 import java.util.List;
 
+import static io.github.eggohito.eggolib.util.EggolibMathUtil.*;
+import static io.github.eggohito.eggolib.util.EggolibInventoryUtil.*;
+
 public class EggolibDataTypes {
 
-    public static final SerializableDataType<EggolibMathUtil.MathOperation> MATH_OPERATION = SerializableDataType.enumValue(EggolibMathUtil.MathOperation.class);
+    public static final SerializableDataType<MathOperation> MATH_OPERATION = SerializableDataType.enumValue(EggolibMathUtil.MathOperation.class);
 
-    public static final SerializableDataType<EggolibInventoryUtil.InventoryType> INVENTORY_TYPE = SerializableDataType.enumValue(EggolibInventoryUtil.InventoryType.class);
+    public static final SerializableDataType<InventoryType> INVENTORY_TYPE = SerializableDataType.enumValue(EggolibInventoryUtil.InventoryType.class);
 
     public static final SerializableDataType<EggolibToolType> TOOL_TYPE = SerializableDataType.enumValue(EggolibToolType.class);
 

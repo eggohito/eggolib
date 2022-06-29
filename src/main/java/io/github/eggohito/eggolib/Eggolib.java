@@ -20,21 +20,22 @@ import java.util.HashMap;
 
 public class Eggolib implements ModInitializer {
 
+    public static String version = "";
+    public static int[] semanticVersion;
+
     public static EggolibConfig config;
     public static MinecraftServer minecraftServer;
 
     public static final String MOD_ID = "eggolib";
     public static final Logger LOGGER = LoggerFactory.getLogger(Eggolib.class);
 
-    public static String version = "";
-    public static int[] semanticVersion;
-
-    public static HashMap<PlayerEntity, Boolean> playersInScreen = new HashMap<>();
-    public static HashMap<PlayerEntity, String> playersPerspective = new HashMap<>();
+    public static final HashMap<PlayerEntity, Boolean> PLAYERS_IN_SCREEN = new HashMap<>();
+    public static final HashMap<PlayerEntity, String> PLAYERS_PERSPECTIVE = new HashMap<>();
 
     @Override
     public void onInitialize() {
 
+        //  Get the server
         ServerLifecycleEvents.SERVER_STARTED.register(server -> minecraftServer = server);
 
         //  Get the semantic version of the mod
@@ -69,10 +70,6 @@ public class Eggolib implements ModInitializer {
         AutoConfig.register(EggolibConfig.class, PartitioningSerializer.wrap(GsonConfigSerializer::new));
         config = AutoConfig.getConfigHolder(EggolibConfig.class).getConfig();
 
-        Eggolib.LOGGER.warn(
-            String.format("[%1$s] Should %1$s perform a version check? %2$s", MOD_ID, config.server.performVersionCheck ? "Yes." : "No.")
-        );
-
         //  Register the packets
         EggolibPacketsC2S.register();
 
@@ -87,12 +84,16 @@ public class Eggolib implements ModInitializer {
         EggolibItemConditions.register();
         EggolibPowers.register();
 
-        LOGGER.info("[{}] Version {} has been initialized! Egg!", MOD_ID, version);
+        LOGGER.info("[{}] Version {} has been initialized. Egg!", MOD_ID, version);
+        LOGGER.warn(
+            String.format("[%1$s] Should %1$s perform a version check? %2$s", MOD_ID, config.server.performVersionCheck ? "Yes." : "No.")
+        );
 
+        //  Clear the hashmaps
         ServerPlayConnectionEvents.DISCONNECT.register(
             (serverPlayNetworkHandler, minecraftServer) -> {
-                playersInScreen.clear();
-                playersPerspective.clear();
+                PLAYERS_IN_SCREEN.clear();
+                PLAYERS_PERSPECTIVE.clear();
             }
         );
 

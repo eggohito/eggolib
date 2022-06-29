@@ -2,7 +2,6 @@ package io.github.eggohito.eggolib.action.entity;
 
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.data.ApoliDataTypes;
-import io.github.apace100.apoli.power.InventoryPower;
 import io.github.apace100.apoli.power.Power;
 import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.apoli.power.factory.action.ActionFactory;
@@ -10,12 +9,9 @@ import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.eggohito.eggolib.Eggolib;
 import io.github.eggohito.eggolib.data.EggolibDataTypes;
-import io.github.eggohito.eggolib.power.EggolibInventoryPower;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 
-import static io.github.eggohito.eggolib.util.EggolibInventoryUtil.InventoryType;
-import static io.github.eggohito.eggolib.util.EggolibInventoryUtil.replaceInventory;
+import static io.github.eggohito.eggolib.util.EggolibInventoryUtil.*;
 
 public class ReplaceInventoryAction {
 
@@ -28,12 +24,20 @@ public class ReplaceInventoryAction {
                 replaceInventory(data, entity, null);
                 break;
             case POWER:
-                if (!data.isPresent("power") || !(entity instanceof LivingEntity livingEntity)) return;
+                if (!data.isPresent("power")) return;
 
                 PowerType<?> targetPowerType = data.get("power");
-                Power targetPower = PowerHolderComponent.KEY.get(livingEntity).getPower(targetPowerType);
+                if (targetPowerType == null) return;
 
-                if (targetPower instanceof InventoryPower || targetPower instanceof EggolibInventoryPower) replaceInventory(data, livingEntity, targetPower);
+                PowerHolderComponent.KEY
+                    .maybeGet(entity)
+                    .ifPresent(
+                        powerHolderComponent -> {
+                            Power targetPower = powerHolderComponent.getPower(targetPowerType);
+                            replaceInventory(data, entity, targetPower);
+                        }
+                    );
+
                 break;
         }
 

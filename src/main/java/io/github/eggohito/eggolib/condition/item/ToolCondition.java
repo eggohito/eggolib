@@ -15,19 +15,16 @@ public class ToolCondition {
 
         EnumSet<EggolibToolType> eggolibToolTypes = EnumSet.noneOf(EggolibToolType.class);
 
-        if (data.isPresent("tool_type") || data.isPresent("tool_types")) {
-            if (data.isPresent("tool_type")) eggolibToolTypes.add(data.get("tool_type"));
-            if (data.isPresent("tool_types")) eggolibToolTypes.addAll(data.get("tool_types"));
-        }
+        if (data.isPresent("tool_type")) eggolibToolTypes.add(data.get("tool_type"));
+        if (data.isPresent("tool_types")) eggolibToolTypes.addAll(data.get("tool_types"));
 
-        else {
-            eggolibToolTypes.addAll(EnumSet.allOf(EggolibToolType.class));
-        }
+        if (eggolibToolTypes.isEmpty()) eggolibToolTypes.addAll(EnumSet.allOf(EggolibToolType.class));
 
-        return (itemToolTypeMatches(eggolibToolTypes, itemStack) > 0);
+        return hasMatchingToolType(eggolibToolTypes, itemStack);
+
     }
 
-    private static int itemToolTypeMatches(EnumSet<EggolibToolType> eggolibToolTypes, ItemStack itemStack) {
+    private static boolean hasMatchingToolType(EnumSet<EggolibToolType> eggolibToolTypes, ItemStack itemStack) {
 
         int matches = 0;
 
@@ -54,7 +51,8 @@ public class ToolCondition {
             }
         }
 
-        return matches;
+        return matches > 0;
+
     }
 
     public static ConditionFactory<ItemStack> getFactory() {
@@ -66,4 +64,5 @@ public class ToolCondition {
             ToolCondition::condition
         );
     }
+
 }

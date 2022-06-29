@@ -87,7 +87,7 @@ public class EggolibPacketsC2S {
                 Entity entity = serverPlayerEntity.getWorld().getEntityById(entityId);
                 if (!(entity instanceof PlayerEntity playerEntity)) return;
 
-                Eggolib.playersInScreen.put(playerEntity, matches);
+                Eggolib.PLAYERS_IN_SCREEN.put(playerEntity, matches);
 
             }
 
@@ -106,7 +106,7 @@ public class EggolibPacketsC2S {
                 Entity entity = serverPlayerEntity.getWorld().getEntityById(entityId);
                 if (!(entity instanceof PlayerEntity playerEntity)) return;
 
-                Eggolib.playersPerspective.put(playerEntity, eggolibPerspectiveString);
+                Eggolib.PLAYERS_PERSPECTIVE.put(playerEntity, eggolibPerspectiveString);
 
             }
         );
