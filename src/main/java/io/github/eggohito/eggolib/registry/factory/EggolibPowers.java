@@ -14,6 +14,7 @@ public class EggolibPowers {
         register(EggolibModifyDamageDealtPower.getFactory());
         register(EggolibModifyDamageTakenPower.getFactory());
         register(EggolibModifyProjectileDamagePower.getFactory());
+        register(ModifyHurtTicksPower.getFactory());
         register(PreventBlockPlacePower.getFactory());
     }
 

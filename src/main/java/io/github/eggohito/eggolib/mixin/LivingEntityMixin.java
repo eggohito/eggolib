@@ -1,5 +1,7 @@
 package io.github.eggohito.eggolib.mixin;
 
+import io.github.apace100.apoli.component.PowerHolderComponent;
+import io.github.eggohito.eggolib.power.ModifyHurtTicksPower;
 import io.github.eggohito.eggolib.util.EggolibMiscUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -47,6 +49,17 @@ public abstract class LivingEntityMixin extends Entity {
     @Inject(method = "damage", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;isSleeping()Z"), cancellable = true)
     private void eggolib$preventHitIfDamageIsZero(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         if (eggolib$modifiedDamage && amount <= 0F) cir.setReturnValue(false);
+    }
+
+    @Inject(method = "damage", at = @At(value = "TAIL"))
+    private void eggolib$modifyHurtTicks(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+        if (!cir.getReturnValue()) return;
+        PowerHolderComponent.withPowers(
+            (LivingEntity) (Object) this,
+            ModifyHurtTicksPower.class,
+            mhtp -> mhtp.doesApply(source, amount, source.getAttacker()),
+            mhtp -> mhtp.apply(source.getAttacker())
+        );
     }
 
 }
