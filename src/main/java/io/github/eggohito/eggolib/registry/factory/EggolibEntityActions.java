@@ -19,6 +19,7 @@ public class EggolibEntityActions {
         register(LoopAction.getFactory(ApoliDataTypes.ENTITY_ACTION));
         register(ModifyInventoryAction.getFactory());
         register(OpenInventoryAction.getFactory());
+        register(RemovePowerAction.getFactory());
         register(ReplaceInventoryAction.getFactory());
         register(SetPerspectiveAction.getFactory());
     }
