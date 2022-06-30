@@ -25,6 +25,7 @@ public class ModifyHurtTicksPower extends ValueModifyingPower {
 
     private int oldMaxHurtTime;
     private int oldTimeUntilRegen;
+    private boolean wasActive = false;
 
     private final Consumer<Pair<Entity, Entity>> biEntityAction;
 
@@ -36,20 +37,26 @@ public class ModifyHurtTicksPower extends ValueModifyingPower {
         this.biEntityAction = biEntityAction;
         this.biEntityCondition = biEntityCondition;
         this.damageCondition = damageCondition;
+        this.setTicking(true);
+    }
+
+    @Override
+    public void tick() {
+        if (isActive() && !wasActive) wasActive = true;
+        else if (wasActive) {
+            entity.maxHurtTime = oldMaxHurtTime;
+            wasActive = false;
+        }
     }
 
     @Override
     public void onGained() {
-        oldMaxHurtTime = entity.maxHurtTime;
-        oldTimeUntilRegen = entity.timeUntilRegen;
-
-        modifyHurtTicks();
+        getHurtTicks();
     }
 
     @Override
     public void onLost() {
         entity.maxHurtTime = oldMaxHurtTime;
-        entity.timeUntilRegen = oldTimeUntilRegen;
     }
 
     @Override
@@ -66,37 +73,31 @@ public class ModifyHurtTicksPower extends ValueModifyingPower {
 
     @Override
     public void fromTag(NbtElement tag) {
-        oldMaxHurtTime = ((NbtCompound) tag).getInt("OldMaxHurtTime");
-        oldTimeUntilRegen = ((NbtCompound) tag).getInt("OldTimeUntilRegen");
+        if (tag instanceof NbtCompound nbtCompound) {
+            oldMaxHurtTime = nbtCompound.getInt("OldMaxHurtTime");
+            oldTimeUntilRegen = nbtCompound.getInt("OldTimeUntilRegen");
+        }
     }
 
     public boolean doesApply(DamageSource damageSource, float damageAmount, Entity attacker) {
-        return (attacker == null || (biEntityCondition == null || biEntityCondition.test(new Pair<>(attacker, entity)))) &&
-               (damageCondition == null || damageCondition.test(new Pair<>(damageSource, damageAmount)));
+        return (damageCondition == null || damageCondition.test(new Pair<>(damageSource, damageAmount))) && (biEntityCondition == null || biEntityCondition.test(new Pair<>(attacker, entity)));
     }
 
     public void apply(Entity attacker) {
-        modifyHurtTicks();
+        getHurtTicks();
+        entity.maxHurtTime = modify(oldMaxHurtTime);
+        entity.timeUntilRegen = modify(oldTimeUntilRegen);
+        entity.hurtTime = entity.maxHurtTime;
         if (biEntityAction != null) biEntityAction.accept(new Pair<>(attacker, entity));
     }
 
-    private void modifyHurtTicks() {
+    private void getHurtTicks() {
+        oldMaxHurtTime = entity.maxHurtTime;
+        oldTimeUntilRegen = entity.timeUntilRegen;
+    }
 
-        int newMaxHurtTime = MathHelper.clamp(
-            (int) PowerHolderComponent.modify(entity, this.getClass(), oldMaxHurtTime),
-            0,
-            Integer.MAX_VALUE
-        );
-        int newTimeUntilRegen = MathHelper.clamp(
-            (int) PowerHolderComponent.modify(entity, this.getClass(), oldTimeUntilRegen),
-            0,
-            Integer.MAX_VALUE
-        );
-
-        entity.maxHurtTime = newMaxHurtTime;
-        entity.timeUntilRegen = newTimeUntilRegen;
-        if (entity.hurtTime > 0) entity.hurtTime = entity.maxHurtTime;
-
+    private int modify(int value) {
+        return MathHelper.clamp((int) PowerHolderComponent.modify(entity, this.getClass(), value), 0, Integer.MAX_VALUE);
     }
 
     public static PowerFactory<?> getFactory() {
