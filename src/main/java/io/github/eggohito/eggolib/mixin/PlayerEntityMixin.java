@@ -1,21 +1,20 @@
 package io.github.eggohito.eggolib.mixin;
 
 import io.github.apace100.apoli.component.PowerHolderComponent;
+import io.github.apace100.apoli.power.ModifyDamageDealtPower;
+import io.github.apace100.apoli.power.ModifyDamageTakenPower;
+import io.github.apace100.apoli.power.ModifyProjectileDamagePower;
 import io.github.eggohito.eggolib.power.EggolibInventoryPower;
-import io.github.eggohito.eggolib.util.EggolibMiscUtil;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.util.Nameable;
-import net.minecraft.util.Pair;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -33,28 +32,19 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Nameable
             .forEach(EggolibInventoryPower::dropItemsOnDeath);
     }
 
-    @Unique
-    private boolean eggolib$modifiedDamage;
+    @Inject(method = "damage", at = @At("TAIL"), cancellable = true)
+    private void eggolib$allowDamageIfModifyingPowersExist(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
 
-    @ModifyVariable(method = "damage", at = @At("HEAD"), argsOnly = true)
-    private float eggolib$modifyDamageStuff(float originalValue, DamageSource source, float amount) {
+        boolean hasModifyingPower = false;
 
-        Pair<Float, Boolean> modifiedDamage = EggolibMiscUtil
-            .modifyDamage(
-                this,
-                source.getAttacker(),
-                source,
-                originalValue
-            );
+        if (source.getAttacker() != null) {
+            if (!source.isProjectile()) hasModifyingPower = PowerHolderComponent.getPowers(source.getAttacker(), ModifyDamageDealtPower.class).size() > 0;
+            else hasModifyingPower = PowerHolderComponent.getPowers(source.getAttacker(), ModifyProjectileDamagePower.class).size() > 0;
+        }
 
-        eggolib$modifiedDamage = modifiedDamage.getRight();
-        return modifiedDamage.getLeft();
+        hasModifyingPower |= PowerHolderComponent.getPowers(this, ModifyDamageTakenPower.class).size() > 0;
+        if (hasModifyingPower) cir.setReturnValue(super.damage(source, amount));
 
-    }
-
-    @Inject(method = "damage", at = @At(value = "TAIL"), cancellable = true)
-    private void eggolib$preventHitIfDamageIsZero(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
-        if (eggolib$modifiedDamage && amount <= 0F) cir.setReturnValue(false);
     }
 
 }
