@@ -6,6 +6,7 @@ import io.github.eggohito.eggolib.Eggolib;
 import io.github.eggohito.eggolib.data.EggolibDataTypes;
 import io.github.eggohito.eggolib.mixin.ClientPlayerEntityAccessor;
 import io.github.eggohito.eggolib.networking.EggolibPackets;
+import io.github.eggohito.eggolib.util.EggolibMiscUtilClient;
 import io.github.eggohito.eggolib.util.EggolibPerspective;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -21,7 +22,7 @@ public class PerspectiveCondition {
     public static boolean condition(SerializableData.Instance data, Entity entity) {
 
         if (!(entity instanceof PlayerEntity playerEntity)) return false;
-        if (Eggolib.PLAYERS_PERSPECTIVE.get(playerEntity) == null) initializePerspective(playerEntity);
+        if (!Eggolib.PLAYERS_PERSPECTIVE.containsKey(playerEntity)) initializePerspective(playerEntity);
 
         String currentEggolibPerspectiveString = Eggolib.PLAYERS_PERSPECTIVE.get(playerEntity);
         if (currentEggolibPerspectiveString == null || currentEggolibPerspectiveString.isEmpty()) return false;
@@ -39,32 +40,15 @@ public class PerspectiveCondition {
     private static void initializePerspective(PlayerEntity playerEntity) {
 
         if (playerEntity.world.isClient) {
-
             MinecraftClient minecraftClient = ((ClientPlayerEntityAccessor) playerEntity).getClient();
-            EggolibPerspective currentEggolibPerspective = null;
-
-            switch (minecraftClient.options.getPerspective()) {
-                case FIRST_PERSON:
-                    currentEggolibPerspective = EggolibPerspective.FIRST_PERSON;
-                    break;
-                case THIRD_PERSON_BACK:
-                    currentEggolibPerspective = EggolibPerspective.THIRD_PERSON_BACK;
-                    break;
-                case THIRD_PERSON_FRONT:
-                    currentEggolibPerspective = EggolibPerspective.THIRD_PERSON_FRONT;
-                    break;
-            }
-
-            Eggolib.PLAYERS_PERSPECTIVE.put(
-                playerEntity,
-                currentEggolibPerspective.toString()
+            minecraftClient.execute(
+                () -> EggolibMiscUtilClient.getPerspective(minecraftClient)
             );
-
         }
 
         else ServerPlayNetworking.send(
             (ServerPlayerEntity) playerEntity,
-            EggolibPackets.Client.GET_PERSPECTIVE,
+            EggolibPackets.GET_PERSPECTIVE,
             PacketByteBufs.empty()
         );
 

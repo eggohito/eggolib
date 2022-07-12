@@ -5,27 +5,14 @@ import net.minecraft.util.Identifier;
 
 public class EggolibPackets {
 
-    public static Identifier HANDSHAKE = Eggolib.identifier("handshake");
+    public static final Identifier HANDSHAKE = Eggolib.identifier("handshake");
 
-    public static class Client {
+    public static final Identifier CLOSE_SCREEN = Eggolib.identifier("close_screen");
 
-        public static Identifier SET_SCREEN = Eggolib.identifier("client.set_screen");
+    public static final Identifier IS_IN_SCREEN = Eggolib.identifier("is_in_screen");
 
-        public static Identifier SET_PERSPECTIVE = Eggolib.identifier("client.set_perspective");
+    public static final Identifier SET_PERSPECTIVE = Eggolib.identifier("set_perspective");
 
-        public static Identifier GET_SCREEN = Eggolib.identifier("client.get_screen");
-
-        public static Identifier GET_PERSPECTIVE = Eggolib.identifier("client.get_perspective");
-
-    }
-
-    public static class Server {
-
-        public static Identifier GET_SCREEN = Eggolib.identifier("server.get_screen");
-
-        public static Identifier GET_PERSPECTIVE = Eggolib.identifier("server.get_perspective");
-
-    }
-
+    public static final Identifier GET_PERSPECTIVE = Eggolib.identifier("get_perspective");
 
 }

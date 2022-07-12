@@ -35,8 +35,8 @@ public class EggolibPacketsC2S {
             ServerLoginConnectionEvents.QUERY_START.register(EggolibPacketsC2S::handshake);
             ServerLoginNetworking.registerGlobalReceiver(EggolibPackets.HANDSHAKE, EggolibPacketsC2S::handleHandshakeReply);
         }
-        ServerPlayNetworking.registerGlobalReceiver(EggolibPackets.Server.GET_SCREEN, EggolibPacketsC2S::getScreen);
-        ServerPlayNetworking.registerGlobalReceiver(EggolibPackets.Server.GET_PERSPECTIVE, EggolibPacketsC2S::getPerspective);
+        ServerPlayNetworking.registerGlobalReceiver(EggolibPackets.IS_IN_SCREEN, EggolibPacketsC2S::isInScreen);
+        ServerPlayNetworking.registerGlobalReceiver(EggolibPackets.GET_PERSPECTIVE, EggolibPacketsC2S::getPerspective);
     }
 
     private static void handshake(ServerLoginNetworkHandler serverLoginNetworkHandler, MinecraftServer minecraftServer, PacketSender packetSender, ServerLoginNetworking.LoginSynchronizer loginSynchronizer) {
@@ -76,7 +76,7 @@ public class EggolibPacketsC2S {
 
     }
 
-    private static void getScreen(MinecraftServer minecraftServer, ServerPlayerEntity serverPlayerEntity, ServerPlayNetworkHandler serverPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
+    private static void isInScreen(MinecraftServer minecraftServer, ServerPlayerEntity serverPlayerEntity, ServerPlayNetworkHandler serverPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
 
         int entityId = packetByteBuf.readInt();
         boolean matches = packetByteBuf.readBoolean();

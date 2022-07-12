@@ -1,7 +1,6 @@
 package io.github.eggohito.eggolib.mixin;
 
-import io.github.eggohito.eggolib.Eggolib;
-import io.github.eggohito.eggolib.util.EggolibPerspective;
+import io.github.eggohito.eggolib.util.EggolibMiscUtilClient;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.Perspective;
@@ -18,24 +17,7 @@ public abstract class GameOptionsMixin {
 
     @Inject(method = "setPerspective", at = @At("HEAD"))
     private void eggolib$getCurrentPerspective(Perspective perspective, CallbackInfo ci) {
-
-        if (this.client.player == null) return;
-        EggolibPerspective eggolibPerspective = null;
-
-        switch (perspective) {
-            case FIRST_PERSON:
-                eggolibPerspective = EggolibPerspective.FIRST_PERSON;
-                break;
-            case THIRD_PERSON_BACK:
-                eggolibPerspective = EggolibPerspective.THIRD_PERSON_BACK;
-                break;
-            case THIRD_PERSON_FRONT:
-                eggolibPerspective = EggolibPerspective.THIRD_PERSON_FRONT;
-                break;
-        }
-
-        Eggolib.PLAYERS_PERSPECTIVE.put(this.client.player, eggolibPerspective.toString());
-
+        EggolibMiscUtilClient.getPerspective(client, perspective);
     }
 
 }

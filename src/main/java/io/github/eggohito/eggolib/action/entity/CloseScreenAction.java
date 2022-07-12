@@ -27,7 +27,7 @@ public class CloseScreenAction {
 
         else ServerPlayNetworking.send(
             (ServerPlayerEntity) playerEntity,
-            EggolibPackets.Client.SET_SCREEN,
+            EggolibPackets.CLOSE_SCREEN,
             PacketByteBufs.empty()
         );
 
