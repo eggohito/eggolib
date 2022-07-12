@@ -12,8 +12,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.util.Pair;
 import net.minecraft.util.math.MathHelper;
 
@@ -22,10 +20,6 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class ModifyHurtTicksPower extends ValueModifyingPower {
-
-    private int oldMaxHurtTime;
-    private int oldTimeUntilRegen;
-    private boolean wasActive = false;
 
     private final Consumer<Pair<Entity, Entity>> biEntityAction;
 
@@ -37,46 +31,6 @@ public class ModifyHurtTicksPower extends ValueModifyingPower {
         this.biEntityAction = biEntityAction;
         this.biEntityCondition = biEntityCondition;
         this.damageCondition = damageCondition;
-        this.setTicking(true);
-    }
-
-    @Override
-    public void tick() {
-        if (isActive() && !wasActive) wasActive = true;
-        else if (wasActive) {
-            entity.maxHurtTime = oldMaxHurtTime;
-            wasActive = false;
-        }
-    }
-
-    @Override
-    public void onGained() {
-        getHurtTicks();
-    }
-
-    @Override
-    public void onLost() {
-        entity.maxHurtTime = oldMaxHurtTime;
-    }
-
-    @Override
-    public NbtElement toTag() {
-
-        NbtCompound nbtCompound = new NbtCompound();
-
-        nbtCompound.putInt("OldMaxHurtTime", oldMaxHurtTime);
-        nbtCompound.putInt("OldTimeUntilRegen", oldTimeUntilRegen);
-
-        return nbtCompound;
-
-    }
-
-    @Override
-    public void fromTag(NbtElement tag) {
-        if (tag instanceof NbtCompound nbtCompound) {
-            oldMaxHurtTime = nbtCompound.getInt("OldMaxHurtTime");
-            oldTimeUntilRegen = nbtCompound.getInt("OldTimeUntilRegen");
-        }
     }
 
     public boolean doesApply(DamageSource damageSource, float damageAmount, Entity attacker) {
@@ -84,20 +38,8 @@ public class ModifyHurtTicksPower extends ValueModifyingPower {
     }
 
     public void apply(Entity attacker) {
-        getHurtTicks();
-        entity.maxHurtTime = modify(oldMaxHurtTime);
-        entity.timeUntilRegen = modify(oldTimeUntilRegen);
-        entity.hurtTime = entity.maxHurtTime;
+        entity.timeUntilRegen = MathHelper.clamp((int) PowerHolderComponent.modify(entity, this.getClass(), entity.timeUntilRegen), 0, Integer.MAX_VALUE);
         if (biEntityAction != null) biEntityAction.accept(new Pair<>(attacker, entity));
-    }
-
-    private void getHurtTicks() {
-        oldMaxHurtTime = entity.maxHurtTime;
-        oldTimeUntilRegen = entity.timeUntilRegen;
-    }
-
-    private int modify(int value) {
-        return MathHelper.clamp((int) PowerHolderComponent.modify(entity, this.getClass(), value), 0, Integer.MAX_VALUE);
     }
 
     public static PowerFactory<?> getFactory() {
