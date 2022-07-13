@@ -9,6 +9,7 @@ import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.eggohito.eggolib.Eggolib;
 import io.github.eggohito.eggolib.data.EggolibDataTypes;
+import io.github.eggohito.eggolib.util.EggolibInventoryUtil.InventoryType;
 import net.minecraft.entity.Entity;
 
 import static io.github.eggohito.eggolib.util.EggolibInventoryUtil.*;

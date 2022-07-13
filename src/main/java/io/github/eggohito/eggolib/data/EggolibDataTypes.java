@@ -4,15 +4,18 @@ import io.github.apace100.calio.ClassUtil;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.calio.data.SerializableDataTypes;
-import io.github.eggohito.eggolib.util.*;
+import io.github.apace100.calio.util.ArgumentWrapper;
+import io.github.eggohito.eggolib.util.EggolibInventoryUtil;
+import io.github.eggohito.eggolib.util.EggolibInventoryUtil.InventoryType;
+import io.github.eggohito.eggolib.util.EggolibMathUtil;
+import io.github.eggohito.eggolib.util.EggolibMathUtil.MathOperation;
+import io.github.eggohito.eggolib.util.EggolibPerspective;
+import io.github.eggohito.eggolib.util.EggolibToolType;
 import net.minecraft.command.argument.ItemSlotArgumentType;
 import net.minecraft.util.Pair;
 
 import java.util.EnumSet;
 import java.util.List;
-
-import static io.github.eggohito.eggolib.util.EggolibMathUtil.*;
-import static io.github.eggohito.eggolib.util.EggolibInventoryUtil.*;
 
 public class EggolibDataTypes {
 
@@ -28,9 +31,9 @@ public class EggolibDataTypes {
 
     public static final SerializableDataType<EnumSet<EggolibPerspective>> PERSPECTIVE_SET = SerializableDataType.enumSet(EggolibPerspective.class, PERSPECTIVE);
 
-    public static final SerializableDataType<EggolibArgumentWrapper<Integer>> ITEM_SLOT = EggolibSerializableDataType.argumentType(ItemSlotArgumentType.itemSlot());
+    public static final SerializableDataType<ArgumentWrapper<Integer>> ITEM_SLOT = SerializableDataType.argumentType(ItemSlotArgumentType.itemSlot());
 
-    public static final SerializableDataType<List<EggolibArgumentWrapper<Integer>>> ITEM_SLOTS = SerializableDataType.list(ITEM_SLOT);
+    public static final SerializableDataType<List<ArgumentWrapper<Integer>>> ITEM_SLOTS = SerializableDataType.list(ITEM_SLOT);
 
     public static final SerializableDataType<Pair<String, String>> SCOREBOARD = SerializableDataType.compound(
         ClassUtil.castClass(Pair.class),

@@ -4,7 +4,6 @@ import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.power.ModifyDamageDealtPower;
 import io.github.apace100.apoli.power.ModifyDamageTakenPower;
 import io.github.apace100.apoli.power.ModifyProjectileDamagePower;
-import io.github.eggohito.eggolib.Eggolib;
 import io.github.eggohito.eggolib.power.EggolibInventoryPower;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;

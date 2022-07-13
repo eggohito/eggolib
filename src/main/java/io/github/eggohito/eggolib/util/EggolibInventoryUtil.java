@@ -4,6 +4,7 @@ import io.github.apace100.apoli.power.InventoryPower;
 import io.github.apace100.apoli.power.Power;
 import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import io.github.apace100.calio.data.SerializableData;
+import io.github.apace100.calio.util.ArgumentWrapper;
 import io.github.eggohito.eggolib.mixin.ItemSlotArgumentTypeAccessor;
 import io.github.eggohito.eggolib.power.EggolibInventoryPower;
 import net.minecraft.entity.Entity;
@@ -223,11 +224,11 @@ public class EggolibInventoryUtil {
         Set<Integer> itemSlots = new HashSet<>();
 
         if (data.isPresent("slots")) {
-            List<EggolibArgumentWrapper<Integer>> slotNames = data.get("slots");
-            itemSlots.addAll(slotNames.stream().map(EggolibArgumentWrapper::get).toList());
+            List<ArgumentWrapper<Integer>> slotNames = data.get("slots");
+            itemSlots.addAll(slotNames.stream().map(ArgumentWrapper::get).toList());
         }
         if (data.isPresent("slot")) {
-            EggolibArgumentWrapper<Integer> slotName = data.get("slot");
+            ArgumentWrapper<Integer> slotName = data.get("slot");
             itemSlots.add(slotName.get());
         }
 
