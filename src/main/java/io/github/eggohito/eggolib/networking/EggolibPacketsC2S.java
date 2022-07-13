@@ -26,7 +26,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerLoginNetworkHandler;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 
 public class EggolibPacketsC2S {
 
@@ -66,13 +66,13 @@ public class EggolibPacketsC2S {
                     if (i < clientSemVerLength - 1) clientVersionString.append(".");
                 }
 
-                serverLoginNetworkHandler.disconnect(new TranslatableText("disconnect.eggolib.version_mismatch", Eggolib.version, clientVersionString));
+                serverLoginNetworkHandler.disconnect(Text.translatable("disconnect.eggolib.version_mismatch", Eggolib.version, clientVersionString));
 
             }
 
         }
 
-        else serverLoginNetworkHandler.disconnect(new TranslatableText("disconnect.eggolib.missing", Eggolib.version));
+        else serverLoginNetworkHandler.disconnect(Text.translatable("disconnect.eggolib.missing", Eggolib.version));
 
     }
 

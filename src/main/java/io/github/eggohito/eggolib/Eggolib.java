@@ -61,11 +61,6 @@ public class Eggolib implements ModInitializer {
             }
         );
 
-        // TODO: Finish implementing the 'concat' command (alias is not final)
-//        CommandRegistrationCallback.EVENT.register(
-//            (commandDispatcher, dedicated) -> ConcatCommand.register(commandDispatcher)
-//        );
-
         //  Register the partitioned config
         AutoConfig.register(EggolibConfig.class, PartitioningSerializer.wrap(GsonConfigSerializer::new));
         config = AutoConfig.getConfigHolder(EggolibConfig.class).getConfig();

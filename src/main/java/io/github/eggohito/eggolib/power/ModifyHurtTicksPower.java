@@ -5,6 +5,7 @@ import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.apoli.power.ValueModifyingPower;
 import io.github.apace100.apoli.power.factory.PowerFactory;
+import io.github.apace100.apoli.util.modifier.Modifier;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.eggohito.eggolib.Eggolib;
@@ -50,8 +51,8 @@ public class ModifyHurtTicksPower extends ValueModifyingPower {
                 .add("bientity_action", ApoliDataTypes.BIENTITY_ACTION, null)
                 .add("bientity_condition", ApoliDataTypes.BIENTITY_CONDITION, null)
                 .add("damage_condition", ApoliDataTypes.DAMAGE_CONDITION, null)
-                .add("modifier", SerializableDataTypes.ATTRIBUTE_MODIFIER, null)
-                .add("modifiers", SerializableDataTypes.ATTRIBUTE_MODIFIERS, null),
+                .add("modifier", Modifier.DATA_TYPE, null)
+                .add("modifiers", Modifier.LIST_TYPE, null),
             data -> (powerType, livingEntity) -> {
 
                 ModifyHurtTicksPower mhtp = new ModifyHurtTicksPower(
@@ -62,11 +63,8 @@ public class ModifyHurtTicksPower extends ValueModifyingPower {
                     data.get("damage_condition")
                 );
 
-                if (data.isPresent("modifier")) mhtp.addModifier(data.getModifier("modifier"));
-                if (data.isPresent("modifiers")) {
-                    List<EntityAttributeModifier> modifiers = data.get("modifiers");
-                    modifiers.forEach(mhtp::addModifier);
-                }
+                data.ifPresent("modifier", mhtp::addModifier);
+                data.<List<Modifier>>ifPresent("modifiers", modifiers -> modifiers.forEach(mhtp::addModifier));
 
                 return mhtp;
 

@@ -15,12 +15,9 @@ public class EggolibEntityActions {
         register(ChangeHealthAction.getFactory());
         register(ChangeInsomniaTicksAction.getFactory());
         register(CloseScreenAction.getFactory());
-        register(DropInventoryAction.getFactory());
         register(LoopAction.getFactory(ApoliDataTypes.ENTITY_ACTION));
-        register(ModifyInventoryAction.getFactory());
         register(OpenInventoryAction.getFactory());
         register(RemovePowerAction.getFactory());
-        register(ReplaceInventoryAction.getFactory());
         register(SetPerspectiveAction.getFactory());
     }
 

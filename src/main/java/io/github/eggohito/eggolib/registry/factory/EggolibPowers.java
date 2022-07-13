@@ -10,7 +10,6 @@ public class EggolibPowers {
 
     public static void register() {
         register(ActionOnBlockPlacePower.getFactory());
-        register(EggolibInventoryPower.getFactory());
         register(ModifyHurtTicksPower.getFactory());
         register(PreventBlockPlacePower.getFactory());
     }
