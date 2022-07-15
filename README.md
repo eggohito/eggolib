@@ -1,9 +1,18 @@
-# Fabric Example Mod
+# eggolib
 
-## Setup
+[![JitPack](https://img.shields.io/jitpack/v/github/eggohito/eggolib)](https://jitpack.io/#eggohito/eggolib) [![GitHub issues](https://img.shields.io/github/issues/eggohito/eggolib)](https://github.com/eggohito/eggolib/issues) [![GitHub Pull Requests](https://img.shields.io/github/issues-pr/eggohito/eggolib)](https://github.com/eggohito/eggolib/pulls)
 
-For setup instructions please see the [fabric wiki page](https://fabricmc.net/wiki/tutorial:setup) that relates to the IDE that you are using.
+eggolib is a Fabric mod that extends the functionality of [Apoli](https://github.com/apace100/apoli) for funsies. [See here](https://eggolib.github.io/latest/) for the documentation for eggolib.
 
-## License
 
-This template is available under the CC0 license. Feel free to learn from it and incorporate it in your own projects.
+##  Gradle
+
+```groovy
+repositories {
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+    modImplementation "com.github.eggohito:eggolib:[VERSION]"
+}
+```
