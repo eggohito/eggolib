@@ -9,6 +9,7 @@ import net.minecraft.util.registry.Registry;
 public class EggolibEntityConditions {
 
     public static void register() {
+        register(InGroupCondition.getFactory());
         register(InScreenCondition.getFactory());
         register(PermissionLevelCondition.getFactory());
         register(PerspectiveCondition.getFactory());
