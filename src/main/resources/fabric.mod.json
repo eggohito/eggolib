@@ -1,39 +1,51 @@
 {
-  "schemaVersion": 1,
-  "id": "eggolib",
-  "version": "${version}",
+    "schemaVersion": 1,
+    "id": "eggolib",
+    "version": "${version}",
 
-  "name": "eggolib",
-  "description": "An extension to Apoli for funsies",
-  "authors": [
-    "eggohito"
-  ],
-  "contact": {
-    "homepage": "https://github.com/eggohito/eggolib",
-    "sources": "https://github.com/eggohito/eggolib"
-  },
-
-  "license": "MIT",
-  "icon": "assets/eggolib/icon.png",
-
-  "environment": "*",
-  "entrypoints": {
-    "main": [
-      "io.github.eggohito.eggolib.Eggolib"
+    "name": "eggolib",
+    "description": "An extension to Apoli for funsies",
+    "authors": [
+        "eggohito"
     ],
-    "client": [
-      "io.github.eggohito.eggolib.EggolibClient"
-    ]
-  },
-  "mixins": [
-    "eggolib.mixins.json"
-  ],
+    "contact": {
+        "homepage": "https://github.com/eggohito/eggolib",
+        "sources": "https://github.com/eggohito/eggolib"
+    },
 
-  "depends": {
-    "fabricloader": ">=0.14.8",
-    "fabric": "*",
-    "minecraft": "1.19.x",
-    "java": ">=17",
-    "apoli": ">=2.5.1"
-  }
+    "license": "MIT",
+    "icon": "assets/eggolib/icon.png",
+
+    "environment": "*",
+    "entrypoints": {
+        "main": [
+            "io.github.eggohito.eggolib.Eggolib"
+        ],
+        "client": [
+            "io.github.eggohito.eggolib.EggolibClient"
+        ],
+        "cardinal-components-entity": [
+            "io.github.eggohito.eggolib.component.EggolibEntityComponents"
+        ]
+    },
+    "mixins": [
+        "eggolib.mixins.json"
+    ],
+    "custom": {
+        "cardinal-components": [
+            "eggolib:groups"
+        ],
+        "modmenu": {
+            "badges": [
+                "library"
+            ]
+        }
+    },
+    "depends": {
+        "fabricloader": ">=0.14.8",
+        "fabric": "*",
+        "minecraft": "1.19.x",
+        "java": ">=17",
+        "apoli": ">=2.5.1"
+    }
 }
