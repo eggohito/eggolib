@@ -4,6 +4,7 @@ import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
 import dev.onyxstudios.cca.api.v3.entity.EntityComponentFactoryRegistry;
 import dev.onyxstudios.cca.api.v3.entity.EntityComponentInitializer;
+import dev.onyxstudios.cca.api.v3.entity.RespawnCopyStrategy;
 import io.github.eggohito.eggolib.Eggolib;
 import io.github.eggohito.eggolib.component.entity.GroupComponent;
 import io.github.eggohito.eggolib.component.entity.GroupComponentImpl;
@@ -15,7 +16,11 @@ public class EggolibEntityComponents implements EntityComponentInitializer {
 
     @Override
     public void registerEntityComponentFactories(EntityComponentFactoryRegistry registry) {
-        registry.registerFor(Entity.class, GROUP, entity -> new GroupComponentImpl());
+        registry
+            .beginRegistration(Entity.class, GROUP)
+            .impl(GroupComponentImpl.class)
+            .respawnStrategy(RespawnCopyStrategy.ALWAYS_COPY)
+            .end(GroupComponentImpl::new);
     }
 
 }
