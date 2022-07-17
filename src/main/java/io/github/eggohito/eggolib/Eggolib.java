@@ -70,6 +70,7 @@ public class Eggolib implements ModInitializer {
 
         //  Register the action/condition/power type factories
         EggolibBiEntityActions.register();
+        EggolibBiEntityConditions.register();
         EggolibBlockActions.register();
         EggolibBlockConditions.register();
         EggolibDamageConditions.register();
