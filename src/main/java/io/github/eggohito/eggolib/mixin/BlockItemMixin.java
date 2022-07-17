@@ -1,6 +1,7 @@
 package io.github.eggohito.eggolib.mixin;
 
 import io.github.apace100.apoli.component.PowerHolderComponent;
+import io.github.apace100.apoli.power.ActiveInteractionPower;
 import io.github.eggohito.eggolib.power.ActionOnBlockPlacePower;
 import io.github.eggohito.eggolib.power.PreventBlockPlacePower;
 import net.minecraft.block.BlockState;
@@ -34,15 +35,22 @@ public class BlockItemMixin {
 
         if (playerEntity == null) return;
 
-        List<PreventBlockPlacePower> filteredPreventBlockPlacePowers = PowerHolderComponent
-            .getPowers(playerEntity, PreventBlockPlacePower.class)
-            .stream()
-            .filter(pbpp -> pbpp.doesPrevent(hand, hitPos, placementPos, direction, itemStack))
-            .toList();
+        int eggolib$preventBlockPlacePowers = 0;
+        ActiveInteractionPower.CallInstance<PreventBlockPlacePower> pbppci = new ActiveInteractionPower.CallInstance<>();
+        pbppci.add(playerEntity, PreventBlockPlacePower.class, pbpp -> pbpp.doesPrevent(hand, hitPos, placementPos, direction, itemStack));
 
-        if (filteredPreventBlockPlacePowers.size() == 0) return;
-        filteredPreventBlockPlacePowers.forEach(pbpp -> pbpp.executeActions(hand, hitPos, placementPos, direction));
-        cir.setReturnValue(false);
+        for (int i = pbppci.getMaxPriority(); i >= 0; i--) {
+
+            if (!pbppci.hasPowers(i)) continue;
+
+            List<PreventBlockPlacePower> pbpps = pbppci.getPowers(i);
+            eggolib$preventBlockPlacePowers += pbpps.size();
+
+            pbpps.forEach(pbpp -> pbpp.executeActions(hand, hitPos, placementPos, direction));
+
+        }
+
+        if (eggolib$preventBlockPlacePowers > 0) cir.setReturnValue(false);
 
     }
 
@@ -58,14 +66,17 @@ public class BlockItemMixin {
 
         if (playerEntity == null) return;
 
-        List<ActionOnBlockPlacePower> filteredActionOnBlockPlacePowers = PowerHolderComponent
-            .getPowers(playerEntity, ActionOnBlockPlacePower.class)
-            .stream()
-            .filter(aobpp -> aobpp.shouldExecute(hand, hitPos, placementPos, direction, itemStack))
-            .toList();
+        ActiveInteractionPower.CallInstance<ActionOnBlockPlacePower> aobppci = new ActiveInteractionPower.CallInstance<>();
+        aobppci.add(playerEntity, ActionOnBlockPlacePower.class, aobpp -> aobpp.shouldExecute(hand, hitPos, placementPos, direction, itemStack));
 
-        if (filteredActionOnBlockPlacePowers.size() == 0) return;
-        filteredActionOnBlockPlacePowers.forEach(aobpp -> aobpp.executeActions(hand, hitPos, placementPos, direction));
+        for (int i = aobppci.getMaxPriority(); i >= 0; i--) {
+
+            if (!aobppci.hasPowers(i)) continue;
+
+            List<ActionOnBlockPlacePower> aobpps = aobppci.getPowers(i);
+            aobpps.forEach(aobpp -> aobpp.executeActions(hand, hitPos, placementPos, direction));
+
+        }
 
     }
 
