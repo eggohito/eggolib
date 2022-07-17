@@ -78,6 +78,7 @@ public class Eggolib implements ModInitializer {
         EggolibEntityConditions.register();
         EggolibItemActions.register();
         EggolibItemConditions.register();
+        EggolibLootConditions.register();
         EggolibPowers.register();
 
         LOGGER.info("[{}] Version {} has been initialized. Egg!", MOD_ID, version);
