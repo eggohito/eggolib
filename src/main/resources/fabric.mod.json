@@ -33,7 +33,7 @@
     ],
     "custom": {
         "cardinal-components": [
-            "eggolib:groups"
+            "eggolib:misc"
         ],
         "modmenu": {
             "badges": [
