@@ -1,7 +1,10 @@
 package io.github.eggohito.eggolib.mixin;
 
+import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.eggohito.eggolib.component.EggolibEntityComponents;
+import io.github.eggohito.eggolib.power.EggolibInvisibilityPower;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -46,6 +49,16 @@ public class EntityMixin {
             }
         );
 
+    }
+
+    @Inject(method = "isInvisible", at = @At("HEAD"), cancellable = true)
+    private void eggolib$invisibility(CallbackInfoReturnable<Boolean> cir) {
+        if (PowerHolderComponent.hasPower((Entity) (Object) this, EggolibInvisibilityPower.class)) cir.setReturnValue(true);
+    }
+
+    @Inject(method = "isInvisibleTo", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;getScoreboardTeam()Lnet/minecraft/scoreboard/AbstractTeam;"), cancellable = true)
+    private void eggolib$invisibilityException(PlayerEntity playerEntity, CallbackInfoReturnable<Boolean> cir) {
+        if (PowerHolderComponent.hasPower((Entity) (Object) this, EggolibInvisibilityPower.class, eip -> !eip.doesApply(playerEntity))) cir.setReturnValue(false);
     }
 
 }

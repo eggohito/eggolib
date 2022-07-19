@@ -14,7 +14,9 @@
     ],
     "client": [
         "ClientPlayerEntityAccessor",
-        "GameOptionsMixin"
+        "GameOptionsMixin",
+        "LivingEntityRendererAccessor",
+        "LivingEntityRendererMixin"
     ],
     "server": [],
     "injectors": {
