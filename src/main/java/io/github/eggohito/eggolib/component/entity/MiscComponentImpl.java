@@ -13,7 +13,7 @@ import java.util.Set;
 public class MiscComponentImpl implements MiscComponent {
 
     private final Entity entity;
-    private Set<String> scoreboardTags = new HashSet();
+    private Set<String> scoreboardTags = new HashSet<>();
 
     public MiscComponentImpl(Entity entity) {
         this.entity = entity;
@@ -32,11 +32,13 @@ public class MiscComponentImpl implements MiscComponent {
     @Override
     public void removeScoreboardTag(String tag) {
         this.scoreboardTags.remove(tag);
+        sync();
     }
 
     @Override
     public void addScoreboardTag(String tag) {
         this.scoreboardTags.add(tag);
+        sync();
     }
 
     @Override

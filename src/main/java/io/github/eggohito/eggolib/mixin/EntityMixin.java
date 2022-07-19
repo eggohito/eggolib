@@ -17,38 +17,17 @@ public class EntityMixin {
 
     @Inject(method = "addScoreboardTag", at = @At("TAIL"))
     private void eggolib$syncScoreboardTagsOnAdd(String tag, CallbackInfoReturnable<Boolean> cir) {
-
-        if (cir.getReturnValue()) EggolibEntityComponents.MISC.maybeGet(this).ifPresent(
-            miscComponent -> {
-                miscComponent.addScoreboardTag(tag);
-                miscComponent.sync();
-            }
-        );
-
+        if (cir.getReturnValue()) EggolibEntityComponents.MISC.maybeGet(this).ifPresent(miscComponent -> miscComponent.addScoreboardTag(tag));
     }
 
     @Inject(method = "removeScoreboardTag", at = @At("TAIL"))
     private void eggolib$syncScoreboardTagsOnRemove(String tag, CallbackInfoReturnable<Boolean> cir) {
-
-        if (cir.getReturnValue()) EggolibEntityComponents.MISC.maybeGet(this).ifPresent(
-            miscComponent -> {
-                miscComponent.removeScoreboardTag(tag);
-                miscComponent.sync();
-            }
-        );
-
+        if (cir.getReturnValue()) EggolibEntityComponents.MISC.maybeGet(this).ifPresent(miscComponent -> miscComponent.removeScoreboardTag(tag));
     }
 
     @Inject(method = "getScoreboardTags", at = @At(value = "TAIL"))
     private void eggolib$syncScoreboardTags(CallbackInfoReturnable<Set<String>> cir) {
-
-        EggolibEntityComponents.MISC.maybeGet(this).ifPresent(
-            miscComponent -> {
-                miscComponent.copyScoreboardTagsFrom(cir.getReturnValue());
-                miscComponent.sync();
-            }
-        );
-
+        EggolibEntityComponents.MISC.maybeGet(this).ifPresent(miscComponent -> miscComponent.copyScoreboardTagsFrom(cir.getReturnValue()));
     }
 
     @Inject(method = "isInvisible", at = @At("HEAD"), cancellable = true)
