@@ -13,6 +13,7 @@ public class EggolibPowers {
         register(EggolibInvisibilityPower.getFactory());
         register(ModifyHurtTicksPower.getFactory());
         register(PreventBlockPlacePower.getFactory());
+	register(EggolibPreventItemUsePower.getFactory());
     }
 
     private static void register(PowerFactory<?> serializer) {
