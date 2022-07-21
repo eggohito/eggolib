@@ -25,7 +25,7 @@ public abstract class LivingEntityRendererMixin {
     private final List<FeatureRenderer<?, ?>> eggolib$cachedFeatureRenderers = new ArrayList<>();
 
     @Unique
-    private boolean eggolib$replacedFeatureRenderers = false;
+    private boolean eggolib$preventedArmorRenderWhenInvisible = false;
 
     @Inject(method = "addFeature", at = @At("TAIL"))
     private void eggolib$cacheNewFeatureRenderer(FeatureRenderer<?, ?> feature, CallbackInfoReturnable<Boolean> cir) {
@@ -33,18 +33,18 @@ public abstract class LivingEntityRendererMixin {
     }
 
     @Inject(method = "render(Lnet/minecraft/entity/LivingEntity;FFLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V", at = @At(value = "INVOKE", target = "Ljava/util/List;iterator()Ljava/util/Iterator;"))
-    private void eggolib$preventArmorRender(LivingEntity livingEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, CallbackInfo ci) {
+    private void eggolib$preventArmorRenderWhenInvisible(LivingEntity livingEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, CallbackInfo ci) {
 
         LivingEntityRenderer<?, ?> thisAsLivingEntityRenderer = (LivingEntityRenderer<?, ?>) (Object) this;
         List<FeatureRenderer<?, ?>> originalFeatureRenderers = ((LivingEntityRendererAccessor) thisAsLivingEntityRenderer).getFeatures();
 
         if (PowerHolderComponent.hasPower(livingEntity, EggolibInvisibilityPower.class, eip -> !eip.shouldRenderArmor())) {
-            this.eggolib$replacedFeatureRenderers = true;
+            this.eggolib$preventedArmorRenderWhenInvisible = true;
             originalFeatureRenderers.removeIf(featureRenderer -> featureRenderer instanceof ArmorFeatureRenderer<?,?,?>);
         }
 
-        else if (this.eggolib$replacedFeatureRenderers) {
-            this.eggolib$replacedFeatureRenderers = false;
+        else if (this.eggolib$preventedArmorRenderWhenInvisible) {
+            this.eggolib$preventedArmorRenderWhenInvisible = false;
             originalFeatureRenderers.clear();
             originalFeatureRenderers.addAll(this.eggolib$cachedFeatureRenderers);
         }
