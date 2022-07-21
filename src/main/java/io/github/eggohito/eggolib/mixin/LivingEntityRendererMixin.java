@@ -2,6 +2,7 @@ package io.github.eggohito.eggolib.mixin;
 
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.eggohito.eggolib.power.EggolibInvisibilityPower;
+import io.github.eggohito.eggolib.power.ModelFlipPower;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.feature.ArmorFeatureRenderer;
@@ -49,6 +50,11 @@ public abstract class LivingEntityRendererMixin {
             originalFeatureRenderers.addAll(this.eggolib$cachedFeatureRenderers);
         }
 
+    }
+
+    @Inject(method = "shouldFlipUpsideDown", at = @At("HEAD"), cancellable = true)
+    private static void eggolib$flipUpsideDown(LivingEntity livingEntity, CallbackInfoReturnable<Boolean> cir) {
+        if (PowerHolderComponent.hasPower(livingEntity, ModelFlipPower.class)) cir.setReturnValue(true);
     }
 
 }
