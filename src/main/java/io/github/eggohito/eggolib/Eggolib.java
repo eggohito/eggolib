@@ -1,5 +1,6 @@
 package io.github.eggohito.eggolib;
 
+import io.github.apace100.apoli.util.NamespaceAlias;
 import io.github.eggohito.eggolib.networking.EggolibPacketsC2S;
 import io.github.eggohito.eggolib.registry.factory.*;
 import io.github.eggohito.eggolib.util.EggolibConfig;
@@ -65,6 +66,9 @@ public class Eggolib implements ModInitializer {
         AutoConfig.register(EggolibConfig.class, PartitioningSerializer.wrap(GsonConfigSerializer::new));
         config = AutoConfig.getConfigHolder(EggolibConfig.class).getConfig();
 
+        //  Add "apoli" as a namespace alias
+        NamespaceAlias.addAlias(MOD_ID, "apoli");
+
         //  Register the packets
         EggolibPacketsC2S.register();
 
@@ -86,11 +90,11 @@ public class Eggolib implements ModInitializer {
             String.format("[%1$s] Should %1$s perform a version check? %2$s", MOD_ID, config.server.performVersionCheck ? "Yes." : "No.")
         );
 
-        //  Clear the hashmaps
+        //  Remove the key-value pair in the hashmaps for the player that disconnected
         ServerPlayConnectionEvents.DISCONNECT.register(
             (serverPlayNetworkHandler, minecraftServer) -> {
-                PLAYERS_IN_SCREEN.clear();
-                PLAYERS_PERSPECTIVE.clear();
+                PLAYERS_IN_SCREEN.remove(serverPlayNetworkHandler.player);
+                PLAYERS_PERSPECTIVE.remove(serverPlayNetworkHandler.player);
             }
         );
 
