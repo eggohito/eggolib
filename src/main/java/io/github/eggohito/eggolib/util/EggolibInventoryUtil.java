@@ -14,7 +14,10 @@ import net.minecraft.util.Pair;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -25,12 +28,57 @@ public class EggolibInventoryUtil {
     private static Predicate<ItemStack> itemCondition;
     private static Consumer<Pair<World, ItemStack>> itemAction;
 
+    public static int checkInventory(SerializableData.Instance data, Entity entity, InventoryPower inventoryPower) {
+
+        getSlots(data);
+        itemCondition = data.get("item_condition");
+        int[] matches = {0};
+
+        if (inventoryPower == null) slots
+            .forEach(
+                slot -> {
+
+                    StackReference stackReference = entity.getStackReference(slot);
+                    if (stackReference == StackReference.EMPTY) return;
+
+                    ItemStack itemStack = stackReference.get();
+                    if (itemCondition == null || itemStack.isEmpty()) return;
+                    else if (!itemCondition.test(itemStack)) return;
+
+                    matches[0]++;
+
+                }
+            );
+
+        else {
+            slots.removeIf(slot -> slot < 0 || slot >= inventoryPower.size());
+            slots
+                .forEach(
+                    slot -> {
+
+                        ItemStack itemStack = inventoryPower.getStack(slot);
+                        if (itemCondition == null || itemStack.isEmpty()) return;
+                        else if (!itemCondition.test(itemStack)) return;
+
+                        matches[0]++;
+
+                    }
+                );
+        }
+
+        return matches[0];
+
+    }
+
     public static void replaceInventory(SerializableData.Instance data, Entity entity, InventoryPower inventoryPower) {
 
-        getFields(data);
+        getSlots(data);
+        itemAction = data.get("item_action");
+        entityAction = data.get("entity_action");
+        itemCondition = data.get("item_condition");
 
-        boolean mergeNbt = data.getBoolean("merge_nbt");
         ItemStack replacementStack = data.get("stack");
+        boolean mergeNbt = data.getBoolean("merge_nbt");
 
         if (inventoryPower == null) slots
             .forEach(
@@ -85,7 +133,10 @@ public class EggolibInventoryUtil {
 
     public static void dropInventory(SerializableData.Instance data, Entity entity, InventoryPower inventoryPower) {
 
-        getFields(data);
+        getSlots(data);
+        itemAction = data.get("item_action");
+        entityAction = data.get("entity_action");
+        itemCondition = data.get("item_condition");
 
         int amount = data.get("amount");
         boolean throwRandomly = data.getBoolean("throw_randomly");
@@ -200,21 +251,16 @@ public class EggolibInventoryUtil {
 
     }
 
-    public static void getFields(SerializableData.Instance data) {
+    public static void getSlots(SerializableData.Instance data) {
 
         Set<Integer> itemSlots = new HashSet<>();
 
         data.<ArgumentWrapper<Integer>>ifPresent("slot", iaw -> itemSlots.add(iaw.get()));
         data.<List<ArgumentWrapper<Integer>>>ifPresent("slots", liaw -> itemSlots.addAll(liaw.stream().map(ArgumentWrapper::get).toList()));
 
-        if (itemSlots.isEmpty()) itemSlots.addAll(
-            ItemSlotArgumentTypeAccessor.getSlotMappings().values()
-        );
+        if (itemSlots.isEmpty()) itemSlots.addAll(ItemSlotArgumentTypeAccessor.getSlotMappings().values());
 
         slots = itemSlots;
-        entityAction = data.get("entity_action");
-        itemAction = data.get("item_action");
-        itemCondition = data.get("item_condition");
 
     }
 
