@@ -8,6 +8,7 @@
         "ClassDataRegistryAccessor",
         "EntityAccessor",
         "EntityMixin",
+        "ItemSlotArgumentTypeAccessor",
         "ItemStackMixin",
         "ItemUsageContextAccessor",
         "LivingEntityMixin",
