@@ -1,7 +1,7 @@
 package io.github.eggohito.eggolib.mixin;
 
 import io.github.apace100.apoli.component.PowerHolderComponent;
-import io.github.eggohito.eggolib.component.EggolibEntityComponents;
+import io.github.eggohito.eggolib.component.entity.MiscComponent;
 import io.github.eggohito.eggolib.power.EggolibInvisibilityPower;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -17,17 +17,17 @@ public class EntityMixin {
 
     @Inject(method = "addScoreboardTag", at = @At("TAIL"))
     private void eggolib$syncScoreboardTagsOnAdd(String tag, CallbackInfoReturnable<Boolean> cir) {
-        if (cir.getReturnValue()) EggolibEntityComponents.MISC.maybeGet(this).ifPresent(miscComponent -> miscComponent.addScoreboardTag(tag));
+        if (cir.getReturnValue()) MiscComponent.KEY.maybeGet(this).ifPresent(miscComponent -> miscComponent.addScoreboardTag(tag));
     }
 
     @Inject(method = "removeScoreboardTag", at = @At("TAIL"))
     private void eggolib$syncScoreboardTagsOnRemove(String tag, CallbackInfoReturnable<Boolean> cir) {
-        if (cir.getReturnValue()) EggolibEntityComponents.MISC.maybeGet(this).ifPresent(miscComponent -> miscComponent.removeScoreboardTag(tag));
+        if (cir.getReturnValue()) MiscComponent.KEY.maybeGet(this).ifPresent(miscComponent -> miscComponent.removeScoreboardTag(tag));
     }
 
     @Inject(method = "getScoreboardTags", at = @At(value = "TAIL"))
     private void eggolib$syncScoreboardTags(CallbackInfoReturnable<Set<String>> cir) {
-        EggolibEntityComponents.MISC.maybeGet(this).ifPresent(miscComponent -> miscComponent.copyScoreboardTagsFrom(cir.getReturnValue()));
+        MiscComponent.KEY.maybeGet(this).ifPresent(miscComponent -> miscComponent.copyScoreboardTagsFrom(cir.getReturnValue()));
     }
 
     @Inject(method = "isInvisible", at = @At("HEAD"), cancellable = true)

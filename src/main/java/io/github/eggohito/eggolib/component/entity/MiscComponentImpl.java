@@ -1,6 +1,5 @@
 package io.github.eggohito.eggolib.component.entity;
 
-import io.github.eggohito.eggolib.component.EggolibEntityComponents;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -27,6 +26,7 @@ public class MiscComponentImpl implements MiscComponent {
     @Override
     public void copyScoreboardTagsFrom(Set<String> tags) {
         this.scoreboardTags = tags;
+        sync();
     }
 
     @Override
@@ -43,7 +43,7 @@ public class MiscComponentImpl implements MiscComponent {
 
     @Override
     public void sync() {
-        EggolibEntityComponents.MISC.sync(entity);
+        MiscComponent.KEY.sync(entity);
     }
 
     @Override

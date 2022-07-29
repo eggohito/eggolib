@@ -3,7 +3,6 @@ package io.github.eggohito.eggolib.condition.bientity;
 import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.eggohito.eggolib.Eggolib;
-import io.github.eggohito.eggolib.component.EggolibEntityComponents;
 import io.github.eggohito.eggolib.component.entity.MiscComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Pair;
@@ -16,8 +15,8 @@ public class HasMatchingTagCondition {
 
     public static boolean condition(SerializableData.Instance data, Pair<Entity, Entity> actorAndTarget) {
 
-        Optional<MiscComponent> actorMiscComponent = EggolibEntityComponents.MISC.maybeGet(actorAndTarget.getLeft());
-        Optional<MiscComponent> targetMiscComponent = EggolibEntityComponents.MISC.maybeGet(actorAndTarget.getRight());
+        Optional<MiscComponent> actorMiscComponent = MiscComponent.KEY.maybeGet(actorAndTarget.getLeft());
+        Optional<MiscComponent> targetMiscComponent = MiscComponent.KEY.maybeGet(actorAndTarget.getRight());
 
         if (actorMiscComponent.isEmpty() || targetMiscComponent.isEmpty()) return false;
 

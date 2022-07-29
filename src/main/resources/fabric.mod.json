@@ -25,7 +25,7 @@
             "io.github.eggohito.eggolib.EggolibClient"
         ],
         "cardinal-components-entity": [
-            "io.github.eggohito.eggolib.component.EggolibEntityComponents"
+            "io.github.eggohito.eggolib.registry.factory.EggolibEntityComponents"
         ]
     },
     "mixins": [

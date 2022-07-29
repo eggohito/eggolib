@@ -4,7 +4,6 @@ import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.eggohito.eggolib.Eggolib;
-import io.github.eggohito.eggolib.component.EggolibEntityComponents;
 import io.github.eggohito.eggolib.component.entity.MiscComponent;
 import net.minecraft.entity.Entity;
 
@@ -17,7 +16,7 @@ public class HasTagCondition {
 
     public static boolean condition(SerializableData.Instance data, Entity entity) {
 
-        Optional<MiscComponent> miscComponent = EggolibEntityComponents.MISC.maybeGet(entity);
+        Optional<MiscComponent> miscComponent = MiscComponent.KEY.maybeGet(entity);
         if (miscComponent.isEmpty()) return false;
 
         Set<String> specifiedScoreboardTags = new HashSet<>();
