@@ -15,10 +15,13 @@ public class ModifyHealthAction {
         if (!(entity instanceof LivingEntity livingEntity)) return;
 
         Modifier modifier = data.get("modifier");
-        float result = (float) modifier.apply(livingEntity, livingEntity.getMaxHealth());
+        float maxHealth = livingEntity.getMaxHealth();
+        float newHealth = (float) modifier.apply(livingEntity, maxHealth);
 
-        if (result <= 0F) livingEntity.damage(EggolibDamageSources.CHANGE_HEALTH_UNDERFLOW, livingEntity.getMaxHealth());
-        else livingEntity.setHealth(result);
+        if (newHealth > maxHealth) newHealth -= maxHealth;
+
+        if (newHealth <= 0F) livingEntity.damage(EggolibDamageSources.CHANGE_HEALTH_UNDERFLOW, maxHealth);
+        else livingEntity.setHealth(newHealth);
 
     }
 
