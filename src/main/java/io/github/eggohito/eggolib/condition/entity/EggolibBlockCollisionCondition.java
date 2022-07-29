@@ -12,7 +12,7 @@ import net.minecraft.util.math.Box;
 
 import java.util.function.Predicate;
 
-public class BlockCollisionCondition {
+public class EggolibBlockCollisionCondition {
 
     public static boolean condition(SerializableData.Instance data, Entity entity) {
 
@@ -59,7 +59,7 @@ public class BlockCollisionCondition {
                 .add("offset_x", SerializableDataTypes.FLOAT, 0F)
                 .add("offset_y", SerializableDataTypes.FLOAT, 0F)
                 .add("offset_z", SerializableDataTypes.FLOAT, 0F),
-            BlockCollisionCondition::condition
+            EggolibBlockCollisionCondition::condition
         );
     }
 
