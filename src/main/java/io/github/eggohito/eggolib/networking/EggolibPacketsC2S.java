@@ -72,7 +72,7 @@ public class EggolibPacketsC2S {
 
         }
 
-        else serverLoginNetworkHandler.disconnect(Text.translatable("disconnect.eggolib.missing", Eggolib.version));
+        else serverLoginNetworkHandler.disconnect(Text.translatable("This server requires you to install Eggolib (v%s) to join.", Eggolib.version));
 
     }
 
