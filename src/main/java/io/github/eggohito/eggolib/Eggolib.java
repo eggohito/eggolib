@@ -1,7 +1,9 @@
 package io.github.eggohito.eggolib;
 
+import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.util.NamespaceAlias;
 import io.github.eggohito.eggolib.networking.EggolibPacketsC2S;
+import io.github.eggohito.eggolib.power.ActionOnBlockHitPower;
 import io.github.eggohito.eggolib.registry.factory.*;
 import io.github.eggohito.eggolib.util.EggolibConfig;
 import me.shedaniel.autoconfig.AutoConfig;
@@ -9,10 +11,12 @@ import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import me.shedaniel.autoconfig.serializer.PartitioningSerializer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

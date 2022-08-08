@@ -12,7 +12,9 @@
         "ItemStackMixin",
         "ItemUsageContextAccessor",
         "LivingEntityMixin",
-        "PlayerEntityMixin"
+        "PlayerEntityMixin",
+        "ProjectileEntityMixin",
+        "ServerPlayerInteractionManagerAccessor"
     ],
     "client": [
         "ClientPlayerEntityAccessor",
