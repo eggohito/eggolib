@@ -102,6 +102,21 @@ public class Eggolib implements ModInitializer {
             }
         );
 
+        AttackBlockCallback.EVENT.register(
+            (player, world, hand, pos, direction) -> {
+
+                if (!player.isSpectator()) PowerHolderComponent.withPowers(
+                    player,
+                    ActionOnBlockHitPower.class,
+                    aobhp -> aobhp.doesApply(world, pos, direction, null),
+                    aobhp -> aobhp.executeActions(world, pos, direction, null)
+                );
+
+                return ActionResult.PASS;
+
+            }
+        );
+
     }
 
     public static Identifier identifier(String path) {
