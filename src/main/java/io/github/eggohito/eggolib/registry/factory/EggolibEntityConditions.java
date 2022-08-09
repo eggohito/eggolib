@@ -10,6 +10,7 @@ import net.minecraft.util.registry.Registry;
 public class EggolibEntityConditions {
 
     public static void register() {
+        register(BreakingBlockCondition.getFactory());
         register(ChanceCondition.getFactory());
         register(EggolibBlockCollisionCondition.getFactory());
         register(HasTagCondition.getFactory());

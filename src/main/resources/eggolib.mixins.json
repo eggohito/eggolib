@@ -18,6 +18,7 @@
     ],
     "client": [
         "ClientPlayerEntityAccessor",
+        "ClientPlayerInteractionManagerAccessor",
         "GameOptionsMixin",
         "LivingEntityRendererAccessor",
         "LivingEntityRendererMixin"
