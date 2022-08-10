@@ -2,6 +2,7 @@ package io.github.eggohito.eggolib;
 
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.util.NamespaceAlias;
+import io.github.eggohito.eggolib.command.EggolibCommand;
 import io.github.eggohito.eggolib.networking.EggolibPacketsC2S;
 import io.github.eggohito.eggolib.power.ActionOnBlockHitPower;
 import io.github.eggohito.eggolib.registry.factory.*;
@@ -10,6 +11,8 @@ import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import me.shedaniel.autoconfig.serializer.PartitioningSerializer;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
@@ -100,6 +103,10 @@ public class Eggolib implements ModInitializer {
                 PLAYERS_IN_SCREEN.remove(serverPlayNetworkHandler.player);
                 PLAYERS_PERSPECTIVE.remove(serverPlayNetworkHandler.player);
             }
+        );
+
+        CommandRegistrationCallback.EVENT.register(
+            (dispatcher, registryAccess, environment) -> EggolibCommand.register(dispatcher)
         );
 
         AttackBlockCallback.EVENT.register(

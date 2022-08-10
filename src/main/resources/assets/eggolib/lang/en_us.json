@@ -1,4 +1,11 @@
 {
+    "layer.origins.random_not_allowed": "Random is not allowed!",
+    "commands.eggolib.randomize_origin.success.to_target": "You've been randomly assigned the following Origin: %1$s for layer: %2$s",
+    "commands.eggolib.randomize_origin.success.single": "%1$s was randomly assigned the following Origin: %2$s for layer: %3$s",
+    "commands.eggolib.randomize_origin.success.multiple": "%1$s players were randomly assigned an Origin for layer: %2$s",
+    "commands.eggolib.randomize_origin.fail.single": "Unable to randomly assign an Origin to %1$s for layer: %2$s; %3$s",
+    "commands.eggolib.randomize_origin.fail.multiple": "Unable to randomly assign an Origin to %1$s players for layer: %2$s; %3$s",
+    "commands.origin.layer_not_found": "Unknown layer: %s",
     "death.attack.eggolib.change_health.underflow": "%1$s died",
     "death.attack.eggolib.change_health.underflow.player": "%1$s died whilst trying to run away from %2$s",
     "disconnect.eggolib.version_mismatch": "This server is running a different version of Eggolib (v%1$s) which is incompatible with the one you have installed (v%2$s)"

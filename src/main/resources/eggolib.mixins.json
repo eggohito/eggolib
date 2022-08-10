@@ -4,6 +4,7 @@
     "package": "io.github.eggohito.eggolib.mixin",
     "compatibilityLevel": "JAVA_17",
     "mixins": [
+        "ArgumentTypesMixin",
         "BlockItemMixin",
         "ClassDataRegistryAccessor",
         "EntityAccessor",
