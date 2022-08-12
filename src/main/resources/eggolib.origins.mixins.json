@@ -1,0 +1,16 @@
+{
+    "required": true,
+    "minVersion": "0.8",
+    "package": "io.github.eggohito.eggolib.mixin.origins",
+    "plugin": "io.github.eggohito.eggolib.mixin.origins.OriginsMixinPlugin",
+    "mixins": [
+        "LayerArgumentTypeMixin",
+        "OriginArgumentTypeMixin",
+        "OriginLayersMixin"
+    ],
+    "client": [],
+    "server": [],
+    "injectors": {
+        "defaultRequire": 1
+    }
+}

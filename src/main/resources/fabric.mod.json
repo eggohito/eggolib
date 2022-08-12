@@ -29,7 +29,8 @@
         ]
     },
     "mixins": [
-        "eggolib.mixins.json"
+        "eggolib.mixins.json",
+        "eggolib.origins.mixins.json"
     ],
     "custom": {
         "cardinal-components": [
