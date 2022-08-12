@@ -1,5 +1,9 @@
 {
     "commands.origin.layer_not_found": "Unknown layer: %s",
+    "commands.origin.unregistered_in_layer": "Origin %1$s is not registered in layer %2$s!",
+    "commands.origin.random.not_allowed": "The layer %s does not allow for random origins!",
+    "commands.origin.random.success.multiple": "Randomly assigned an origin to %1$s targets in layer %2$s",
+    "commands.origin.random.success.single": "Randomly assigned the origin %2$s to %1$s in layer %3$s",
     "death.attack.eggolib.change_health.underflow": "%1$s died",
     "death.attack.eggolib.change_health.underflow.player": "%1$s died whilst trying to run away from %2$s",
     "disconnect.eggolib.version_mismatch": "This server is running a different version of Eggolib (v%1$s) which is incompatible with the one you have installed (v%2$s)"
