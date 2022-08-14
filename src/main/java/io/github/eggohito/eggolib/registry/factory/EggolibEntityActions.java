@@ -14,6 +14,7 @@ public class EggolibEntityActions {
         register(CalculateResourceAction.getFactory());
         register(ChangeHealthAction.getFactory());
         register(ChangeInsomniaTicksAction.getFactory());
+        register(ClearKeyCacheAction.getFactory());
         register(CloseScreenAction.getFactory());
         register(EggolibDamageAction.getFactory());
         register(EggolibDropInventoryAction.getFactory());
