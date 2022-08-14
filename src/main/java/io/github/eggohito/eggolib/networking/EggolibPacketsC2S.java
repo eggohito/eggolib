@@ -24,6 +24,7 @@ import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.apoli.power.PowerTypeRegistry;
 import io.github.eggohito.eggolib.Eggolib;
 import io.github.eggohito.eggolib.power.ActionOnKeySequencePower;
+import io.github.eggohito.eggolib.util.Key;
 import net.fabricmc.fabric.api.networking.v1.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -146,10 +147,7 @@ public class EggolibPacketsC2S {
 
                     if (!(power instanceof ActionOnKeySequencePower actionOnKeySequencePower)) continue;
 
-                    Active.Key key = new Active.Key();
-                    key.key = powerIdAndKeyMap.get(powerId);
-                    key.continuous = false;
-
+                    Key key = new Key(powerIdAndKeyMap.get(powerId));
                     actionOnKeySequencePower.addKeyToSequence(key);
 
                 }

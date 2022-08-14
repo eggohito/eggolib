@@ -1,15 +1,15 @@
 package io.github.eggohito.eggolib.power;
 
 import io.github.apace100.apoli.data.ApoliDataTypes;
-import io.github.apace100.apoli.power.Active;
 import io.github.apace100.apoli.power.CooldownPower;
 import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.apoli.power.factory.PowerFactory;
 import io.github.apace100.apoli.util.HudRender;
 import io.github.apace100.calio.data.SerializableData;
-import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.eggohito.eggolib.Eggolib;
+import io.github.eggohito.eggolib.data.EggolibDataTypes;
+import io.github.eggohito.eggolib.util.Key;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -20,21 +20,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+/**
+ *  TODO: Use {@link Key.Timed} for the sequences and implement the timing system.
+ */
 public class ActionOnKeySequencePower extends CooldownPower {
 
-    private final List<Active.Key> currentKeySequence = new ArrayList<>();
+    private final List<Key> currentKeySequence = new ArrayList<>();
 
-    private final List<Active.Key> specifiedKeySequence;
-    private final List<Active.Key> keys;
+    private final List<Key> specifiedKeySequence;
+    private final List<Key.Functional> keys;
     private final Consumer<Entity> successAction;
     private final Consumer<Entity> failAction;
 
-    public ActionOnKeySequencePower(PowerType<?> type, LivingEntity entity, Consumer<Entity> successAction, Consumer<Entity> failAction, int cooldownDuration, HudRender hudRender, List<Active.Key> keys, List<Active.Key> specifiedKeySequence) {
+    public ActionOnKeySequencePower(PowerType<?> type, LivingEntity entity, Consumer<Entity> successAction, Consumer<Entity> failAction, int cooldownDuration, HudRender hudRender, List<Key.Functional> keys, List<Key> keySequence) {
         super(type, entity, cooldownDuration, hudRender);
         this.successAction = successAction;
         this.failAction = failAction;
         this.keys = keys;
-        this.specifiedKeySequence = specifiedKeySequence;
+        this.specifiedKeySequence = keySequence;
     }
 
     public void onSuccess() {
@@ -48,19 +51,22 @@ public class ActionOnKeySequencePower extends CooldownPower {
         currentKeySequence.clear();
     }
 
-    public List<Active.Key> getSpecifiedKeySequence() {
+    public List<Key> getSpecifiedKeySequence() {
         return specifiedKeySequence;
     }
 
-    public List<Active.Key> getCurrentKeySequence() {
+    public List<Key> getCurrentKeySequence() {
         return currentKeySequence;
     }
 
-    public void addKeyToSequence(Active.Key key) {
-        if (canUse() && currentKeySequence.size() < specifiedKeySequence.size()) currentKeySequence.add(key);
+    public void addKeyToSequence(Key key) {
+        if ((canUse() && currentKeySequence.size() < specifiedKeySequence.size())) {
+            keys.stream().filter(functionalKey -> functionalKey.key.equals(key.key)).forEach(functionalKey -> { if (functionalKey.action != null) functionalKey.action.accept(entity); });
+            currentKeySequence.add(key);
+        }
     }
 
-    public List<Active.Key> getKeys() {
+    public List<Key.Functional> getKeys() {
         return keys;
     }
 
@@ -71,17 +77,15 @@ public class ActionOnKeySequencePower extends CooldownPower {
         NbtList currentKeySequenceNbtList = new NbtList();
         NbtCompound rootNbtCompound = new NbtCompound();
 
-        for (Active.Key key : specifiedKeySequence) {
+        for (Key key : specifiedKeySequence) {
             NbtCompound keyNbtCompound = new NbtCompound();
             keyNbtCompound.putString("Key", key.key);
-            keyNbtCompound.putBoolean("Continuous", key.continuous);
             specifiedKeySequenceNbtList.add(keyNbtCompound);
         }
 
-        for (Active.Key key : currentKeySequence) {
+        for (Key key : currentKeySequence) {
             NbtCompound keyNbtCompound = new NbtCompound();
             keyNbtCompound.putString("Key", key.key);
-            keyNbtCompound.putBoolean("Continuous", key.continuous);
             currentKeySequenceNbtList.add(keyNbtCompound);
         }
 
@@ -102,28 +106,14 @@ public class ActionOnKeySequencePower extends CooldownPower {
 
         specifiedKeySequence.clear();
         for (NbtElement nbtElement : specifiedKeySequenceNbtList) {
-
             if (!(nbtElement instanceof NbtCompound keyNbtCompound)) continue;
-
-            Active.Key key = new Active.Key();
-            key.key = keyNbtCompound.getString("Key");
-            key.continuous = keyNbtCompound.getBoolean("Continuous");
-
-            specifiedKeySequence.add(key);
-
+            specifiedKeySequence.add(new Key(keyNbtCompound.getString("Key")));
         }
 
         currentKeySequence.clear();
         for (NbtElement nbtElement : currentKeySequenceNbtList) {
-
             if (!(nbtElement instanceof NbtCompound keyNbtCompound)) continue;
-
-            Active.Key key = new Active.Key();
-            key.key = keyNbtCompound.getString("Key");
-            key.continuous = keyNbtCompound.getBoolean("Continuous");
-
-            currentKeySequence.add(key);
-
+            currentKeySequence.add(new Key(keyNbtCompound.getString("Key")));
         }
 
     }
@@ -136,19 +126,19 @@ public class ActionOnKeySequencePower extends CooldownPower {
                 .add("fail_action", ApoliDataTypes.ENTITY_ACTION, null)
                 .add("cooldown", SerializableDataTypes.INT, 0)
                 .add("hud_render", ApoliDataTypes.HUD_RENDER, HudRender.DONT_RENDER)
-                .add("keys", SerializableDataType.list(ApoliDataTypes.BACKWARDS_COMPATIBLE_KEY))
-                .add("key_sequence", SerializableDataType.list(ApoliDataTypes.BACKWARDS_COMPATIBLE_KEY)),
+                .add("keys", EggolibDataTypes.BACKWARDS_COMPATIBLE_FUNCTIONAL_KEYS)
+                .add("key_sequence", EggolibDataTypes.BACKWARDS_COMPATIBLE_KEYS),
             data -> (powerType, livingEntity) -> new ActionOnKeySequencePower(
-                    powerType,
-                    livingEntity,
-                    data.get("success_action"),
-                    data.get("fail_action"),
-                    data.getInt("cooldown"),
-                    data.get("hud_render"),
-                    data.get("keys"),
-                    data.get("key_sequence")
-                )
-        );
+                powerType,
+                livingEntity,
+                data.get("success_action"),
+                data.get("fail_action"),
+                data.getInt("cooldown"),
+                data.get("hud_render"),
+                data.get("keys"),
+                data.get("key_sequence")
+            )
+        ).allowCondition();
     }
 
 }
