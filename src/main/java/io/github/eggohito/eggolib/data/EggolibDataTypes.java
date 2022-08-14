@@ -1,16 +1,18 @@
 package io.github.eggohito.eggolib.data;
 
+import com.google.gson.JsonPrimitive;
+import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.calio.ClassUtil;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.calio.data.SerializableDataTypes;
-import io.github.eggohito.eggolib.util.EggolibMathUtil;
+import io.github.eggohito.eggolib.util.*;
 import io.github.eggohito.eggolib.util.EggolibMathUtil.MathOperation;
-import io.github.eggohito.eggolib.util.EggolibPerspective;
-import io.github.eggohito.eggolib.util.EggolibToolType;
 import net.minecraft.util.Pair;
 
+import java.io.Serializable;
 import java.util.EnumSet;
+import java.util.List;
 
 public class EggolibDataTypes {
 
@@ -41,39 +43,56 @@ public class EggolibDataTypes {
         }
     );
 
-    public static final SerializableDataType<FunctionalKey> FUNCTIONAL_KEY = SerializableDataType.compound(
-        FunctionalKey.class,
+    public static final SerializableDataType<Key.Timed> TIMED_KEY = SerializableDataType.compound(
+        Key.Timed.class,
         new SerializableData()
             .add("key", SerializableDataTypes.STRING)
-            .add("continuous", SerializableDataTypes.BOOLEAN, false)
-            .add("action", ApoliDataTypes.ENTITY_ACTION, null),
-        data -> new FunctionalKey(
-            data.getString("key"),
-            data.getBoolean("continuous"),
-            data.get("action")
-        ),
-        (serializableData, functionalKey) -> {
+            .add("ticks", SerializableDataTypes.INT),
+        data -> new Key.Timed(data.getString("key"), data.getInt("ticks")),
+        (serializableData, timedKey) -> {
 
             SerializableData.Instance data = serializableData.new Instance();
 
-            data.set("key", functionalKey.key);
-            data.set("continuous", functionalKey.continuous);
-            data.set("action", functionalKey.action);
+            data.set("key", timedKey.key);
+            data.set("ticks", timedKey.ticks);
 
             return data;
 
         }
     );
 
-    public static final SerializableDataType<FunctionalKey> BACKWARDS_COMPATIBLE_FUNCTIONAL_KEY = new SerializableDataType<>(
-        FunctionalKey.class,
+    public static final SerializableDataType<Key.Functional> FUNCTIONAL_KEY = SerializableDataType.compound(
+        Key.Functional.class,
+        new SerializableData()
+            .add("key", SerializableDataTypes.STRING)
+            .add("continuous", SerializableDataTypes.BOOLEAN, false)
+            .add("action", ApoliDataTypes.ENTITY_ACTION, null),
+        data -> new Key.Functional(
+            data.getString("key"),
+            data.getBoolean("continuous"),
+            data.get("action")
+        ),
+        (serializableData, functional) -> {
+
+            SerializableData.Instance data = serializableData.new Instance();
+
+            data.set("key", functional.key);
+            data.set("continuous", functional.continuous);
+            data.set("action", functional.action);
+
+            return data;
+
+        }
+    );
+
+    public static final SerializableDataType<Key.Functional> BACKWARDS_COMPATIBLE_FUNCTIONAL_KEY = new SerializableDataType<>(
+        Key.Functional.class,
         FUNCTIONAL_KEY::send,
         FUNCTIONAL_KEY::receive,
         jsonElement -> {
 
             if (!(jsonElement instanceof JsonPrimitive jsonPrimitive && jsonPrimitive.isString())) return FUNCTIONAL_KEY.read(jsonElement);
-
-            return new FunctionalKey(
+            return new Key.Functional(
                 jsonPrimitive.getAsString(),
                 false,
                 null
@@ -82,8 +101,10 @@ public class EggolibDataTypes {
         }
     );
 
-    public static final SerializableDataType<List<FunctionalKey>> FUNCTIONAL_KEYS = SerializableDataType.list(FUNCTIONAL_KEY);
+    public static final SerializableDataType<List<Key.Timed>> TIMED_KEYS = SerializableDataType.list(TIMED_KEY);
 
-    public static final SerializableDataType<List<FunctionalKey>> BACKWARDS_COMPATIBLE_FUNCTIONAL_KEYS = SerializableDataType.list(BACKWARDS_COMPATIBLE_FUNCTIONAL_KEY);
+    public static final SerializableDataType<List<Key.Functional>> FUNCTIONAL_KEYS = SerializableDataType.list(FUNCTIONAL_KEY);
+
+    public static final SerializableDataType<List<Key.Functional>> BACKWARDS_COMPATIBLE_FUNCTIONAL_KEYS = SerializableDataType.list(BACKWARDS_COMPATIBLE_FUNCTIONAL_KEY);
 
 }
