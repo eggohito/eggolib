@@ -41,4 +41,49 @@ public class EggolibDataTypes {
         }
     );
 
+    public static final SerializableDataType<FunctionalKey> FUNCTIONAL_KEY = SerializableDataType.compound(
+        FunctionalKey.class,
+        new SerializableData()
+            .add("key", SerializableDataTypes.STRING)
+            .add("continuous", SerializableDataTypes.BOOLEAN, false)
+            .add("action", ApoliDataTypes.ENTITY_ACTION, null),
+        data -> new FunctionalKey(
+            data.getString("key"),
+            data.getBoolean("continuous"),
+            data.get("action")
+        ),
+        (serializableData, functionalKey) -> {
+
+            SerializableData.Instance data = serializableData.new Instance();
+
+            data.set("key", functionalKey.key);
+            data.set("continuous", functionalKey.continuous);
+            data.set("action", functionalKey.action);
+
+            return data;
+
+        }
+    );
+
+    public static final SerializableDataType<FunctionalKey> BACKWARDS_COMPATIBLE_FUNCTIONAL_KEY = new SerializableDataType<>(
+        FunctionalKey.class,
+        FUNCTIONAL_KEY::send,
+        FUNCTIONAL_KEY::receive,
+        jsonElement -> {
+
+            if (!(jsonElement instanceof JsonPrimitive jsonPrimitive && jsonPrimitive.isString())) return FUNCTIONAL_KEY.read(jsonElement);
+
+            return new FunctionalKey(
+                jsonPrimitive.getAsString(),
+                false,
+                null
+            );
+
+        }
+    );
+
+    public static final SerializableDataType<List<FunctionalKey>> FUNCTIONAL_KEYS = SerializableDataType.list(FUNCTIONAL_KEY);
+
+    public static final SerializableDataType<List<FunctionalKey>> BACKWARDS_COMPATIBLE_FUNCTIONAL_KEYS = SerializableDataType.list(BACKWARDS_COMPATIBLE_FUNCTIONAL_KEY);
+
 }

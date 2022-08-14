@@ -15,4 +15,8 @@ public class EggolibPackets {
 
     public static final Identifier GET_PERSPECTIVE = Eggolib.identifier("get_perspective");
 
+    public static final Identifier SYNC_KEY_PRESS = Eggolib.identifier("sync_key_press");
+
+    public static final Identifier TRIGGER_KEY_SEQUENCE = Eggolib.identifier("trigger_key_sequence");
+
 }

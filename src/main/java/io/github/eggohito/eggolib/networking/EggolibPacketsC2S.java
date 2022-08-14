@@ -17,7 +17,13 @@
 
 package io.github.eggohito.eggolib.networking;
 
+import io.github.apace100.apoli.component.PowerHolderComponent;
+import io.github.apace100.apoli.power.Active;
+import io.github.apace100.apoli.power.Power;
+import io.github.apace100.apoli.power.PowerType;
+import io.github.apace100.apoli.power.PowerTypeRegistry;
 import io.github.eggohito.eggolib.Eggolib;
+import io.github.eggohito.eggolib.power.ActionOnKeySequencePower;
 import net.fabricmc.fabric.api.networking.v1.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -27,6 +33,10 @@ import net.minecraft.server.network.ServerLoginNetworkHandler;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class EggolibPacketsC2S {
 
@@ -37,6 +47,8 @@ public class EggolibPacketsC2S {
         }
         ServerPlayNetworking.registerGlobalReceiver(EggolibPackets.IS_IN_SCREEN, EggolibPacketsC2S::isInScreen);
         ServerPlayNetworking.registerGlobalReceiver(EggolibPackets.GET_PERSPECTIVE, EggolibPacketsC2S::getPerspective);
+        ServerPlayNetworking.registerGlobalReceiver(EggolibPackets.SYNC_KEY_PRESS, EggolibPacketsC2S::syncKeyPress);
+        ServerPlayNetworking.registerGlobalReceiver(EggolibPackets.TRIGGER_KEY_SEQUENCE, EggolibPacketsC2S::triggerKeySequence);
     }
 
     private static void handshake(ServerLoginNetworkHandler serverLoginNetworkHandler, MinecraftServer minecraftServer, PacketSender packetSender, ServerLoginNetworking.LoginSynchronizer loginSynchronizer) {
@@ -107,6 +119,71 @@ public class EggolibPacketsC2S {
                 if (!(entity instanceof PlayerEntity playerEntity)) return;
 
                 Eggolib.PLAYERS_PERSPECTIVE.put(playerEntity, eggolibPerspectiveString);
+
+            }
+        );
+
+    }
+
+    private static void syncKeyPress(MinecraftServer minecraftServer, ServerPlayerEntity serverPlayerEntity, ServerPlayNetworkHandler serverPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
+
+        int powerIdCount = packetByteBuf.readInt();
+        HashMap<Identifier, String> powerIdAndKeyMap = new HashMap<>();
+        for (int i = 0; i < powerIdCount; i++) {
+            Identifier powerId = packetByteBuf.readIdentifier();
+            String keyString = packetByteBuf.readString();
+            powerIdAndKeyMap.put(powerId, keyString);
+        }
+
+        minecraftServer.execute(
+            () -> {
+
+                PowerHolderComponent powerHolderComponent = PowerHolderComponent.KEY.get(serverPlayerEntity);
+                for (Identifier powerId : powerIdAndKeyMap.keySet()) {
+
+                    PowerType<?> powerType = PowerTypeRegistry.get(powerId);
+                    Power power = powerHolderComponent.getPower(powerType);
+
+                    if (!(power instanceof ActionOnKeySequencePower actionOnKeySequencePower)) continue;
+
+                    Active.Key key = new Active.Key();
+                    key.key = powerIdAndKeyMap.get(powerId);
+                    key.continuous = false;
+
+                    actionOnKeySequencePower.addKeyToSequence(key);
+
+                }
+
+            }
+        );
+
+    }
+
+    private static void triggerKeySequence(MinecraftServer minecraftServer, ServerPlayerEntity serverPlayerEntity, ServerPlayNetworkHandler serverPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
+
+        int powerIdCount = packetByteBuf.readInt();
+        HashMap<Identifier, Boolean> powerIdAndMatchingSequenceMap = new HashMap<>();
+        for (int i = 0; i < powerIdCount; i++) {
+            Identifier powerId = packetByteBuf.readIdentifier();
+            boolean matchingSequence = packetByteBuf.readBoolean();
+            powerIdAndMatchingSequenceMap.put(powerId, matchingSequence);
+        }
+
+        minecraftServer.execute(
+            () -> {
+
+                PowerHolderComponent powerHolderComponent = PowerHolderComponent.KEY.get(serverPlayerEntity);
+                for (Identifier powerId : powerIdAndMatchingSequenceMap.keySet()) {
+
+                    PowerType<?> powerType = PowerTypeRegistry.get(powerId);
+                    Power power = powerHolderComponent.getPower(powerType);
+
+                    if (!(power instanceof ActionOnKeySequencePower actionOnKeySequencePower)) continue;
+
+                    if (powerIdAndMatchingSequenceMap.get(powerId)) actionOnKeySequencePower.onSuccess();
+                    else actionOnKeySequencePower.onFail();
+
+                }
 
             }
         );
