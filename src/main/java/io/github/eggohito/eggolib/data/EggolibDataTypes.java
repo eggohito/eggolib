@@ -78,10 +78,12 @@ public class EggolibDataTypes {
         TimedKey.class,
         new SerializableData()
             .add("key", SerializableDataTypes.STRING)
-            .add("ticks", SerializableDataTypes.INT, 0),
+            .add("ticks", SerializableDataTypes.INT, 0)
+            .add("offset", SerializableDataTypes.INT, 20),
         data -> new TimedKey(
             data.getString("key"),
-            data.get("ticks")
+            data.getInt("ticks"),
+            data.getInt("offset")
         ),
         (serializableData, timedKey) -> {
 
@@ -89,6 +91,7 @@ public class EggolibDataTypes {
 
             data.set("key", timedKey.key);
             data.set("ticks", timedKey.ticks);
+            data.set("offset", timedKey.offset);
 
             return data;
 
