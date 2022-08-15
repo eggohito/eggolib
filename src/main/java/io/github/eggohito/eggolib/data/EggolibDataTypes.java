@@ -11,6 +11,8 @@ import io.github.eggohito.eggolib.util.EggolibMathUtil.MathOperation;
 import io.github.eggohito.eggolib.util.EggolibPerspective;
 import io.github.eggohito.eggolib.util.EggolibToolType;
 import io.github.eggohito.eggolib.util.Key;
+import io.github.eggohito.eggolib.util.key.FunctionalKey;
+import io.github.eggohito.eggolib.util.key.TimedKey;
 import net.minecraft.util.Pair;
 
 import java.util.EnumSet;
@@ -72,12 +74,12 @@ public class EggolibDataTypes {
         }
     );
 
-    public static final SerializableDataType<Key.Timed> TIMED_KEY = SerializableDataType.compound(
-        Key.Timed.class,
+    public static final SerializableDataType<TimedKey> TIMED_KEY = SerializableDataType.compound(
+        TimedKey.class,
         new SerializableData()
             .add("key", SerializableDataTypes.STRING)
-            .add("ticks", SerializableDataTypes.INT, null),
-        data -> new Key.Timed(
+            .add("ticks", SerializableDataTypes.INT, 0),
+        data -> new TimedKey(
             data.getString("key"),
             data.get("ticks")
         ),
@@ -93,26 +95,30 @@ public class EggolibDataTypes {
         }
     );
 
-    public static final SerializableDataType<Key.Timed> BACKWARDS_COMPATIBLE_TIMED_KEY = new SerializableDataType<>(
-        Key.Timed.class,
+    public static final SerializableDataType<TimedKey> BACKWARDS_COMPATIBLE_TIMED_KEY = new SerializableDataType<>(
+        TimedKey.class,
         TIMED_KEY::send,
         TIMED_KEY::receive,
         jsonElement -> {
             if (!(jsonElement instanceof JsonPrimitive jsonPrimitive && jsonPrimitive.isString())) return TIMED_KEY.read(jsonElement);
-            else return new Key.Timed(
-                jsonPrimitive.getAsString(),
-                null
-            );
+            else {
+
+                TimedKey timedKey = new TimedKey();
+                timedKey.key = jsonPrimitive.getAsString();
+
+                return timedKey;
+
+            }
         }
     );
 
-    public static final SerializableDataType<Key.Functional> FUNCTIONAL_KEY = SerializableDataType.compound(
-        Key.Functional.class,
+    public static final SerializableDataType<FunctionalKey> FUNCTIONAL_KEY = SerializableDataType.compound(
+        FunctionalKey.class,
         new SerializableData()
             .add("key", SerializableDataTypes.STRING)
             .add("continuous", SerializableDataTypes.BOOLEAN, false)
             .add("action", ApoliDataTypes.ENTITY_ACTION, null),
-        data -> new Key.Functional(
+        data -> new FunctionalKey(
             data.getString("key"),
             data.getBoolean("continuous"),
             data.get("action")
@@ -130,28 +136,31 @@ public class EggolibDataTypes {
         }
     );
 
-    public static final SerializableDataType<Key.Functional> BACKWARDS_COMPATIBLE_FUNCTIONAL_KEY = new SerializableDataType<>(
-        Key.Functional.class,
+    public static final SerializableDataType<FunctionalKey> BACKWARDS_COMPATIBLE_FUNCTIONAL_KEY = new SerializableDataType<>(
+        FunctionalKey.class,
         FUNCTIONAL_KEY::send,
         FUNCTIONAL_KEY::receive,
         jsonElement -> {
             if (!(jsonElement instanceof JsonPrimitive jsonPrimitive && jsonPrimitive.isString())) return FUNCTIONAL_KEY.read(jsonElement);
-            return new Key.Functional(
-                jsonPrimitive.getAsString(),
-                false,
-                null
-            );
+            else {
+
+                FunctionalKey functionalKey = new FunctionalKey();
+                functionalKey.key = jsonPrimitive.getAsString();
+
+                return functionalKey;
+
+            }
         }
     );
 
-    public static final SerializableDataType<List<Key.Timed>> TIMED_KEYS = SerializableDataType.list(TIMED_KEY);
+    public static final SerializableDataType<List<TimedKey>> TIMED_KEYS = SerializableDataType.list(TIMED_KEY);
 
-    public static final SerializableDataType<List<Key.Functional>> FUNCTIONAL_KEYS = SerializableDataType.list(FUNCTIONAL_KEY);
+    public static final SerializableDataType<List<FunctionalKey>> FUNCTIONAL_KEYS = SerializableDataType.list(FUNCTIONAL_KEY);
 
     public static final SerializableDataType<List<Key>> BACKWARDS_COMPATIBLE_KEYS = SerializableDataType.list(BACKWARDS_COMPATIBLE_KEY);
 
-    public static final SerializableDataType<List<Key.Timed>> BACKWARDS_COMPATIBLE_TIMED_KEYS = SerializableDataType.list(BACKWARDS_COMPATIBLE_TIMED_KEY);
+    public static final SerializableDataType<List<TimedKey>> BACKWARDS_COMPATIBLE_TIMED_KEYS = SerializableDataType.list(BACKWARDS_COMPATIBLE_TIMED_KEY);
 
-    public static final SerializableDataType<List<Key.Functional>> BACKWARDS_COMPATIBLE_FUNCTIONAL_KEYS = SerializableDataType.list(BACKWARDS_COMPATIBLE_FUNCTIONAL_KEY);
+    public static final SerializableDataType<List<FunctionalKey>> BACKWARDS_COMPATIBLE_FUNCTIONAL_KEYS = SerializableDataType.list(BACKWARDS_COMPATIBLE_FUNCTIONAL_KEY);
 
 }

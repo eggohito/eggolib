@@ -7,6 +7,7 @@ import io.github.eggohito.eggolib.networking.EggolibPackets;
 import io.github.eggohito.eggolib.networking.EggolibPacketsS2C;
 import io.github.eggohito.eggolib.power.ActionOnKeySequencePower;
 import io.github.eggohito.eggolib.util.Key;
+import io.github.eggohito.eggolib.util.key.FunctionalKey;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
@@ -46,13 +47,13 @@ public class EggolibClient implements ClientModInitializer {
                 if (minecraftClient.player == null) return;
 
                 List<ActionOnKeySequencePower> powers = PowerHolderComponent.getPowers(minecraftClient.player, ActionOnKeySequencePower.class);
-                HashMap<ActionOnKeySequencePower, Key.Functional> triggeredPowers = new HashMap<>();
+                HashMap<ActionOnKeySequencePower, FunctionalKey> triggeredPowers = new HashMap<>();
                 HashMap<String, Boolean> currentKeyBindingStates = new HashMap<>();
 
                 for (ActionOnKeySequencePower power : powers) {
 
-                    List<Key.Functional> keys = power.getKeys();
-                    for (Key.Functional key : keys) {
+                    List<FunctionalKey> keys = power.getKeys();
+                    for (FunctionalKey key : keys) {
 
                         KeyBinding keyBinding = getKeyBinding(key.key);
                         if (keyBinding == null) continue;
@@ -75,14 +76,14 @@ public class EggolibClient implements ClientModInitializer {
 
     }
 
-    private void syncKeyPresses(HashMap<ActionOnKeySequencePower, Key.Functional> powerAndKeyMap) {
+    private void syncKeyPresses(HashMap<ActionOnKeySequencePower, FunctionalKey> powerAndKeyMap) {
 
         PacketByteBuf syncKeyPressBuf = new PacketByteBuf(Unpooled.buffer());
         HashMap<Identifier, String> powerIdAndKeyStringMap = new HashMap<>();
 
         for (ActionOnKeySequencePower power : powerAndKeyMap.keySet()) {
 
-            Key.Functional functionalKey = powerAndKeyMap.get(power);
+            FunctionalKey functionalKey = powerAndKeyMap.get(power);
             Key key = new Key(functionalKey.key);
 
             power.addKeyToSequence(key);
@@ -103,7 +104,7 @@ public class EggolibClient implements ClientModInitializer {
 
     }
 
-    private void compareKeySequences(HashMap<ActionOnKeySequencePower, Key.Functional> powerAndKeyMap) {
+    private void compareKeySequences(HashMap<ActionOnKeySequencePower, FunctionalKey> powerAndKeyMap) {
 
         PacketByteBuf triggerKeySequenceBuf = new PacketByteBuf(Unpooled.buffer());
         HashMap<Identifier, Boolean> powerIdAndMatchingSequenceMap = new HashMap<>();

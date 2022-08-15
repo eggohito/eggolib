@@ -10,6 +10,8 @@ import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.eggohito.eggolib.Eggolib;
 import io.github.eggohito.eggolib.data.EggolibDataTypes;
 import io.github.eggohito.eggolib.util.Key;
+import io.github.eggohito.eggolib.util.key.FunctionalKey;
+import io.github.eggohito.eggolib.util.key.TimedKey;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -21,18 +23,18 @@ import java.util.List;
 import java.util.function.Consumer;
 
 /**
- *  TODO: Use {@link Key.Timed} for the sequences and implement the timing system.
+ *  TODO: Use {@link TimedKey} for the sequences and implement the timing system.
  */
 public class ActionOnKeySequencePower extends CooldownPower {
 
     private final List<Key> currentKeySequence = new ArrayList<>();
 
     private final List<Key> specifiedKeySequence;
-    private final List<Key.Functional> keys;
+    private final List<FunctionalKey> keys;
     private final Consumer<Entity> successAction;
     private final Consumer<Entity> failAction;
 
-    public ActionOnKeySequencePower(PowerType<?> type, LivingEntity entity, Consumer<Entity> successAction, Consumer<Entity> failAction, int cooldownDuration, HudRender hudRender, List<Key.Functional> keys, List<Key> keySequence) {
+    public ActionOnKeySequencePower(PowerType<?> type, LivingEntity entity, Consumer<Entity> successAction, Consumer<Entity> failAction, int cooldownDuration, HudRender hudRender, List<FunctionalKey> keys, List<Key> keySequence) {
         super(type, entity, cooldownDuration, hudRender);
         this.successAction = successAction;
         this.failAction = failAction;
@@ -60,13 +62,15 @@ public class ActionOnKeySequencePower extends CooldownPower {
     }
 
     public void addKeyToSequence(Key key) {
-        if ((canUse() && currentKeySequence.size() < specifiedKeySequence.size())) {
-            keys.stream().filter(functionalKey -> functionalKey.key.equals(key.key)).forEach(functionalKey -> { if (functionalKey.action != null) functionalKey.action.accept(entity); });
-            currentKeySequence.add(key);
-        }
+
+        if (!(canUse() && currentKeySequence.size() < specifiedKeySequence.size())) return;
+
+        keys.stream().filter(key::equals).forEach(functionalKey -> functionalKey.function(entity));
+        currentKeySequence.add(key);
+
     }
 
-    public List<Key.Functional> getKeys() {
+    public List<FunctionalKey> getKeys() {
         return keys;
     }
 
