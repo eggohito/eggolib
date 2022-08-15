@@ -20,7 +20,10 @@ public class ClearKeyCacheAction {
                 PowerType<?> powerType = data.get("power");
                 Power power = powerHolderComponent.getPower(powerType);
 
-                if (power instanceof ActionOnKeySequencePower actionOnKeySequencePower) actionOnKeySequencePower.getCurrentKeySequence().clear();
+                if (!(power instanceof ActionOnKeySequencePower aoksp)) return;
+
+                aoksp.getCurrentKeySequence().clear();
+                PowerHolderComponent.syncPower(entity, aoksp.getType());
 
             }
         );
