@@ -18,7 +18,6 @@
 package io.github.eggohito.eggolib.networking;
 
 import io.github.apace100.apoli.component.PowerHolderComponent;
-import io.github.apace100.apoli.power.Active;
 import io.github.apace100.apoli.power.Power;
 import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.apoli.power.PowerTypeRegistry;
@@ -37,7 +36,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 import java.util.HashMap;
-import java.util.Map;
 
 public class EggolibPacketsC2S {
 
@@ -49,7 +47,7 @@ public class EggolibPacketsC2S {
         ServerPlayNetworking.registerGlobalReceiver(EggolibPackets.IS_IN_SCREEN, EggolibPacketsC2S::isInScreen);
         ServerPlayNetworking.registerGlobalReceiver(EggolibPackets.GET_PERSPECTIVE, EggolibPacketsC2S::getPerspective);
         ServerPlayNetworking.registerGlobalReceiver(EggolibPackets.SYNC_KEY_PRESS, EggolibPacketsC2S::syncKeyPress);
-        ServerPlayNetworking.registerGlobalReceiver(EggolibPackets.TRIGGER_KEY_SEQUENCE, EggolibPacketsC2S::triggerKeySequence);
+        ServerPlayNetworking.registerGlobalReceiver(EggolibPackets.END_KEY_SEQUENCE, EggolibPacketsC2S::endKeySequence);
     }
 
     private static void handshake(ServerLoginNetworkHandler serverLoginNetworkHandler, MinecraftServer minecraftServer, PacketSender packetSender, ServerLoginNetworking.LoginSynchronizer loginSynchronizer) {
@@ -128,26 +126,22 @@ public class EggolibPacketsC2S {
 
     private static void syncKeyPress(MinecraftServer minecraftServer, ServerPlayerEntity serverPlayerEntity, ServerPlayNetworkHandler serverPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
 
-        int powerIdCount = packetByteBuf.readInt();
-        HashMap<Identifier, String> powerIdAndKeyMap = new HashMap<>();
-        for (int i = 0; i < powerIdCount; i++) {
-            Identifier powerId = packetByteBuf.readIdentifier();
-            String keyString = packetByteBuf.readString();
-            powerIdAndKeyMap.put(powerId, keyString);
-        }
+        HashMap<Identifier, String> powerIdAndKeyStringMap = new HashMap<>(
+            packetByteBuf.readMap(PacketByteBuf::readIdentifier, PacketByteBuf::readString)
+        );
 
         minecraftServer.execute(
             () -> {
 
                 PowerHolderComponent powerHolderComponent = PowerHolderComponent.KEY.get(serverPlayerEntity);
-                for (Identifier powerId : powerIdAndKeyMap.keySet()) {
+                for (Identifier powerId : powerIdAndKeyStringMap.keySet()) {
 
                     PowerType<?> powerType = PowerTypeRegistry.get(powerId);
                     Power power = powerHolderComponent.getPower(powerType);
 
                     if (!(power instanceof ActionOnKeySequencePower actionOnKeySequencePower)) continue;
 
-                    Key key = new Key(powerIdAndKeyMap.get(powerId));
+                    Key key = new Key(powerIdAndKeyStringMap.get(powerId));
                     actionOnKeySequencePower.addKeyToSequence(key);
 
                 }
@@ -157,15 +151,11 @@ public class EggolibPacketsC2S {
 
     }
 
-    private static void triggerKeySequence(MinecraftServer minecraftServer, ServerPlayerEntity serverPlayerEntity, ServerPlayNetworkHandler serverPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
+    private static void endKeySequence(MinecraftServer minecraftServer, ServerPlayerEntity serverPlayerEntity, ServerPlayNetworkHandler serverPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
 
-        int powerIdCount = packetByteBuf.readInt();
-        HashMap<Identifier, Boolean> powerIdAndMatchingSequenceMap = new HashMap<>();
-        for (int i = 0; i < powerIdCount; i++) {
-            Identifier powerId = packetByteBuf.readIdentifier();
-            boolean matchingSequence = packetByteBuf.readBoolean();
-            powerIdAndMatchingSequenceMap.put(powerId, matchingSequence);
-        }
+        HashMap<Identifier, Boolean> powerIdAndMatchingSequenceMap = new HashMap<>(
+            packetByteBuf.readMap(PacketByteBuf::readIdentifier, PacketByteBuf::readBoolean)
+        );
 
         minecraftServer.execute(
             () -> {

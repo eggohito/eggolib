@@ -78,7 +78,7 @@ public class EggolibClient implements ClientModInitializer {
 
     private void syncKeyPresses(HashMap<ActionOnKeySequencePower, FunctionalKey> powerAndKeyMap) {
 
-        PacketByteBuf syncKeyPressBuf = new PacketByteBuf(Unpooled.buffer());
+        PacketByteBuf buffer = new PacketByteBuf(Unpooled.buffer());
         HashMap<Identifier, String> powerIdAndKeyStringMap = new HashMap<>();
 
         for (ActionOnKeySequencePower power : powerAndKeyMap.keySet()) {
@@ -91,22 +91,16 @@ public class EggolibClient implements ClientModInitializer {
 
         }
 
-        int powerIdAndKeyMapSize = powerIdAndKeyStringMap.size();
-        if (powerIdAndKeyMapSize <= 0) return;
+        if (powerIdAndKeyStringMap.size() <= 0) return;
 
-        syncKeyPressBuf.writeInt(powerIdAndKeyMapSize);
-        for (Identifier powerId : powerIdAndKeyStringMap.keySet()) {
-            syncKeyPressBuf.writeIdentifier(powerId);
-            syncKeyPressBuf.writeString(powerIdAndKeyStringMap.get(powerId));
-        }
-
-        ClientPlayNetworking.send(EggolibPackets.SYNC_KEY_PRESS, syncKeyPressBuf);
+        buffer.writeMap(powerIdAndKeyStringMap, PacketByteBuf::writeIdentifier, PacketByteBuf::writeString);
+        ClientPlayNetworking.send(EggolibPackets.SYNC_KEY_PRESS, buffer);
 
     }
 
     private void compareKeySequences(HashMap<ActionOnKeySequencePower, FunctionalKey> powerAndKeyMap) {
 
-        PacketByteBuf triggerKeySequenceBuf = new PacketByteBuf(Unpooled.buffer());
+        PacketByteBuf buffer = new PacketByteBuf(Unpooled.buffer());
         HashMap<Identifier, Boolean> powerIdAndMatchingSequenceMap = new HashMap<>();
 
         for (ActionOnKeySequencePower power : powerAndKeyMap.keySet()) {
@@ -126,16 +120,10 @@ public class EggolibClient implements ClientModInitializer {
 
         }
 
-        int powerIdAndMatchingSequenceMapSize = powerIdAndMatchingSequenceMap.size();
-        if (powerIdAndMatchingSequenceMapSize <= 0) return;
+        if (powerIdAndMatchingSequenceMap.size() <= 0) return;
 
-        triggerKeySequenceBuf.writeInt(powerIdAndMatchingSequenceMapSize);
-        for (Identifier powerId: powerIdAndMatchingSequenceMap.keySet()) {
-            triggerKeySequenceBuf.writeIdentifier(powerId);
-            triggerKeySequenceBuf.writeBoolean(powerIdAndMatchingSequenceMap.get(powerId));
-        }
-
-        ClientPlayNetworking.send(EggolibPackets.TRIGGER_KEY_SEQUENCE, triggerKeySequenceBuf);
+        buffer.writeMap(powerIdAndMatchingSequenceMap, PacketByteBuf::writeIdentifier, PacketByteBuf::writeBoolean);
+        ClientPlayNetworking.send(EggolibPackets.END_KEY_SEQUENCE, buffer);
 
     }
 

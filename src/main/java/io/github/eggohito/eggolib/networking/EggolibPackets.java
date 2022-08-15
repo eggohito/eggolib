@@ -17,6 +17,6 @@ public class EggolibPackets {
 
     public static final Identifier SYNC_KEY_PRESS = Eggolib.identifier("sync_key_press");
 
-    public static final Identifier TRIGGER_KEY_SEQUENCE = Eggolib.identifier("trigger_key_sequence");
+    public static final Identifier END_KEY_SEQUENCE = Eggolib.identifier("trigger_key_sequence");
 
 }
