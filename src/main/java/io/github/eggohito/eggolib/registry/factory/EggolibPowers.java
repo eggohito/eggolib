@@ -10,6 +10,7 @@ public class EggolibPowers {
     public static void register() {
         register(ActionOnBlockHitPower.getFactory());
         register(ActionOnBlockPlacePower.getFactory());
+        register(ActionOnItemPickupPower.getFactory());
         register(ActionOnKeySequencePower.getFactory());
         register(EggolibInvisibilityPower.getFactory());
         register(EggolibPreventItemUsePower.getFactory());
