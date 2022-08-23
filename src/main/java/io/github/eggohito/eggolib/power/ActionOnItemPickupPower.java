@@ -32,13 +32,13 @@ public class ActionOnItemPickupPower extends PrioritizedPower {
         this.itemCondition = itemCondition;
     }
 
-    public boolean doesApply(ItemStack itemStack, Entity owner) {
-        return (itemCondition == null || itemCondition.test(itemStack)) && (biEntityCondition == null || biEntityCondition.test(new Pair<>(owner, entity)));
+    public boolean doesApply(ItemStack itemStack, Entity thrower) {
+        return (itemCondition == null || itemCondition.test(itemStack)) && (biEntityCondition == null || biEntityCondition.test(new Pair<>(thrower, entity)));
     }
 
-    public void executeActions(ItemStack itemStack, Entity owner) {
+    public void executeActions(ItemStack itemStack, Entity thrower) {
         if (itemAction != null) itemAction.accept(new Pair<>(entity.world, itemStack));
-        if (biEntityAction != null) biEntityAction.accept(new Pair<>(owner, entity));
+        if (biEntityAction != null) biEntityAction.accept(new Pair<>(thrower, entity));
     }
 
     public static PowerFactory<?> getFactory() {
