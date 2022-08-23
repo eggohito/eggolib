@@ -17,6 +17,7 @@ public class EggolibPowers {
         register(ModelFlipPower.getFactory());
         register(ModifyHurtTicksPower.getFactory());
         register(PreventBlockPlacePower.getFactory());
+        register(PreventItemPickupPower.getFactory());
     }
 
     private static void register(PowerFactory<?> serializer) {
