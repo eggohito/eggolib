@@ -4,13 +4,14 @@
     "version": "${version}",
 
     "name": "eggolib",
-    "description": "An extension to Apoli for funsies",
+    "description": "A Fabric mod library that extends the functionality of Apoli for funsies; adds new power, condition and action types to be used for developing Origins/Apoli datapacks.",
     "authors": [
         "eggohito"
     ],
     "contact": {
-        "homepage": "https://github.com/eggohito/eggolib",
-        "sources": "https://github.com/eggohito/eggolib"
+        "homepage": "https://curseforge.com/minecraft/mc-mods/eggolib",
+        "sources": "https://github.com/eggohito/eggolib",
+        "issues": "https://github.com/eggohito/eggolib/issues"
     },
 
     "license": "MIT",
@@ -45,8 +46,7 @@
     "depends": {
         "fabricloader": ">=0.14.8",
         "fabric": "*",
-        "minecraft": "1.19.x",
-        "java": ">=17",
-        "apoli": ">=2.5.1"
+        "minecraft": "1.19",
+        "java": ">=17"
     }
 }
