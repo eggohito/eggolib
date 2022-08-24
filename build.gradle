@@ -99,8 +99,6 @@ publishing {
 	publications {
 		mavenJava(MavenPublication) {
 
-			from components.java
-
 			// Add all the built JARs that should be included when publishing to maven
 			artifact(remapJar) {
 				builtBy remapJar
