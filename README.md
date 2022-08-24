@@ -1,9 +1,8 @@
-# eggolib
+<h1><img src="https://github.com/eggohito/eggolib/blob/1.19/src/main/resources/assets/eggolib/icon.png" height="192" width="192" alt="Mod icon" align="right">eggolib</h1>
 
 [![JitPack](https://img.shields.io/jitpack/v/github/eggohito/eggolib)](https://jitpack.io/#eggohito/eggolib) [![GitHub issues](https://img.shields.io/github/issues/eggohito/eggolib)](https://github.com/eggohito/eggolib/issues) [![GitHub Pull Requests](https://img.shields.io/github/issues-pr/eggohito/eggolib)](https://github.com/eggohito/eggolib/pulls)
 
-### Requires [Apoli](https://github.com/apace100/apoli) (You should already have this if you have [Origins](https://modrinth.com/mod/origins))
-*(Also required on both client and server)*
+### Required on the client and the server!
 
 
 eggolib is a Fabric mod library that extends the functionality of [Apoli](https://github.com/apace100/apoli) for funsies. This mod library adds new power, condition and action types to be used for developing Origins/Apoli datapacks.
@@ -11,11 +10,6 @@ eggolib is a Fabric mod library that extends the functionality of [Apoli](https:
 [See here](https://eggolib.github.io) for the documentation for eggolib.
 
 <br>
-
-
-**Q: What is Apoli?**
-<br>
-A: Apoli is a library mod used by Origins for its power, condition and action types. These types provides certain functionality to entities.
 
 **Q: Are the versions for 1.18.x going to be updated?**
 <br>
@@ -29,7 +23,10 @@ A: The same answer from above still applies, but if you can or want to, feel fre
 
 
 ## Using as a dependency
-You can add eggolib as a dependency via modifying the`gradle.properties` and `build.gradle` files of your project, like so:
+You can use eggolib as a dependency by modifying the `gradle.properties` and `build.gradle` files of your project, like so: <br>
+*(You can remove the `include` part if you don't want to include eggolib in your project)*
+
+<br>
 
 **`build.gradle`**
 
@@ -45,6 +42,8 @@ dependencies {
     include "com.github.eggohito:eggolib:${project.eggolib_version}"
 }
 ```
+
+<br>
 
 **`gradle.properties`**
 ```properties
