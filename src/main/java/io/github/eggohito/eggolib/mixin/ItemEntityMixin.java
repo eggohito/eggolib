@@ -33,8 +33,7 @@ public abstract class ItemEntityMixin {
         if (Eggolib.minecraftServer != null && throwerUUID != null) {
             for (ServerWorld serverWorld : Eggolib.minecraftServer.getWorlds()) {
                 singletonThrowerEntity[0] = serverWorld.getEntity(throwerUUID);
-                if (singletonThrowerEntity[0] == null) continue;
-                break;
+                if (singletonThrowerEntity[0] != null) break;
             }
         }
 
@@ -53,7 +52,10 @@ public abstract class ItemEntityMixin {
 
         }
 
-        if (j > 0) ci.cancel();
+        if (j > 0) {
+            ci.cancel();
+            return;
+        }
 
         //  ActionOnItemPickupPower
         PrioritizedPower.SortedMap<ActionOnItemPickupPower> aoippsm = new PrioritizedPower.SortedMap<>();
