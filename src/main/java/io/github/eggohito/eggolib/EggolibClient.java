@@ -1,6 +1,7 @@
 package io.github.eggohito.eggolib;
 
 import io.github.apace100.apoli.component.PowerHolderComponent;
+import io.github.apace100.apoli.power.Power;
 import io.github.eggohito.eggolib.compat.EggolibOriginsCompat;
 import io.github.eggohito.eggolib.data.EggolibClassDataClient;
 import io.github.eggohito.eggolib.networking.EggolibPackets;
@@ -46,7 +47,9 @@ public class EggolibClient implements ClientModInitializer {
 
                 if (minecraftClient.player == null) return;
 
-                List<ActionOnKeySequencePower> powers = PowerHolderComponent.getPowers(minecraftClient.player, ActionOnKeySequencePower.class);
+                List<ActionOnKeySequencePower> powers = PowerHolderComponent.getPowers(minecraftClient.player, ActionOnKeySequencePower.class).stream().filter(Power::isActive).toList();
+                if (powers.size() <= 0) return;
+
                 HashMap<ActionOnKeySequencePower, FunctionalKey> triggeredPowers = new HashMap<>();
                 HashMap<String, Boolean> currentKeyBindingStates = new HashMap<>();
 
