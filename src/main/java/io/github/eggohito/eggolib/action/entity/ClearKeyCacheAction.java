@@ -10,6 +10,7 @@ import io.github.eggohito.eggolib.Eggolib;
 import io.github.eggohito.eggolib.power.ActionOnKeySequencePower;
 import net.minecraft.entity.Entity;
 
+@Deprecated(since = "1.3.0", forRemoval = true)
 public class ClearKeyCacheAction {
 
     public static void action(SerializableData.Instance data, Entity entity) {
