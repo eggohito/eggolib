@@ -6,6 +6,7 @@ import io.github.apace100.calio.ClassUtil;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.calio.data.SerializableDataTypes;
+import io.github.apace100.calio.util.ArgumentWrapper;
 import io.github.eggohito.eggolib.util.EggolibMathUtil;
 import io.github.eggohito.eggolib.util.EggolibMathUtil.MathOperation;
 import io.github.eggohito.eggolib.util.EggolibPerspective;
@@ -13,6 +14,8 @@ import io.github.eggohito.eggolib.util.EggolibToolType;
 import io.github.eggohito.eggolib.util.Key;
 import io.github.eggohito.eggolib.util.key.FunctionalKey;
 import io.github.eggohito.eggolib.util.key.TimedKey;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.Pair;
 
 import java.util.EnumSet;
@@ -165,5 +168,39 @@ public class EggolibDataTypes {
     public static final SerializableDataType<List<TimedKey>> BACKWARDS_COMPATIBLE_TIMED_KEYS = SerializableDataType.list(BACKWARDS_COMPATIBLE_TIMED_KEY);
 
     public static final SerializableDataType<List<FunctionalKey>> BACKWARDS_COMPATIBLE_FUNCTIONAL_KEYS = SerializableDataType.list(BACKWARDS_COMPATIBLE_FUNCTIONAL_KEY);
+
+    public static final SerializableDataType<Pair<ArgumentWrapper<Integer>, ItemStack>> GENERALIZED_POSITIONED_ITEM_STACK = SerializableDataType.compound(
+        ClassUtil.castClass(Pair.class),
+        new SerializableData()
+            .add("item", SerializableDataTypes.ITEM)
+            .add("amount", SerializableDataTypes.INT, 1)
+            .add("tag", SerializableDataTypes.NBT, null)
+            .add("slot", ApoliDataTypes.ITEM_SLOT, null),
+        data -> {
+
+            ItemStack itemStack = new ItemStack((Item) data.get("item"), data.getInt("amount"));
+            ArgumentWrapper<Integer> slotArgumentWrapper = data.get("slot");
+            data.ifPresent("tag", itemStack::setNbt);
+
+            return new Pair<>(slotArgumentWrapper, itemStack);
+
+        },
+        (serializableData, generalizedPositionedStack) -> {
+
+            SerializableData.Instance data = serializableData.new Instance();
+            ArgumentWrapper<Integer> slotArgumentWrapper = generalizedPositionedStack.getLeft();
+            ItemStack itemStack = generalizedPositionedStack.getRight();
+
+            data.set("item", itemStack.getItem());
+            data.set("amount", itemStack.getCount());
+            data.set("tag", itemStack.hasNbt() ? itemStack.getNbt() : null);
+            data.set("slot", slotArgumentWrapper);
+
+            return data;
+
+        }
+    );
+
+    public static final SerializableDataType<List<Pair<ArgumentWrapper<Integer>, ItemStack>>> GENERALIZED_POSITIONED_ITEM_STACKS = SerializableDataType.list(GENERALIZED_POSITIONED_ITEM_STACK);
 
 }

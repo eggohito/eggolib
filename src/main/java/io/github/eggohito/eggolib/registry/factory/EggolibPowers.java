@@ -14,6 +14,7 @@ public class EggolibPowers {
         register(ActionOnKeySequencePower.getFactory());
         register(EggolibInvisibilityPower.getFactory());
         register(EggolibPreventItemUsePower.getFactory());
+        register(EggolibStartingEquipmentPower.getFactory());
         register(ModelFlipPower.getFactory());
         register(ModifyHurtTicksPower.getFactory());
         register(PreventBlockPlacePower.getFactory());
