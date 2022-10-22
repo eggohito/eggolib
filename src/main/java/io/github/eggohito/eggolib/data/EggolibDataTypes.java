@@ -7,15 +7,13 @@ import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.apace100.calio.util.ArgumentWrapper;
-import io.github.eggohito.eggolib.util.EggolibMathUtil;
+import io.github.eggohito.eggolib.util.*;
 import io.github.eggohito.eggolib.util.EggolibMathUtil.MathOperation;
-import io.github.eggohito.eggolib.util.EggolibPerspective;
-import io.github.eggohito.eggolib.util.EggolibToolType;
-import io.github.eggohito.eggolib.util.Key;
 import io.github.eggohito.eggolib.util.key.FunctionalKey;
 import io.github.eggohito.eggolib.util.key.TimedKey;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.util.Pair;
 
 import java.util.EnumSet;

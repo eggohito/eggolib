@@ -15,6 +15,7 @@ public class EggolibEntityConditions {
         register(EggolibBlockCollisionCondition.getFactory());
         register(HasTagCondition.getFactory());
         register(InScreenCondition.getFactory());
+        register(InTeamCondition.getFactory());
         register(InventoryCondition.getFactory());
         register(PermissionLevelCondition.getFactory());
         register(PerspectiveCondition.getFactory());
@@ -24,4 +25,5 @@ public class EggolibEntityConditions {
     private static void register(ConditionFactory<Entity> conditionFactory) {
         Registry.register(ApoliRegistries.ENTITY_CONDITION, conditionFactory.getSerializerId(), conditionFactory);
     }
+
 }
