@@ -20,6 +20,7 @@
     "client": [
         "ClientPlayerEntityAccessor",
         "ClientPlayerInteractionManagerAccessor",
+        "EntityRendererMixin",
         "GameOptionsMixin",
         "LivingEntityRendererAccessor",
         "LivingEntityRendererMixin"
