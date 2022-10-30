@@ -1,13 +1,6 @@
 package io.github.eggohito.eggolib.util;
 
 import net.minecraft.scoreboard.AbstractTeam;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-
-import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.Collection;
 
 public class EggolibAbstractTeam {
 
@@ -75,16 +68,11 @@ public class EggolibAbstractTeam {
         this.collisionRule = collisionRule;
     }
 
-    //  TODO: Optimize the implementation of this method
     public boolean isEqualTo(Object obj) {
 
         if (obj instanceof AbstractTeam abstractTeam) {
 
             int i = 0;
-            int j = (int) Arrays
-                .stream(this.getClass().getDeclaredFields())
-                .filter(this::isFieldValueNotNull)
-                .count();
 
             if (name != null && name.equals(abstractTeam.getName())) i++;
             if (friendlyFire != null && friendlyFire.equals(abstractTeam.isFriendlyFireAllowed())) i++;
@@ -93,22 +81,13 @@ public class EggolibAbstractTeam {
             if (deathMessageVisibilityRule != null && deathMessageVisibilityRule.equals(abstractTeam.getDeathMessageVisibilityRule())) i++;
             if (collisionRule != null && collisionRule.equals(abstractTeam.getCollisionRule())) i++;
 
-            return i == j;
+            return i > 0;
 
         }
 
         else if (obj instanceof EggolibAbstractTeam eggolibAbstractTeam) return this.equals(eggolibAbstractTeam);
         else return false;
 
-    }
-
-    private boolean isFieldValueNotNull(Field field) {
-        try {
-            return field.get(this) != null;
-        }
-        catch (IllegalAccessException e) {
-            return false;
-        }
     }
 
 }
