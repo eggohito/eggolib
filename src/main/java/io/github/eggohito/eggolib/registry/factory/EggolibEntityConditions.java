@@ -12,6 +12,7 @@ public class EggolibEntityConditions {
     public static void register() {
         register(BreakingBlockCondition.getFactory());
         register(ChanceCondition.getFactory());
+        register(DimensionCondition.getFactory());
         register(EggolibBlockCollisionCondition.getFactory());
         register(HasTagCondition.getFactory());
         register(InScreenCondition.getFactory());
