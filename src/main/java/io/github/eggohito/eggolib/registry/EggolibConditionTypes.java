@@ -1,10 +1,11 @@
 package io.github.eggohito.eggolib.registry;
 
 import io.github.apace100.apoli.power.factory.condition.ConditionType;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.dimension.DimensionType;
 
 public class EggolibConditionTypes {
 
-    public static final ConditionType<DimensionType> DIMENSION = new ConditionType<>("DimensionCondition", EggolibRegistries.DIMENSION_CONDITION);
+    public static final ConditionType<RegistryEntry<DimensionType>> DIMENSION_TYPE = new ConditionType<>("DimensionCondition", EggolibRegistries.DIMENSION_TYPE_CONDITION);
 
 }

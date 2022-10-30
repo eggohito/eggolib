@@ -17,6 +17,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.util.Pair;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.dimension.DimensionType;
 
 import java.util.EnumSet;
@@ -24,14 +25,14 @@ import java.util.List;
 
 public class EggolibDataTypes {
 
-    public static final SerializableDataType<ConditionFactory<DimensionType>.Instance> DIMENSION_CONDITION = new SerializableDataType<>(
+    public static final SerializableDataType<ConditionFactory<RegistryEntry<DimensionType>>.Instance> DIMENSION_TYPE_CONDITION = new SerializableDataType<>(
         ClassUtil.castClass(ConditionFactory.Instance.class),
-        EggolibConditionTypes.DIMENSION::write,
-        EggolibConditionTypes.DIMENSION::read,
-        EggolibConditionTypes.DIMENSION::read
+        EggolibConditionTypes.DIMENSION_TYPE::write,
+        EggolibConditionTypes.DIMENSION_TYPE::read,
+        EggolibConditionTypes.DIMENSION_TYPE::read
     );
 
-    public static final SerializableDataType<List<ConditionFactory<DimensionType>.Instance>> DIMENSION_CONDITIONS = SerializableDataType.list(DIMENSION_CONDITION);
+    public static final SerializableDataType<List<ConditionFactory<RegistryEntry<DimensionType>>.Instance>> DIMENSION_TYPE_CONDITIONS = SerializableDataType.list(DIMENSION_TYPE_CONDITION);
 
     public static final SerializableDataType<MathOperation> MATH_OPERATION = SerializableDataType.enumValue(EggolibMathUtil.MathOperation.class);
 

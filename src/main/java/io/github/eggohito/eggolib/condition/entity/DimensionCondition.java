@@ -8,6 +8,7 @@ import io.github.eggohito.eggolib.data.EggolibDataTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.dimension.DimensionType;
 
@@ -19,7 +20,7 @@ public class DimensionCondition {
 
     public static boolean condition(SerializableData.Instance data, Entity entity) {
 
-        Predicate<DimensionType> dimensionCondition = data.get("dimension_condition");
+        Predicate<RegistryEntry<DimensionType>> dimensionTypeCondition = data.get("dimension_condition");
         List<Identifier> worldIds = new ArrayList<>();
         int i = 0;
 
@@ -27,7 +28,7 @@ public class DimensionCondition {
         data.<List<Identifier>>ifPresent("dimensions", worldIds::addAll);
 
         i += worldIds.stream().anyMatch(worldId -> entity.world.getRegistryKey() == RegistryKey.of(Registry.WORLD_KEY, worldId)) ? 1 : 0;
-        i += dimensionCondition == null || dimensionCondition.test(entity.world.getDimension()) ? 1 : 0;
+        i += dimensionTypeCondition == null || dimensionTypeCondition.test(entity.world.getDimensionEntry()) ? 1 : 0;
 
         return i > 0;
 
@@ -39,7 +40,7 @@ public class DimensionCondition {
             new SerializableData()
                 .add("dimension", SerializableDataTypes.IDENTIFIER, null)
                 .add("dimensions", SerializableDataTypes.IDENTIFIERS, null)
-                .add("dimension_condition", EggolibDataTypes.DIMENSION_CONDITION, null),
+                .add("dimension_type_condition", EggolibDataTypes.DIMENSION_TYPE_CONDITION, null),
             DimensionCondition::condition
         );
     }
