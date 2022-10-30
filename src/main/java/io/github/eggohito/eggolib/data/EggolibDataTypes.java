@@ -2,11 +2,13 @@ package io.github.eggohito.eggolib.data;
 
 import com.google.gson.JsonPrimitive;
 import io.github.apace100.apoli.data.ApoliDataTypes;
+import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
 import io.github.apace100.calio.ClassUtil;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.apace100.calio.util.ArgumentWrapper;
+import io.github.eggohito.eggolib.registry.EggolibConditionTypes;
 import io.github.eggohito.eggolib.util.*;
 import io.github.eggohito.eggolib.util.EggolibMathUtil.MathOperation;
 import io.github.eggohito.eggolib.util.key.FunctionalKey;
@@ -15,11 +17,21 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.util.Pair;
+import net.minecraft.world.dimension.DimensionType;
 
 import java.util.EnumSet;
 import java.util.List;
 
 public class EggolibDataTypes {
+
+    public static final SerializableDataType<ConditionFactory<DimensionType>.Instance> DIMENSION_CONDITION = new SerializableDataType<>(
+        ClassUtil.castClass(ConditionFactory.Instance.class),
+        EggolibConditionTypes.DIMENSION::write,
+        EggolibConditionTypes.DIMENSION::read,
+        EggolibConditionTypes.DIMENSION::read
+    );
+
+    public static final SerializableDataType<List<ConditionFactory<DimensionType>.Instance>> DIMENSION_CONDITIONS = SerializableDataType.list(DIMENSION_CONDITION);
 
     public static final SerializableDataType<MathOperation> MATH_OPERATION = SerializableDataType.enumValue(EggolibMathUtil.MathOperation.class);
 
