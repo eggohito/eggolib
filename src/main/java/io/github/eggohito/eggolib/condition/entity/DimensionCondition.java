@@ -20,7 +20,7 @@ public class DimensionCondition {
 
     public static boolean condition(SerializableData.Instance data, Entity entity) {
 
-        Predicate<RegistryEntry<DimensionType>> dimensionTypeCondition = data.get("dimension_condition");
+        Predicate<RegistryEntry<DimensionType>> dimensionTypeCondition = data.get("dimension_type_condition");
         List<Identifier> worldIds = new ArrayList<>();
         int i = 0;
 
