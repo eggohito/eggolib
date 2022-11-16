@@ -6,6 +6,6 @@ import net.minecraft.world.dimension.DimensionType;
 
 public class EggolibConditionTypes {
 
-    public static final ConditionType<RegistryEntry<DimensionType>> DIMENSION_TYPE = new ConditionType<>("DimensionCondition", EggolibRegistries.DIMENSION_TYPE_CONDITION);
+    public static final ConditionType<RegistryEntry<DimensionType>> DIMENSION_TYPE = new ConditionType<>("DimensionTypeCondition", EggolibRegistries.DIMENSION_TYPE_CONDITION);
 
 }
