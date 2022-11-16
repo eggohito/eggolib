@@ -53,7 +53,6 @@ public abstract class ItemEntityMixin {
         }
 
         if (j > 0) {
-            thisAsItemEntity.setToDefaultPickupDelay();
             ci.cancel();
             return;
         }
