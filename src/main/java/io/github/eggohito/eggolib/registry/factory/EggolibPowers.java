@@ -15,6 +15,7 @@ public class EggolibPowers {
         register(EggolibInvisibilityPower.getFactory());
         register(EggolibPreventItemUsePower.getFactory());
         register(EggolibStartingEquipmentPower.getFactory());
+        register(GameEventListenerPower.getFactory());
         register(ModelFlipPower.getFactory());
         register(ModifyHurtTicksPower.getFactory());
         register(ModifyLabelRenderPower.getFactory());
@@ -25,4 +26,5 @@ public class EggolibPowers {
     private static void register(PowerFactory<?> serializer) {
         Registry.register(ApoliRegistries.POWER_FACTORY, serializer.getSerializerId(), serializer);
     }
+
 }
