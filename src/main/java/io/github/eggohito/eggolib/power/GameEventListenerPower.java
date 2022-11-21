@@ -20,8 +20,11 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.event.EntityPositionSource;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.event.listener.EntityGameEventHandler;
@@ -42,7 +45,7 @@ public class GameEventListenerPower extends Power implements VibrationListener.C
     private final Predicate<CachedBlockPosition> blockCondition;
     private final Predicate<Pair<Entity, Entity>> biEntityCondition;
     
-    public EntityGameEventHandler<VibrationListener> gameEventHandler;
+    public final EntityGameEventHandler<VibrationListener> gameEventHandler;
 
     private final List<GameEvent> acceptedGameEvents;
     private final TagKey<GameEvent> acceptedGameEventTag;
@@ -55,7 +58,7 @@ public class GameEventListenerPower extends Power implements VibrationListener.C
         this.biEntityCondition = biEntityCondition;
         this.gameEventHandler = new EntityGameEventHandler<>(
             new VibrationListener(
-                getPositionSource(),
+                getNewPositionSource(),
                 range,
                 this,
                 null,
@@ -70,7 +73,7 @@ public class GameEventListenerPower extends Power implements VibrationListener.C
         this.setTicking();
     }
 
-    private EntityPositionSource getPositionSource() {
+    private EntityPositionSource getNewPositionSource() {
         return new EntityPositionSource(
             this.entity,
             this.entity.getEyeHeight(this.entity.getPose())
@@ -78,9 +81,26 @@ public class GameEventListenerPower extends Power implements VibrationListener.C
     }
 
     @Override
+    public void onAdded() {
+        this.entity.updateEventHandler(EntityGameEventHandler::onEntitySetPosCallback);
+    }
+
+    @Override
+    public void onRemoved() {
+
+        ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(this.entity);
+        Chunk chunk = this.entity.world.getChunk(chunkSectionPos.getSectionX(), chunkSectionPos.getSectionZ(), ChunkStatus.FULL, false);
+
+        if (chunk == null) return;
+
+        chunk.getGameEventDispatcher(chunkSectionPos.getY()).removeListener(this.gameEventHandler.getListener());
+
+    }
+
+    @Override
     public void tick() {
-        this.gameEventHandler.getListener().positionSource = getPositionSource();
-        if (this.isActive()) this.gameEventHandler.getListener().tick(this.entity.world);
+        this.gameEventHandler.getListener().positionSource = getNewPositionSource();
+        this.gameEventHandler.getListener().tick(this.entity.world);
     }
 
     @Override
@@ -110,31 +130,36 @@ public class GameEventListenerPower extends Power implements VibrationListener.C
     }
 
     @Override
+    public TagKey<GameEvent> getTag() {
+        return this.acceptedGameEventTag != null ? this.acceptedGameEventTag : VibrationListener.Callback.super.getTag();
+    }
+
+    @Override
     public boolean canAccept(GameEvent gameEvent, GameEvent.Emitter emitter) {
-        return this.isActive() && VibrationListener.Callback.super.canAccept(gameEvent, emitter);
+        return (this.isActive() && (acceptedGameEvents.isEmpty() || acceptedGameEvents.contains(gameEvent))) && VibrationListener.Callback.super.canAccept(gameEvent, emitter);
     }
 
     @Override
     public boolean accepts(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, GameEvent.Emitter emitter) {
         
-        if (entity.world != world) return false;
+        if (this.entity.world != world) return false;
         Entity target = emitter.sourceEntity();
         
         return
-            this.isActive() &&
-            (!entity.equals(target)) &&
-            (acceptedGameEventTag == null || event.isIn(acceptedGameEventTag)) &&
-            (acceptedGameEvents.isEmpty() || acceptedGameEvents.contains(event)) &&
-            target == null ?
-            (blockCondition == null || blockCondition.test(new CachedBlockPosition(world, pos, true))) && biEntityCondition == null :
-            (blockCondition == null || blockCondition.test(new CachedBlockPosition(world, pos, true))) && (biEntityCondition == null || biEntityCondition.test(new Pair<>(this.entity, target)));
+            (!this.entity.equals(target)) && (
+                target != null ?
+                    (target.isAlive() && (biEntityCondition == null || biEntityCondition.test(new Pair<>(this.entity, target)))) && blockCondition == null :
+                    (blockCondition == null || blockCondition.test(new CachedBlockPosition(world, pos, true))) && biEntityCondition == null
+            );
         
     }
 
     @Override
     public void accept(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable Entity entity, @Nullable Entity sourceEntity, float distance) {
-        if (blockAction != null) blockAction.accept(Triple.of(world, pos, Direction.UP));
-        if (biEntityAction != null) biEntityAction.accept(new Pair<>(this.entity, entity));
+        if (entity == null && sourceEntity == null) {
+            if (blockAction != null) blockAction.accept(Triple.of(world, pos, Direction.UP));
+        }
+        else if (biEntityAction != null) biEntityAction.accept(new Pair<>(this.entity, sourceEntity != null ? sourceEntity : entity));
     }
 
     public static PowerFactory<?> getFactory() {
