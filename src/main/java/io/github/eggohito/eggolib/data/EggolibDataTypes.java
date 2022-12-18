@@ -15,6 +15,7 @@ import io.github.eggohito.eggolib.util.key.FunctionalKey;
 import io.github.eggohito.eggolib.util.key.TimedKey;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.util.Pair;
 import net.minecraft.util.registry.RegistryEntry;
@@ -274,5 +275,21 @@ public class EggolibDataTypes {
     );
 
     public static final SerializableDataType<List<EggolibAbstractTeam>> BACKWARDS_COMPATIBLE_ABSTRACT_TEAMS = SerializableDataType.list(BACKWARDS_COMPATIBLE_ABSTRACT_TEAM);
+
+    public static final SerializableDataType<Integer> POSITIVE_INT = new SerializableDataType<>(
+        Integer.class,
+        PacketByteBuf::writeInt,
+        PacketByteBuf::readInt,
+        jsonElement -> {
+
+            int value = jsonElement.getAsInt();
+
+            if (value <= 0) throw new IllegalArgumentException("'" + value + "' must be equal to or greater than 1!");
+            else return value;
+
+        }
+    );
+
+    public static final SerializableDataType<List<Integer>> POSITIVE_INTS = SerializableDataType.list(POSITIVE_INT);
 
 }

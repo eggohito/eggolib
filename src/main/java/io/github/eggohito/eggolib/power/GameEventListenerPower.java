@@ -1,30 +1,23 @@
 package io.github.eggohito.eggolib.power;
 
-import com.mojang.logging.LogUtils;
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.Dynamic;
 import io.github.apace100.apoli.data.ApoliDataTypes;
-import io.github.apace100.apoli.power.Power;
+import io.github.apace100.apoli.power.CooldownPower;
 import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.apoli.power.factory.PowerFactory;
+import io.github.apace100.apoli.util.HudRender;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.eggohito.eggolib.Eggolib;
+import io.github.eggohito.eggolib.data.EggolibDataTypes;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
-import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.event.EntityPositionSource;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.event.listener.EntityGameEventHandler;
@@ -38,7 +31,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-public class GameEventListenerPower extends Power implements VibrationListener.Callback {
+public class GameEventListenerPower extends CooldownPower implements VibrationListener.Callback {
 
     private final Consumer<Triple<World, BlockPos, Direction>> blockAction;
     private final Consumer<Pair<Entity, Entity>> biEntityAction;
@@ -50,8 +43,8 @@ public class GameEventListenerPower extends Power implements VibrationListener.C
     private final List<GameEvent> acceptedGameEvents;
     private final TagKey<GameEvent> acceptedGameEventTag;
 
-    public GameEventListenerPower(PowerType<?> powerType, LivingEntity livingEntity, Consumer<Triple<World, BlockPos, Direction>> blockAction, Consumer<Pair<Entity, Entity>> biEntityAction, Predicate<CachedBlockPosition> blockCondition, Predicate<Pair<Entity, Entity>> biEntityCondition, int range, GameEvent gameEvent, List<GameEvent> gameEvents, TagKey<GameEvent> gameEventTag) {
-        super(powerType, livingEntity);
+    public GameEventListenerPower(PowerType<?> powerType, LivingEntity livingEntity, Consumer<Triple<World, BlockPos, Direction>> blockAction, Consumer<Pair<Entity, Entity>> biEntityAction, Predicate<CachedBlockPosition> blockCondition, Predicate<Pair<Entity, Entity>> biEntityCondition, int cooldown, HudRender hudRender, int range, GameEvent gameEvent, List<GameEvent> gameEvents, TagKey<GameEvent> gameEventTag) {
+        super(powerType, livingEntity, cooldown, hudRender);
         this.blockAction = blockAction;
         this.biEntityAction = biEntityAction;
         this.blockCondition = blockCondition;
@@ -82,51 +75,22 @@ public class GameEventListenerPower extends Power implements VibrationListener.C
 
     @Override
     public void onAdded() {
-        this.entity.updateEventHandler(EntityGameEventHandler::onEntitySetPosCallback);
+        this.entity.updateEventHandler(EntityGameEventHandler::onEntitySetPos);
     }
 
     @Override
     public void onRemoved() {
-
-        ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(this.entity);
-        Chunk chunk = this.entity.world.getChunk(chunkSectionPos.getSectionX(), chunkSectionPos.getSectionZ(), ChunkStatus.FULL, false);
-
-        if (chunk == null) return;
-
-        chunk.getGameEventDispatcher(chunkSectionPos.getY()).removeListener(this.gameEventHandler.getListener());
-
+        this.entity.updateEventHandler(EntityGameEventHandler::onEntityRemoval);
     }
 
     @Override
     public void tick() {
+
+        if (!canUse()) return;
+
         this.gameEventHandler.getListener().positionSource = getNewPositionSource();
         this.gameEventHandler.getListener().tick(this.entity.world);
-    }
 
-    @Override
-    public NbtElement toTag() {
-
-        NbtCompound nbtCompound = new NbtCompound();
-        DataResult<?> vibrationListenerDataResult = VibrationListener.createCodec(this).encodeStart(NbtOps.INSTANCE, this.gameEventHandler.getListener());
-        
-        vibrationListenerDataResult.resultOrPartial(LogUtils.getLogger()::error).ifPresent(
-            o -> nbtCompound.put("listener", (NbtElement) o)
-        );
-        
-        return nbtCompound;
-        
-    }
-
-    @Override
-    public void fromTag(NbtElement tag) {
-        
-        if (!(tag instanceof NbtCompound nbtCompound)) return;
-        
-        DataResult<?> vibrationListenerDataResult = VibrationListener.createCodec(this).parse(new Dynamic<>(NbtOps.INSTANCE, nbtCompound.getCompound("listener")));
-        vibrationListenerDataResult.resultOrPartial(LogUtils.getLogger()::error).ifPresent(
-            o -> this.gameEventHandler.setListener((VibrationListener) o, this.entity.world)
-        );
-        
     }
 
     @Override
@@ -136,7 +100,7 @@ public class GameEventListenerPower extends Power implements VibrationListener.C
 
     @Override
     public boolean canAccept(GameEvent gameEvent, GameEvent.Emitter emitter) {
-        return (this.isActive() && (acceptedGameEvents.isEmpty() || acceptedGameEvents.contains(gameEvent))) && VibrationListener.Callback.super.canAccept(gameEvent, emitter);
+        return this.canUse() && (acceptedGameEvents.isEmpty() || acceptedGameEvents.contains(gameEvent)) && VibrationListener.Callback.super.canAccept(gameEvent, emitter);
     }
 
     @Override
@@ -144,22 +108,20 @@ public class GameEventListenerPower extends Power implements VibrationListener.C
         
         if (this.entity.world != world) return false;
         Entity target = emitter.sourceEntity();
-        
-        return
-            (!this.entity.equals(target)) && (
-                target != null ?
-                    (target.isAlive() && (biEntityCondition == null || biEntityCondition.test(new Pair<>(this.entity, target)))) && blockCondition == null :
-                    (blockCondition == null || blockCondition.test(new CachedBlockPosition(world, pos, true))) && biEntityCondition == null
-            );
-        
+
+        if (target == null) return biEntityCondition == null && (blockCondition == null || blockCondition.test(new CachedBlockPosition(world, pos, true)));
+        else return !this.entity.equals(target) && blockCondition == null && (biEntityCondition == null || biEntityCondition.test(new Pair<>(this.entity, target)));
+
     }
 
     @Override
     public void accept(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable Entity entity, @Nullable Entity sourceEntity, float distance) {
-        if (entity == null && sourceEntity == null) {
-            if (blockAction != null) blockAction.accept(Triple.of(world, pos, Direction.UP));
-        }
-        else if (biEntityAction != null) biEntityAction.accept(new Pair<>(this.entity, sourceEntity != null ? sourceEntity : entity));
+
+        this.use();
+
+        if (blockAction != null) blockAction.accept(Triple.of(world, pos, Direction.UP));
+        if (biEntityAction != null) biEntityAction.accept(new Pair<>(this.entity, entity));
+
     }
 
     public static PowerFactory<?> getFactory() {
@@ -170,7 +132,9 @@ public class GameEventListenerPower extends Power implements VibrationListener.C
                 .add("bientity_action", ApoliDataTypes.BIENTITY_ACTION, null)
                 .add("block_condition", ApoliDataTypes.BLOCK_CONDITION, null)
                 .add("bientity_condition", ApoliDataTypes.BIENTITY_CONDITION, null)
-                .add("range", SerializableDataTypes.INT, 16)
+                .add("cooldown", EggolibDataTypes.POSITIVE_INT, 1)
+                .add("hud_render", ApoliDataTypes.HUD_RENDER, HudRender.DONT_RENDER)
+                .add("range", EggolibDataTypes.POSITIVE_INT, 16)
                 .add("event", SerializableDataTypes.GAME_EVENT, null)
                 .add("events", SerializableDataTypes.GAME_EVENTS, null)
                 .add("tag", SerializableDataTypes.GAME_EVENT_TAG, null),
@@ -181,6 +145,8 @@ public class GameEventListenerPower extends Power implements VibrationListener.C
                 data.get("bientity_action"),
                 data.get("block_condition"),
                 data.get("bientity_condition"),
+                data.getInt("cooldown"),
+                data.get("hud_render"),
                 data.getInt("range"),
                 data.get("event"),
                 data.get("events"),
