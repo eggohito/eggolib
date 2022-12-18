@@ -64,8 +64,13 @@ dependencies {
 	modImplementation "com.jamieswhiteshirt:reach-entity-attributes:${project.reach_version}"
 
 	// Apoli by Apace100
-	modImplementation "com.github.apace100:apoli:${project.apoli_version}"
-	include "com.github.apace100:apoli:${project.apoli_version}"
+//	modImplementation "com.github.apace100:apoli:${project.apoli_version}"
+//	include "com.github.apace100:apoli:${project.apoli_version}"
+
+	//	Apoli (fork) by eggohito
+	//	(temporary fix)
+	modImplementation "com.github.eggohito:apoli:${project.apoli_version}"
+	include "com.github.eggohito:apoli:${project.apoli_version}"
 
 	// Origins by Apace100
 	modImplementation "com.github.apace100:origins-fabric:${project.origins_version}"
