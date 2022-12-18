@@ -49,6 +49,8 @@ loom {
 }
 
 dependencies {
+	
+	implementation "com.demonwav.mcdev:annotations:1.0"
 
 	// To change the versions see the gradle.properties file
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
@@ -67,13 +69,17 @@ dependencies {
 //	modImplementation "com.github.apace100:apoli:${project.apoli_version}"
 //	include "com.github.apace100:apoli:${project.apoli_version}"
 
-	//	Apoli (fork) by eggohito
-	//	(temporary fix)
+	// Apoli (fork) by eggohito
+	// (temporary fix)
 	modImplementation "com.github.eggohito:apoli:${project.apoli_version}"
 	include "com.github.eggohito:apoli:${project.apoli_version}"
 
 	// Origins by Apace100
-	modImplementation "com.github.apace100:origins-fabric:${project.origins_version}"
+//	modImplementation "com.github.apace100:origins-fabric:${project.origins_version}"
+
+	// Origins (fork) by eggohito
+	// (temporary fix)
+	modImplementation "com.github.eggohito:origins-fabric:${project.origins_version}"
 
 }
 
