@@ -7,7 +7,7 @@ import io.github.eggohito.eggolib.Eggolib;
 import io.github.eggohito.eggolib.mixin.ClientPlayerEntityAccessor;
 import io.github.eggohito.eggolib.networking.EggolibPackets;
 import io.github.eggohito.eggolib.util.EggolibMiscUtilClient;
-import io.netty.buffer.Unpooled;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
@@ -25,11 +25,10 @@ public class InScreenCondition {
         if (!(entity instanceof PlayerEntity playerEntity)) return false;
 
         Set<String> screenClassStrings = new HashSet<>();
-        PacketByteBuf buffer = new PacketByteBuf(Unpooled.buffer());
+        PacketByteBuf buffer = PacketByteBufs.create();
 
-        if (data.isPresent("screen")) screenClassStrings.add(data.get("screen"));
-        if (data.isPresent("screens")) screenClassStrings.addAll(data.get("screens"));
-
+        data.ifPresent("screen", screenClassStrings::add);
+        data.ifPresent("screens", screenClassStrings::addAll);
 
         if (entity.world.isClient) {
             MinecraftClient minecraftClient = ((ClientPlayerEntityAccessor) playerEntity).getClient();
@@ -41,10 +40,8 @@ public class InScreenCondition {
         else {
 
             buffer.writeInt(screenClassStrings.size());
-            if (screenClassStrings.size() > 0) {
-                for (int i = 0; i < screenClassStrings.size(); i++) {
-                    buffer.writeString(screenClassStrings.stream().toList().get(i));
-                }
+            for (String screenClassString : screenClassStrings) {
+                buffer.writeString(screenClassString);
             }
 
             ServerPlayNetworking.send(

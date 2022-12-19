@@ -48,6 +48,7 @@ public class EggolibMiscUtilClient {
 
         }
 
+        if (Eggolib.PLAYERS_IN_SCREEN.get(minecraftClient.player) != null && Eggolib.PLAYERS_IN_SCREEN.get(minecraftClient.player) == matches) return;
         Eggolib.PLAYERS_IN_SCREEN.put(minecraftClient.player, matches);
 
         buffer.writeInt(minecraftClient.player.getId());
