@@ -1,9 +1,8 @@
 package io.github.eggohito.eggolib;
 
-import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.util.NamespaceAlias;
+import io.github.eggohito.eggolib.integration.EggolibPowerIntegration;
 import io.github.eggohito.eggolib.networking.EggolibPacketsC2S;
-import io.github.eggohito.eggolib.power.ActionOnBlockHitPower;
 import io.github.eggohito.eggolib.registry.factory.*;
 import io.github.eggohito.eggolib.util.EggolibConfig;
 import me.shedaniel.autoconfig.AutoConfig;
@@ -11,12 +10,10 @@ import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import me.shedaniel.autoconfig.serializer.PartitioningSerializer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,10 +70,10 @@ public class Eggolib implements ModInitializer {
         //  Add "apoli" as a namespace alias
         NamespaceAlias.addAlias(MOD_ID, "apoli");
 
-        //  Register the packets
+        //  Register the client-to-server packet receivers
         EggolibPacketsC2S.register();
 
-        //  Register the action/condition/power type factories
+        //  Register the action/condition/power types
         EggolibBiEntityActions.register();
         EggolibBiEntityConditions.register();
         EggolibBlockActions.register();
@@ -90,31 +87,20 @@ public class Eggolib implements ModInitializer {
         EggolibLootConditions.register();
         EggolibPowers.register();
 
+        //  Register callbacks used by some power types
+        EggolibPowerIntegration.register();
+
+        //  Notify client/server that eggolib has been initialized and if it should perform a version check
         LOGGER.info("[{}] Version {} has been initialized. Egg!", MOD_ID, version);
         LOGGER.warn(
             String.format("[%1$s] Should %1$s perform a version check? %2$s", MOD_ID, config.server.performVersionCheck ? "Yes." : "No.")
         );
 
-        //  Remove the key-value pair in the hashmaps for the player that disconnected
+        //  Remove the player from the HashMaps upon them disconnecting
         ServerPlayConnectionEvents.DISCONNECT.register(
             (serverPlayNetworkHandler, minecraftServer) -> {
                 PLAYERS_IN_SCREEN.remove(serverPlayNetworkHandler.player);
                 PLAYERS_PERSPECTIVE.remove(serverPlayNetworkHandler.player);
-            }
-        );
-
-        AttackBlockCallback.EVENT.register(
-            (player, world, hand, pos, direction) -> {
-
-                if (!player.isSpectator()) PowerHolderComponent.withPowers(
-                    player,
-                    ActionOnBlockHitPower.class,
-                    aobhp -> aobhp.doesApply(world, pos, direction, null),
-                    aobhp -> aobhp.executeActions(world, pos, direction, null)
-                );
-
-                return ActionResult.PASS;
-
             }
         );
 

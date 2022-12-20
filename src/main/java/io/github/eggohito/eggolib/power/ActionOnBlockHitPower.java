@@ -1,5 +1,6 @@
 package io.github.eggohito.eggolib.power;
 
+import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.power.Power;
 import io.github.apace100.apoli.power.PowerType;
@@ -7,10 +8,14 @@ import io.github.apace100.apoli.power.factory.PowerFactory;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.eggohito.eggolib.Eggolib;
+import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
@@ -52,6 +57,19 @@ public class ActionOnBlockHitPower extends Power {
         if (blockAction != null) blockAction.accept(Triple.of(world, blockPos, direction));
         if (projectileEntity != null && projectileAction != null) projectileAction.accept(projectileEntity);
         if (entityAction != null) entityAction.accept(entity);
+    }
+
+    public static ActionResult integrateCallback(PlayerEntity playerEntity, World world, Hand hand, BlockPos blockPos, Direction direction) {
+
+        if (!playerEntity.isSpectator()) PowerHolderComponent.withPowers(
+            playerEntity,
+            ActionOnBlockHitPower.class,
+            aobhp -> aobhp.doesApply(world, blockPos, direction, null),
+            aobhp -> aobhp.executeActions(world, blockPos, direction, null)
+        );
+
+        return ActionResult.PASS;
+
     }
 
     public static PowerFactory<?> getFactory() {
