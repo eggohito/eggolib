@@ -20,7 +20,7 @@ public abstract class PowerHolderComponentImplMixin {
 
     @Shadow @Final private LivingEntity owner;
 
-    @Inject(method = "removePower", at = @At(value = "INVOKE", target = "Lio/github/apace100/apoli/power/Power;onLost()V"))
+    @Inject(method = "removePower", at = @At(value = "INVOKE", target = "Lio/github/apace100/apoli/power/Power;onLost()V"), remap = false)
     private void eggolib$removeCurrentScreenStatusOnPowerRemoval(PowerType<?> powerType, Identifier source, CallbackInfo ci) {
         eggolib$removeCurrentScreenStatus(owner);
     }
