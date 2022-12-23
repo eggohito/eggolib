@@ -81,6 +81,10 @@ dependencies {
 	// (temporary fix)
 	modImplementation "com.github.eggohito:origins-fabric:${project.origins_version}"
 
+	// BreathingLib (fork) by eggohito
+	modImplementation "com.github.eggohito:BreathingLib:${project.breathing_lib_version}"
+	include "com.github.eggohito:BreathingLib:${project.breathing_lib_version}"
+
 }
 
 processResources {

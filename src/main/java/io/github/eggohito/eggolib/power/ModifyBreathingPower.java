@@ -11,6 +11,7 @@ import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.eggohito.eggolib.Eggolib;
 import io.github.eggohito.eggolib.data.EggolibDataTypes;
+import io.github.eggohito.eggolib.mixin.BreathingInfoBuilderMixin;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -19,12 +20,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Predicate;
 
 public class ModifyBreathingPower extends PrioritizedPower {
@@ -38,12 +35,13 @@ public class ModifyBreathingPower extends PrioritizedPower {
     private final Integer loseAirInterval;
 
     private final DamageSource damageSource;
+    private final List<Modifier> damageModifiers;
     private final Integer damageInterval;
 
     private final ParticleEffect particle;
     private final boolean ignoreRespiration;
 
-    public ModifyBreathingPower(PowerType<?> powerType, LivingEntity livingEntity, Predicate<CachedBlockPosition> breathableBlockCondition, StatusEffect breathingStatusEffect, List<StatusEffect> breathingStatusEffects, Modifier gainAirModifier, List<Modifier> gainAirModifiers, Integer gainAirInterval, Modifier loseAirModifier, List<Modifier> loseAirModifiers, Integer loseAirInterval, DamageSource damageSource, Integer damageInterval, ParticleEffect particle, boolean ignoreRespiration, int priority) {
+    public ModifyBreathingPower(PowerType<?> powerType, LivingEntity livingEntity, Predicate<CachedBlockPosition> breathableBlockCondition, StatusEffect breathingStatusEffect, List<StatusEffect> breathingStatusEffects, Modifier gainAirModifier, List<Modifier> gainAirModifiers, Integer gainAirInterval, Modifier loseAirModifier, List<Modifier> loseAirModifiers, Integer loseAirInterval, DamageSource damageSource, Modifier damageModifier, List<Modifier> damageModifiers, Integer damageInterval, ParticleEffect particle, boolean ignoreRespiration, int priority) {
 
         super(powerType, livingEntity, priority);
         this.breathableBlockCondition = breathableBlockCondition;
@@ -55,17 +53,19 @@ public class ModifyBreathingPower extends PrioritizedPower {
         this.gainAirModifiers = new ArrayList<>();
         if (gainAirModifier != null) this.gainAirModifiers.add(gainAirModifier);
         if (gainAirModifiers != null) this.gainAirModifiers.addAll(gainAirModifiers);
-
         this.gainAirInterval = gainAirInterval;
 
         this.loseAirModifiers = new ArrayList<>();
         if (loseAirModifier != null) this.loseAirModifiers.add(loseAirModifier);
         if (loseAirModifiers != null) this.loseAirModifiers.addAll(loseAirModifiers);
-
         this.loseAirInterval = loseAirInterval;
 
         this.damageSource = damageSource;
+        this.damageModifiers = new ArrayList<>();
+        if (damageModifier != null) this.damageModifiers.add(damageModifier);
+        if (damageModifiers != null) this.damageModifiers.addAll(damageModifiers);
         this.damageInterval = damageInterval;
+
         this.particle = particle;
         this.ignoreRespiration = ignoreRespiration;
 
@@ -73,17 +73,9 @@ public class ModifyBreathingPower extends PrioritizedPower {
 
     public BreathingInfo getGainBreathInfo() {
 
-        BreathingInfo.Builder breathingInfoBuilder = new BreathingInfo.Builder();
-
-        if (!gainAirModifiers.isEmpty()) {
-            ModifierUtil.sortModifiers(gainAirModifiers);
-            breathingInfoBuilder.airPerCycle((int) ModifierUtil.applyModifiers(this.entity, gainAirModifiers, 4));
-        }
-
+        BreathingInfo.Builder breathingInfoBuilder = BreathingInfo.gainingAir();
         if (gainAirInterval != null) breathingInfoBuilder.airDelta(gainAirInterval);
-        if (damageSource != null) breathingInfoBuilder.damageSource(damageSource);
-        if (damageInterval != null) breathingInfoBuilder.damageAt(damageInterval);
-        if (particle != null) breathingInfoBuilder.particleEffect(particle);
+        if (!gainAirModifiers.isEmpty()) breathingInfoBuilder.airPerCycle((int) ModifierUtil.applyModifiers(entity, gainAirModifiers, ((BreathingInfoBuilderMixin) breathingInfoBuilder).getAirPerCycle()));
 
         return breathingInfoBuilder.build();
 
@@ -91,18 +83,17 @@ public class ModifyBreathingPower extends PrioritizedPower {
 
     public BreathingInfo getLoseBreathInfo() {
 
-        BreathingInfo.Builder breathingInfoBuilder = new BreathingInfo.Builder();
-
-        if (!loseAirModifiers.isEmpty()) {
-            ModifierUtil.sortModifiers(loseAirModifiers);
-            breathingInfoBuilder.airPerCycle((int) ModifierUtil.applyModifiers(this.entity, loseAirModifiers, 1));
-        }
+        BreathingInfo.Builder breathingInfoBuilder = BreathingInfo.losingAir();
 
         if (loseAirInterval != null) breathingInfoBuilder.airDelta(loseAirInterval);
         if (damageSource != null) breathingInfoBuilder.damageSource(damageSource);
         if (damageInterval != null) breathingInfoBuilder.damageAt(damageInterval);
-        if (particle != null) breathingInfoBuilder.particleEffect(particle);
         if (ignoreRespiration) breathingInfoBuilder.ignoreRespiration();
+
+        breathingInfoBuilder.particleEffect(particle);
+
+        if (!loseAirModifiers.isEmpty()) breathingInfoBuilder.airPerCycle((int) ModifierUtil.applyModifiers(entity, loseAirModifiers, ((BreathingInfoBuilderMixin) breathingInfoBuilder).getAirPerCycle()));
+        if (!damageModifiers.isEmpty()) breathingInfoBuilder.damagePerCycle((float) ModifierUtil.applyModifiers(entity, damageModifiers, ((BreathingInfoBuilderMixin) breathingInfoBuilder).getDamagePerCycle()));
 
         return breathingInfoBuilder.build();
 
@@ -112,8 +103,8 @@ public class ModifyBreathingPower extends PrioritizedPower {
         return !breathingStatusEffects.isEmpty() && breathingStatusEffects.stream().anyMatch(entity::hasStatusEffect);
     }
 
-    public boolean canBreatheIn(World world, BlockPos blockPos) {
-        return breathableBlockCondition.test(new CachedBlockPosition(world, blockPos, true));
+    public boolean canBreatheIn(BlockPos blockPos) {
+        return breathableBlockCondition.test(new CachedBlockPosition(entity.world, blockPos, true));
     }
 
     public static TypedActionResult<Optional<BreathingInfo>> integrateCallback(LivingEntity livingEntity) {
@@ -125,9 +116,10 @@ public class ModifyBreathingPower extends PrioritizedPower {
             .stream()
             .max(Comparator.comparing(ModifyBreathingPower::getPriority))
             .get();
+        BlockPos blockPos = new BlockPos(livingEntity.getEyePos());
 
-        if (mbps.stream().anyMatch(mbp -> mbp.canBreatheIn(livingEntity.world, new BlockPos(livingEntity.getEyePos())))) return TypedActionResult.success(Optional.of(hpmbp.getGainBreathInfo()));
-        if (mbps.stream().anyMatch(ModifyBreathingPower::hasBreathingStatusEffects)) return TypedActionResult.consume(Optional.empty());
+        if (hpmbp.canBreatheIn(blockPos)) return TypedActionResult.success(Optional.of(hpmbp.getGainBreathInfo()));
+        if (hpmbp.hasBreathingStatusEffects()) return TypedActionResult.consume(Optional.empty());
         if (livingEntity instanceof PlayerEntity playerEntity && playerEntity.getAbilities().invulnerable) return TypedActionResult.consume(Optional.empty());
 
         return TypedActionResult.fail(Optional.of(hpmbp.getLoseBreathInfo()));
@@ -148,6 +140,8 @@ public class ModifyBreathingPower extends PrioritizedPower {
                 .add("lose_air_modifiers", Modifier.LIST_TYPE, null)
                 .add("lose_air_interval", EggolibDataTypes.POSITIVE_INT, null)
                 .add("damage_source", SerializableDataTypes.DAMAGE_SOURCE, null)
+                .add("damage_modifier", Modifier.DATA_TYPE, null)
+                .add("damage_modifiers", Modifier.LIST_TYPE, null)
                 .add("damage_interval", EggolibDataTypes.POSITIVE_INT, null)
                 .add("particle", SerializableDataTypes.PARTICLE_EFFECT_OR_TYPE, null)
                 .add("ignore_respiration", SerializableDataTypes.BOOLEAN, false)
@@ -165,6 +159,8 @@ public class ModifyBreathingPower extends PrioritizedPower {
                 data.get("lose_air_modifiers"),
                 data.get("lose_air_interval"),
                 data.get("damage_source"),
+                data.get("damage_modifier"),
+                data.get("damage_modifiers"),
                 data.get("damage_interval"),
                 data.get("particle"),
                 data.get("ignore_respiration"),
