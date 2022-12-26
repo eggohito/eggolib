@@ -1,5 +1,6 @@
 package io.github.eggohito.eggolib.action.entity;
 
+import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
@@ -17,6 +18,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 
 public class FireProjectileAction {
 
@@ -82,6 +84,7 @@ public class FireProjectileAction {
             }
 
             serverWorld.spawnNewEntityAndPassengers(entityToFire);
+            data.<Consumer<Entity>>ifPresent("entity_action", entityAction -> entityAction.accept(entityToFire));
 
         }
 
@@ -95,7 +98,8 @@ public class FireProjectileAction {
                 .add("divergence", SerializableDataTypes.FLOAT, 1F)
                 .add("speed", SerializableDataTypes.FLOAT, 1.5F)
                 .add("count", EggolibDataTypes.POSITIVE_INT, 1)
-                .add("tag", SerializableDataTypes.NBT, null),
+                .add("tag", SerializableDataTypes.NBT, null)
+                .add("entity_action", ApoliDataTypes.ENTITY_ACTION, null),
             FireProjectileAction::action
         );
     }
