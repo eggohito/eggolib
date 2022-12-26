@@ -19,12 +19,14 @@ public class EggolibEntityActions {
         register(EggolibDamageAction.getFactory());
         register(EggolibDropInventoryAction.getFactory());
         register(EggolibReplaceInventoryAction.getFactory());
+        register(FireProjectileAction.getFactory());
         register(LoopAction.getFactory(ApoliDataTypes.ENTITY_ACTION));
         register(ModifyHealthAction.getFactory());
         register(ModifyKeySequenceAction.getFactory());
         register(OpenInventoryAction.getFactory());
         register(RemovePowerAction.getFactory());
         register(SetPerspectiveAction.getFactory());
+        register(SpawnEntityAction.getFactory());
     }
 
     private static void register(ActionFactory<Entity> actionFactory) {
