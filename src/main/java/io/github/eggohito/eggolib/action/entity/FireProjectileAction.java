@@ -12,8 +12,6 @@ import net.minecraft.entity.projectile.ExplosiveProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
@@ -49,12 +47,9 @@ public class FireProjectileAction {
 
             float yaw = entity.getYaw();
             float pitch = entity.getPitch();
-            float soundPitch = data.get("sound_pitch");
-            float soundVolume = data.get("sound_volume");
 
             Random random = serverWorld.getRandom();
             Vec3d rotationVector = entity.getRotationVector();
-            SoundCategory soundCategory = data.get("sound_category");
 
             if (entityToFire instanceof ProjectileEntity projectileEntity) {
 
@@ -86,7 +81,6 @@ public class FireProjectileAction {
 
             }
 
-            data.<SoundEvent>ifPresent("sound", soundEvent -> entity.world.playSound(entity.getX(), entity.getY(), entity.getZ(), soundEvent, soundCategory, soundVolume, soundPitch, true));
             serverWorld.spawnNewEntityAndPassengers(entityToFire);
 
         }
@@ -99,11 +93,7 @@ public class FireProjectileAction {
             new SerializableData()
                 .add("entity_type", SerializableDataTypes.ENTITY_TYPE)
                 .add("divergence", SerializableDataTypes.FLOAT, 1F)
-                .add("speed", SerializableDataTypes.FLOAT, 1.5f)
-                .add("sound", SerializableDataTypes.SOUND_EVENT, null)
-                .add("sound_pitch", SerializableDataTypes.FLOAT, 1F)
-                .add("sound_volume", SerializableDataTypes.FLOAT, 1F)
-                .add("sound_category", EggolibDataTypes.SOUND_CATEGORY, SoundCategory.NEUTRAL)
+                .add("speed", SerializableDataTypes.FLOAT, 1.5F)
                 .add("count", EggolibDataTypes.POSITIVE_INT, 1)
                 .add("tag", SerializableDataTypes.NBT, null),
             FireProjectileAction::action
