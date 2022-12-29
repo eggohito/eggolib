@@ -116,7 +116,7 @@ public class ModifyBreathingPower extends PrioritizedPower {
             .stream()
             .max(Comparator.comparing(ModifyBreathingPower::getPriority))
             .get();
-        BlockPos blockPos = new BlockPos(livingEntity.getEyePos());
+        BlockPos blockPos = new BlockPos(livingEntity.getPos().add(0, livingEntity.getEyeHeight(livingEntity.getPose()), 0));
 
         if (hpmbp.canBreatheIn(blockPos)) return TypedActionResult.success(Optional.of(hpmbp.getGainBreathInfo()));
         if (hpmbp.hasBreathingStatusEffects()) return TypedActionResult.consume(Optional.empty());
