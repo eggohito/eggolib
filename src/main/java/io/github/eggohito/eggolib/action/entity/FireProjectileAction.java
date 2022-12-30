@@ -7,6 +7,7 @@ import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.eggohito.eggolib.Eggolib;
 import io.github.eggohito.eggolib.data.EggolibDataTypes;
 import io.github.eggohito.eggolib.util.EggolibMiscUtilServer;
+import io.github.eggohito.eggolib.util.EntityOffset;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.projectile.ExplosiveProjectileEntity;
@@ -36,7 +37,7 @@ public class FireProjectileAction {
                 serverWorld,
                 entityType,
                 entityNbt,
-                entity.getPos().add(0, entity.getEyeHeight(entity.getPose()), 0),
+                EntityOffset.EYES.get(entity),
                 entity.getYaw(),
                 entity.getPitch()
             );
