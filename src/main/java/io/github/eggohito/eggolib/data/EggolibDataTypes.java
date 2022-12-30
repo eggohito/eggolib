@@ -4,6 +4,7 @@ import com.google.gson.JsonPrimitive;
 import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
 import io.github.apace100.calio.ClassUtil;
+import io.github.apace100.calio.SerializationHelper;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.calio.data.SerializableDataTypes;
@@ -37,6 +38,8 @@ public class EggolibDataTypes {
     public static final SerializableDataType<List<ConditionFactory<RegistryEntry<DimensionType>>.Instance>> DIMENSION_TYPE_CONDITIONS = SerializableDataType.list(DIMENSION_TYPE_CONDITION);
 
     public static final SerializableDataType<MathOperation> MATH_OPERATION = SerializableDataType.enumValue(EggolibMathUtil.MathOperation.class);
+
+    public static final SerializableDataType<PowerOperation> POWER_OPERATION = SerializableDataType.enumValue(PowerOperation.class, SerializationHelper.buildEnumMap(PowerOperation.class, PowerOperation::getOperationName));
 
     public static final SerializableDataType<EggolibToolType> TOOL_TYPE = SerializableDataType.enumValue(EggolibToolType.class);
 
