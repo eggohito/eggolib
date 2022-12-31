@@ -12,6 +12,7 @@ import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.eggohito.eggolib.Eggolib;
 import io.github.eggohito.eggolib.data.EggolibDataTypes;
 import io.github.eggohito.eggolib.mixin.BreathingInfoBuilderMixin;
+import io.github.eggohito.eggolib.util.EntityOffset;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -116,7 +117,7 @@ public class ModifyBreathingPower extends PrioritizedPower {
             .stream()
             .max(Comparator.comparing(ModifyBreathingPower::getPriority))
             .get();
-        BlockPos blockPos = new BlockPos(livingEntity.getPos().add(0, livingEntity.getEyeHeight(livingEntity.getPose()), 0));
+        BlockPos blockPos = new BlockPos(EntityOffset.EYES.get(livingEntity));
 
         if (hpmbp.canBreatheIn(blockPos)) return TypedActionResult.success(Optional.of(hpmbp.getGainBreathInfo()));
         if (hpmbp.hasBreathingStatusEffects()) return TypedActionResult.consume(Optional.empty());
