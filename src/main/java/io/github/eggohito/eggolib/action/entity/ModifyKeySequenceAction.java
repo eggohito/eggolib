@@ -34,8 +34,9 @@ public class ModifyKeySequenceAction {
             powerHolderComponent -> {
 
                 PowerType<?> targetPowerType = data.get("power");
-                Power targetPower = powerHolderComponent.getPower(targetPowerType);
+                if (targetPowerType == null) return;
 
+                Power targetPower = powerHolderComponent.getPower(targetPowerType);
                 if (!(targetPower instanceof ActionOnKeySequencePower aoksp)) return;
 
                 Operation operation = data.get("operation");
@@ -57,6 +58,8 @@ public class ModifyKeySequenceAction {
                         currentKeySequence.addAll(specifiedKeys);
                     }
                 }
+
+                PowerHolderComponent.syncPower(entity, targetPowerType);
 
             }
         );
