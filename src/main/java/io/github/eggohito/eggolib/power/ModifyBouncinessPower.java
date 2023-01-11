@@ -4,6 +4,7 @@ import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.apoli.power.ValueModifyingPower;
 import io.github.apace100.apoli.power.factory.PowerFactory;
+import io.github.apace100.apoli.util.SavedBlockPosition;
 import io.github.apace100.apoli.util.modifier.Modifier;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.eggohito.eggolib.Eggolib;
@@ -25,6 +26,8 @@ public class ModifyBouncinessPower extends ValueModifyingPower {
     private final Consumer<Triple<World, BlockPos, Direction>> blockAction;
     private final Predicate<CachedBlockPosition> blockCondition;
 
+    public SavedBlockPosition landedOnBlockCache;
+
     public ModifyBouncinessPower(PowerType<?> powerType, LivingEntity livingEntity, Consumer<Entity> entityAction, Consumer<Triple<World, BlockPos, Direction>> blockAction, Predicate<CachedBlockPosition> blockCondition, Modifier modifier, List<Modifier> modifiers) {
         super(powerType, livingEntity);
         this.entityAction = entityAction;
@@ -34,12 +37,17 @@ public class ModifyBouncinessPower extends ValueModifyingPower {
         if (modifiers != null) modifiers.forEach(this::addModifier);
     }
 
-    public boolean doesApply(CachedBlockPosition cachedBlockPosition) {
-        return (blockCondition == null || blockCondition.test(cachedBlockPosition));
+    public boolean doesApply() {
+        return landedOnBlockCache != null && (blockCondition == null || blockCondition.test(landedOnBlockCache));
     }
 
-    public void executeActions(World world, BlockPos blockPos) {
-        if (blockAction != null) blockAction.accept(Triple.of(world, blockPos, Direction.UP));
+    public boolean doesApply(World world, BlockPos blockPos) {
+        landedOnBlockCache = new SavedBlockPosition(world, blockPos);
+        return doesApply();
+    }
+
+    public void executeActions() {
+        if (blockAction != null && landedOnBlockCache != null) blockAction.accept(Triple.of(entity.world, landedOnBlockCache.getBlockPos(), Direction.UP));
         if (entityAction != null) entityAction.accept(entity);
     }
 
