@@ -33,7 +33,7 @@ public abstract class EntityRendererMixin<T extends Entity> {
             .getPowers(entity, ModifyLabelRenderPower.class)
             .stream()
             .filter(mlrp -> mlrp.getReplacementText() != null)
-            .min(Comparator.comparing(ModifyLabelRenderPower::getPriority));
+            .max(Comparator.comparing(ModifyLabelRenderPower::getPriority));
 
         if (modifyLabelRenderPower.isPresent()) return modifyLabelRenderPower.get().getReplacementText();
         else return originalValue;
