@@ -107,10 +107,10 @@ public class GameEventListenerPower extends CooldownPower implements VibrationLi
     public boolean accepts(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, GameEvent.Emitter emitter) {
         
         if (this.entity.world != world) return false;
-        Entity target = emitter.sourceEntity();
+        Entity actor = emitter.sourceEntity();
 
-        if (target == null) return biEntityCondition == null && (blockCondition == null || blockCondition.test(new CachedBlockPosition(world, pos, true)));
-        else return !this.entity.equals(target) && blockCondition == null && (biEntityCondition == null || biEntityCondition.test(new Pair<>(this.entity, target)));
+        if (actor == null) return biEntityCondition == null && (blockCondition == null || blockCondition.test(new CachedBlockPosition(world, pos, true)));
+        else return !this.entity.equals(actor) && blockCondition == null && (biEntityCondition == null || biEntityCondition.test(new Pair<>(actor, this.entity)));
 
     }
 
@@ -120,7 +120,7 @@ public class GameEventListenerPower extends CooldownPower implements VibrationLi
         this.use();
 
         if (blockAction != null) blockAction.accept(Triple.of(world, pos, Direction.UP));
-        if (biEntityAction != null) biEntityAction.accept(new Pair<>(this.entity, entity));
+        if (biEntityAction != null) biEntityAction.accept(new Pair<>(entity, this.entity));
 
     }
 
