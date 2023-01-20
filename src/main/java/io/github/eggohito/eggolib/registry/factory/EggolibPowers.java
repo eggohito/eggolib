@@ -21,6 +21,7 @@ public class EggolibPowers {
         register(ModifyBreathingPower.getFactory());
         register(ModifyHurtTicksPower.getFactory());
         register(ModifyLabelRenderPower.getFactory());
+        register(ModifyMouseSensitivityPower.getFactory());
         register(PreventBlockPlacePower.getFactory());
         register(PreventCriticalHitPower.getFactory());
         register(PreventItemPickupPower.getFactory());

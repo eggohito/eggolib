@@ -26,7 +26,8 @@
         "EntityRendererMixin",
         "GameOptionsMixin",
         "LivingEntityRendererAccessor",
-        "LivingEntityRendererMixin"
+        "LivingEntityRendererMixin",
+        "MouseMixin"
     ],
     "server": [],
     "injectors": {
