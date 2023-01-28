@@ -38,7 +38,7 @@ public class ActionOnCriticalHitPower extends PrioritizedPower {
 
     public static PowerFactory<?> getFactory() {
         return new PowerFactory<>(
-            Eggolib.identifier("modify_critical_hit"),
+            Eggolib.identifier("action_on_critical_hit"),
             new SerializableData()
                 .add("bientity_action", ApoliDataTypes.BIENTITY_ACTION, null)
                 .add("bientity_condition", ApoliDataTypes.BIENTITY_CONDITION, null)

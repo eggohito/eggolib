@@ -10,6 +10,7 @@ public class EggolibPowers {
     public static void register() {
         register(ActionOnBlockHitPower.getFactory());
         register(ActionOnBlockPlacePower.getFactory());
+        register(ActionOnCriticalHitPower.getFactory());
         register(ActionOnItemPickupPower.getFactory());
         register(ActionOnKeySequencePower.getFactory());
         register(EggolibInvisibilityPower.getFactory());
@@ -19,7 +20,6 @@ public class EggolibPowers {
         register(ModelFlipPower.getFactory());
         register(ModifyBouncinessPower.getFactory());
         register(ModifyBreathingPower.getFactory());
-        register(ActionOnCriticalHitPower.getFactory());
         register(ModifyHurtTicksPower.getFactory());
         register(ModifyLabelRenderPower.getFactory());
         register(ModifyMouseSensitivityPower.getFactory());
