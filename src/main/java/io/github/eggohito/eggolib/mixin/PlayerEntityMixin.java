@@ -1,5 +1,6 @@
 package io.github.eggohito.eggolib.mixin;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.power.ModifyDamageDealtPower;
 import io.github.apace100.apoli.power.ModifyDamageTakenPower;
@@ -73,21 +74,21 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Nameable
         eggolib$cachedDamageSource = DamageSource.player((PlayerEntity) (Object) this);
     }
 
-    @Redirect(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;isSprinting()Z", ordinal = 1))
-    private boolean eggolib$preventCriticalHit(PlayerEntity instance) {
+    @ModifyExpressionValue(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;isSprinting()Z", ordinal = 1))
+    private boolean eggolib$preventCriticalHit(boolean originalValue) {
 
         PrioritizedPower.SortedMap<PreventCriticalHitPower> pchpsm = new PrioritizedPower.SortedMap<>();
         pchpsm.add(this, PreventCriticalHitPower.class, pchp -> pchp.doesApply(eggolib$cachedTarget, eggolib$cachedDamageSource, eggolib$cachedDamageAmount));
 
-        int j = 0;
+        int count = 0;
         for (int i = pchpsm.getMaxPriority(); i >= 0; i--) {
             if (!pchpsm.hasPowers(i)) continue;
             pchpsm.getPowers(i).forEach(pchp -> pchp.executeActions(eggolib$cachedTarget));
-            j++;
+            count++;
         }
 
-        if (j > 0) return true;
-        else return instance.isSprinting();
+        if (count > 0) return true;
+        else return originalValue;
 
     }
 

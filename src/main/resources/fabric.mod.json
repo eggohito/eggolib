@@ -25,6 +25,9 @@
         "client": [
             "io.github.eggohito.eggolib.EggolibClient"
         ],
+        "preLaunch": [
+            "com.llamalad7.mixinextras.MixinExtrasBootstrap::init"
+        ],
         "cardinal-components-entity": [
             "io.github.eggohito.eggolib.registry.factory.EggolibEntityComponents"
         ]
