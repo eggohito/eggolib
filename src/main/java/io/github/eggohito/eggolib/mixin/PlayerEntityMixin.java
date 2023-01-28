@@ -4,6 +4,7 @@ import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.power.ModifyDamageDealtPower;
 import io.github.apace100.apoli.power.ModifyDamageTakenPower;
 import io.github.apace100.apoli.power.ModifyProjectileDamagePower;
+import io.github.eggohito.eggolib.power.ActionOnCriticalHitPower;
 import io.github.eggohito.eggolib.power.PreventCriticalHitPower;
 import io.github.eggohito.eggolib.power.PrioritizedPower;
 import net.minecraft.entity.Entity;
@@ -69,14 +70,14 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Nameable
     private void eggolib$cacheVars(Entity target, CallbackInfo ci, float f, float g, float h, boolean bl, boolean bl2, int i, boolean bl3) {
         eggolib$cachedTarget = target;
         eggolib$cachedDamageAmount = f;
-        eggolib$cachedDamageSource = DamageSource.player(eggolib$this());
+        eggolib$cachedDamageSource = DamageSource.player((PlayerEntity) (Object) this);
     }
 
     @Redirect(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;isSprinting()Z", ordinal = 1))
     private boolean eggolib$preventCriticalHit(PlayerEntity instance) {
 
         PrioritizedPower.SortedMap<PreventCriticalHitPower> pchpsm = new PrioritizedPower.SortedMap<>();
-        pchpsm.add(eggolib$this(), PreventCriticalHitPower.class, pchp -> pchp.doesApply(eggolib$cachedTarget, eggolib$cachedDamageSource, eggolib$cachedDamageAmount));
+        pchpsm.add(this, PreventCriticalHitPower.class, pchp -> pchp.doesApply(eggolib$cachedTarget, eggolib$cachedDamageSource, eggolib$cachedDamageAmount));
 
         int j = 0;
         for (int i = pchpsm.getMaxPriority(); i >= 0; i--) {
@@ -90,9 +91,17 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Nameable
 
     }
 
-    @Unique
-    private PlayerEntity eggolib$this() {
-        return (PlayerEntity) (Object) this;
+    @Inject(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;addCritParticles(Lnet/minecraft/entity/Entity;)V"))
+    private void eggolib$actionOnCriticalHit(Entity target, CallbackInfo ci) {
+
+        PrioritizedPower.SortedMap<ActionOnCriticalHitPower> aochpsm = new PrioritizedPower.SortedMap<>();
+        aochpsm.add(this, ActionOnCriticalHitPower.class, aochp -> aochp.doesApply(eggolib$cachedDamageSource, eggolib$cachedDamageAmount, eggolib$cachedTarget));
+
+        for (int i = aochpsm.getMaxPriority(); i >= 0; i--) {
+            if (!aochpsm.hasPowers(i)) continue;
+            aochpsm.getPowers(i).forEach(aochp -> aochp.executeActions(target));
+        }
+
     }
 
 }
