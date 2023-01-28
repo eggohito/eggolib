@@ -1,4 +1,4 @@
-package io.github.eggohito.eggolib.mixin.origins;
+package io.github.eggohito.eggolib.mixin.apace100.origins;
 
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;

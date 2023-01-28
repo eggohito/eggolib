@@ -1,4 +1,4 @@
-package io.github.eggohito.eggolib.mixin;
+package io.github.eggohito.eggolib.mixin.apace100.apoli;
 
 import io.github.apace100.apoli.component.PowerHolderComponentImpl;
 import io.github.apace100.apoli.power.PowerType;

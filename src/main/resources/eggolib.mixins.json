@@ -6,8 +6,8 @@
     "mixins": [
         "BlockItemMixin",
         "BlockMixin",
-        "BreathingInfoBuilderMixin",
-        "ClassDataRegistryAccessor",
+        "micalobia.breathinglib.BreathingInfoBuilderAccessor",
+        "apace100.calio.ClassDataRegistryAccessor",
         "EntityAccessor",
         "EntityMixin",
         "ItemEntityMixin",
@@ -16,7 +16,7 @@
         "ItemUsageContextAccessor",
         "LivingEntityMixin",
         "PlayerEntityMixin",
-        "PowerHolderComponentImplMixin",
+        "apace100.apoli.PowerHolderComponentImplMixin",
         "ProjectileEntityMixin",
         "ServerPlayerInteractionManagerAccessor"
     ],

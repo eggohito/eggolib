@@ -11,7 +11,7 @@ import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.eggohito.eggolib.Eggolib;
 import io.github.eggohito.eggolib.data.EggolibDataTypes;
-import io.github.eggohito.eggolib.mixin.BreathingInfoBuilderMixin;
+import io.github.eggohito.eggolib.mixin.micalobia.breathinglib.BreathingInfoBuilderAccessor;
 import io.github.eggohito.eggolib.util.EntityOffset;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.entity.LivingEntity;
@@ -76,7 +76,7 @@ public class ModifyBreathingPower extends PrioritizedPower {
 
         BreathingInfo.Builder breathingInfoBuilder = BreathingInfo.gainingAir();
         if (gainAirInterval != null) breathingInfoBuilder.airDelta(gainAirInterval);
-        if (!gainAirModifiers.isEmpty()) breathingInfoBuilder.airPerCycle((int) ModifierUtil.applyModifiers(entity, gainAirModifiers, ((BreathingInfoBuilderMixin) breathingInfoBuilder).getAirPerCycle()));
+        if (!gainAirModifiers.isEmpty()) breathingInfoBuilder.airPerCycle((int) ModifierUtil.applyModifiers(entity, gainAirModifiers, ((BreathingInfoBuilderAccessor) breathingInfoBuilder).getAirPerCycle()));
 
         return breathingInfoBuilder.build();
 
@@ -93,8 +93,8 @@ public class ModifyBreathingPower extends PrioritizedPower {
 
         breathingInfoBuilder.particleEffect(particle);
 
-        if (!loseAirModifiers.isEmpty()) breathingInfoBuilder.airPerCycle((int) ModifierUtil.applyModifiers(entity, loseAirModifiers, ((BreathingInfoBuilderMixin) breathingInfoBuilder).getAirPerCycle()));
-        if (!damageModifiers.isEmpty()) breathingInfoBuilder.damagePerCycle((float) ModifierUtil.applyModifiers(entity, damageModifiers, ((BreathingInfoBuilderMixin) breathingInfoBuilder).getDamagePerCycle()));
+        if (!loseAirModifiers.isEmpty()) breathingInfoBuilder.airPerCycle((int) ModifierUtil.applyModifiers(entity, loseAirModifiers, ((BreathingInfoBuilderAccessor) breathingInfoBuilder).getAirPerCycle()));
+        if (!damageModifiers.isEmpty()) breathingInfoBuilder.damagePerCycle((float) ModifierUtil.applyModifiers(entity, damageModifiers, ((BreathingInfoBuilderAccessor) breathingInfoBuilder).getDamagePerCycle()));
 
         return breathingInfoBuilder.build();
 

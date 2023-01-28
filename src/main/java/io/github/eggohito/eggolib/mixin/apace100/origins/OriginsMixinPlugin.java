@@ -1,6 +1,5 @@
-package io.github.eggohito.eggolib.mixin.origins;
+package io.github.eggohito.eggolib.mixin.apace100.origins;
 
-import io.github.eggohito.eggolib.Eggolib;
 import net.fabricmc.loader.api.FabricLoader;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;

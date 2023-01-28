@@ -1,4 +1,4 @@
-package io.github.eggohito.eggolib.mixin;
+package io.github.eggohito.eggolib.mixin.apace100.calio;
 
 import io.github.apace100.calio.data.ClassDataRegistry;
 import org.spongepowered.asm.mixin.Mixin;

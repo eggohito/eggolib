@@ -3,7 +3,7 @@ package io.github.eggohito.eggolib.util;
 import io.github.apace100.calio.ClassUtil;
 import io.github.apace100.calio.data.ClassDataRegistry;
 import io.github.eggohito.eggolib.Eggolib;
-import io.github.eggohito.eggolib.mixin.ClassDataRegistryAccessor;
+import io.github.eggohito.eggolib.mixin.apace100.calio.ClassDataRegistryAccessor;
 import io.github.eggohito.eggolib.networking.EggolibPackets;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.api.EnvType;
@@ -21,6 +21,7 @@ import java.util.Set;
 @Environment(EnvType.CLIENT)
 public class EggolibMiscUtilClient {
 
+    @SuppressWarnings("rawtypes")
     public static void isInScreen(MinecraftClient minecraftClient, Set<String> screenClassStrings) {
 
         if (minecraftClient.player == null) return;
