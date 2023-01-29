@@ -6,8 +6,8 @@ import io.github.apace100.apoli.registry.ApoliRegistries;
 import io.github.eggohito.eggolib.action.bientity.EggolibDamageAction;
 import io.github.eggohito.eggolib.action.meta.LoopAction;
 import net.minecraft.entity.Entity;
+import net.minecraft.registry.Registry;
 import net.minecraft.util.Pair;
-import net.minecraft.util.registry.Registry;
 
 public class EggolibBiEntityActions {
 

@@ -26,15 +26,14 @@
             "io.github.eggohito.eggolib.EggolibClient"
         ],
         "preLaunch": [
-            "com.llamalad7.mixinextras.MixinExtrasBootstrap::init"
+            "io.github.eggohito.eggolib.EggolibPreLaunch"
         ],
         "cardinal-components-entity": [
             "io.github.eggohito.eggolib.registry.factory.EggolibEntityComponents"
         ]
     },
     "mixins": [
-        "eggolib.mixins.json",
-        "eggolib.origins.mixins.json"
+        "eggolib.mixins.json"
     ],
     "custom": {
         "cardinal-components": [
@@ -49,7 +48,7 @@
     "depends": {
         "fabricloader": ">=0.14.8",
         "fabric": "*",
-        "minecraft": "1.19.x",
+        "minecraft": ">=1.19.3",
         "java": ">=17"
     },
     "accessWidener": "eggolib.accesswidener"

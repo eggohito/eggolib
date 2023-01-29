@@ -6,8 +6,8 @@ import io.github.eggohito.eggolib.condition.bientity.CompareScoreCondition;
 import io.github.eggohito.eggolib.condition.bientity.HasMatchingTagCondition;
 import io.github.eggohito.eggolib.condition.meta.ChanceCondition;
 import net.minecraft.entity.Entity;
+import net.minecraft.registry.Registry;
 import net.minecraft.util.Pair;
-import net.minecraft.util.registry.Registry;
 
 public class EggolibBiEntityConditions {
 

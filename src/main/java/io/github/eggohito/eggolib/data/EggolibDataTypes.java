@@ -17,10 +17,10 @@ import io.github.eggohito.eggolib.util.key.TimedKey;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Pair;
-import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.dimension.DimensionType;
 
 import java.util.EnumSet;

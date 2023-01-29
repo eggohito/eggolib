@@ -7,8 +7,8 @@ import io.github.eggohito.apoli.condition.meta.OrCondition;
 import io.github.eggohito.eggolib.condition.dimension_type.*;
 import io.github.eggohito.eggolib.data.EggolibDataTypes;
 import io.github.eggohito.eggolib.registry.EggolibRegistries;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.world.dimension.DimensionType;
 
 public class EggolibDimensionTypeConditions {

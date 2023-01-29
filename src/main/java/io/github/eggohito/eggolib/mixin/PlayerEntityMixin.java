@@ -25,42 +25,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-@Mixin(value = PlayerEntity.class, priority = 1500)
+@Mixin(PlayerEntity.class)
 public abstract class PlayerEntityMixin extends LivingEntity implements Nameable, CommandOutput {
 
     protected PlayerEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
         super(entityType, world);
-    }
-
-    @Inject(method = "damage", at = @At(value = "RETURN", ordinal = 3), cancellable = true)
-    private void eggolib$allowDamageIfModifyingPowersExist(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
-
-        boolean hasModifyingPower = false;
-
-        if (source.getAttacker() != null) {
-            if (!source.isProjectile()) hasModifyingPower = PowerHolderComponent
-                .hasPower(
-                    source.getAttacker(),
-                    ModifyDamageDealtPower.class,
-                    mddp -> mddp.doesApply(source, amount, this)
-                );
-            else hasModifyingPower = PowerHolderComponent
-                .hasPower(
-                    source.getAttacker(),
-                    ModifyProjectileDamagePower.class,
-                    mpdp -> mpdp.doesApply(source, amount, this)
-                );
-        }
-
-        hasModifyingPower |= PowerHolderComponent
-            .hasPower(
-                this,
-                ModifyDamageTakenPower.class,
-                mdtp -> mdtp.doesApply(source, amount)
-            );
-
-        if (hasModifyingPower) cir.setReturnValue(super.damage(source, amount));
-
     }
 
     @Unique private Entity eggolib$cachedTarget;

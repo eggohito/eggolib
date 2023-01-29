@@ -5,10 +5,9 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -23,7 +22,7 @@ public class EggolibMiscUtilServer {
 
         NbtCompound entityToSummonNbt = new NbtCompound();
         if (entityNbt != null) entityToSummonNbt.copyFrom(entityNbt);
-        entityToSummonNbt.putString("id", Registry.ENTITY_TYPE.getId(entityType).toString());
+        entityToSummonNbt.putString("id", Registries.ENTITY_TYPE.getId(entityType).toString());
 
         Entity entityToSummon = EntityType.loadEntityWithPassengers(
             entityToSummonNbt,

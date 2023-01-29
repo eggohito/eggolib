@@ -6,10 +6,11 @@ import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.eggohito.eggolib.Eggolib;
 import io.github.eggohito.eggolib.data.EggolibDataTypes;
 import net.minecraft.entity.Entity;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.dimension.DimensionType;
 
 import java.util.ArrayList;
@@ -27,7 +28,7 @@ public class DimensionCondition {
         data.<Identifier>ifPresent("dimension", worldIds::add);
         data.<List<Identifier>>ifPresent("dimensions", worldIds::addAll);
 
-        i += worldIds.stream().anyMatch(worldId -> entity.world.getRegistryKey() == RegistryKey.of(Registry.WORLD_KEY, worldId)) ? 1 : 0;
+        i += worldIds.stream().anyMatch(worldId -> entity.world.getRegistryKey() == RegistryKey.of(RegistryKeys.WORLD, worldId)) ? 1 : 0;
         i += dimensionTypeCondition == null || dimensionTypeCondition.test(entity.world.getDimensionEntry()) ? 1 : 0;
 
         return i > 0;

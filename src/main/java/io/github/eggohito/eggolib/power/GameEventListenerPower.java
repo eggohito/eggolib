@@ -12,8 +12,8 @@ import io.github.eggohito.eggolib.data.EggolibDataTypes;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.tag.TagKey;
 import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -53,10 +53,7 @@ public class GameEventListenerPower extends CooldownPower implements VibrationLi
             new VibrationListener(
                 getNewPositionSource(),
                 range,
-                this,
-                null,
-                0.0f,
-                0
+                this
             )
         );
         this.acceptedGameEvents = new ArrayList<>();

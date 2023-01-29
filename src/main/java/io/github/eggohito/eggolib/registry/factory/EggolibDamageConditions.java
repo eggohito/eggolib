@@ -6,8 +6,8 @@ import io.github.eggohito.eggolib.condition.damage.EggolibProjectileCondition;
 import io.github.eggohito.eggolib.condition.damage.NbtCondition;
 import io.github.eggohito.eggolib.condition.meta.ChanceCondition;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.registry.Registry;
 import net.minecraft.util.Pair;
-import net.minecraft.util.registry.Registry;
 
 public class EggolibDamageConditions {
 

@@ -5,7 +5,7 @@ import io.github.apace100.apoli.registry.ApoliRegistries;
 import io.github.eggohito.eggolib.condition.block.*;
 import io.github.eggohito.eggolib.condition.meta.ChanceCondition;
 import net.minecraft.block.pattern.CachedBlockPosition;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registry;
 
 public class EggolibBlockConditions {
 

@@ -3,7 +3,7 @@ package io.github.eggohito.eggolib.registry.factory;
 import io.github.apace100.apoli.power.factory.PowerFactory;
 import io.github.apace100.apoli.registry.ApoliRegistries;
 import io.github.eggohito.eggolib.power.*;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registry;
 
 public class EggolibPowers {
 

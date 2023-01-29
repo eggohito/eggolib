@@ -6,7 +6,7 @@ import io.github.apace100.apoli.registry.ApoliRegistries;
 import io.github.eggohito.eggolib.action.entity.*;
 import io.github.eggohito.eggolib.action.meta.LoopAction;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registry;
 
 public class EggolibEntityActions {
 
