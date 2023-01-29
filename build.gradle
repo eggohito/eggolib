@@ -59,6 +59,7 @@ dependencies {
 	//	MixinExtras by LlamaLad7
 	implementation "com.github.LlamaLad7:MixinExtras:${project.mixin_extras_version}"
 	annotationProcessor "com.github.LlamaLad7:MixinExtras:${project.mixin_extras_version}"
+	include "com.github.LlamaLad7:MixinExtras:${project.mixin_extras_version}"
 
 	// Fabric Loader
 	modImplementation "net.fabricmc:fabric-loader:${project.fabric_loader_version}"
