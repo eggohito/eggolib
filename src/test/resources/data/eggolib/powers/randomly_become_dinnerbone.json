@@ -1,0 +1,50 @@
+{
+
+    "type": "apoli:multiple",
+
+    "name": "Randomly Become Dinnerbone",
+    "description": "Flips your model every 5 seconds; with a 50% chance",
+
+    "timer": {
+        "type": "apoli:cooldown",
+        "cooldown": 100,
+        "hud_render": {
+            "should_render": true
+        }
+    },
+
+    "random_trigger": {
+        "type": "apoli:action_over_time",
+        "interval": 20,
+        "entity_action": {
+            "type": "apoli:trigger_cooldown",
+            "power": "*:*_timer"
+        },
+        "condition": {
+            "type": "apoli:and",
+            "conditions": [
+                {
+                    "type": "eggolib:chance",
+                    "chance": 0.5
+                },
+                {
+                    "type": "apoli:resource",
+                    "resource": "*:*_timer",
+                    "comparison": "==",
+                    "compare_to": 0
+                }
+            ]
+        }
+    },
+
+    "flip_model": {
+        "type": "eggolib:model_flip",
+        "condition": {
+            "type": "apoli:resource",
+            "resource": "*:*_timer",
+            "comparison": ">",
+            "compare_to": 0
+        }
+    }
+    
+}

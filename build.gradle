@@ -92,10 +92,23 @@ dependencies {
 }
 
 processResources {
+
 	inputs.property "version", project.version
 
 	filesMatching("fabric.mod.json") {
 		expand "version": project.version
+	}
+
+	def environment = System.getenv("ENVIRONMENT")
+	if (environment != "production") {
+		from(rootProject.rootDir.absolutePath + "/src/test/resources/data") { into("data") }
+	}
+
+}
+
+tasks.named("processResources") {
+	inputs.property("environment") {
+		System.getenv("ENVIRONMENT") || ""
 	}
 }
 

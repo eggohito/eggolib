@@ -1,0 +1,132 @@
+{
+
+	"type": "eggolib:action_on_block_place",
+
+	"name": "Randomize Placed Wool",
+	"description": "Randomizes any Wool block placed",
+
+	"place_to_action": {
+		"type": "apoli:choice",
+		"actions": [
+			{
+				"weight": 1,
+				"element": {
+					"type": "apoli:set_block",
+					"block": "minecraft:white_wool"
+				}
+			},
+			{
+				"weight": 1,
+				"element": {
+					"type": "apoli:set_block",
+					"block": "minecraft:orange_wool"
+				}
+			},
+			{
+				"weight": 1,
+				"element": {
+					"type": "apoli:set_block",
+					"block": "minecraft:magenta_wool"
+				}
+			},
+			{
+				"weight": 1,
+				"element": {
+					"type": "apoli:set_block",
+					"block": "minecraft:light_blue_wool"
+				}
+			},
+			{
+				"weight": 1,
+				"element": {
+					"type": "apoli:set_block",
+					"block": "minecraft:yellow_wool"
+				}
+			},
+			{
+				"weight": 1,
+				"element": {
+					"type": "apoli:set_block",
+					"block": "minecraft:lime_wool"
+				}
+			},
+			{
+				"weight": 1,
+				"element": {
+					"type": "apoli:set_block",
+					"block": "minecraft:pink_wool"
+				}
+			},
+			{
+				"weight": 1,
+				"element": {
+					"type": "apoli:set_block",
+					"block": "minecraft:gray_wool"
+				}
+			},
+			{
+				"weight": 1,
+				"element": {
+					"type": "apoli:set_block",
+					"block": "minecraft:light_gray_wool"
+				}
+			},
+			{
+				"weight": 1,
+				"element": {
+					"type": "apoli:set_block",
+					"block": "minecraft:cyan_wool"
+				}
+			},
+			{
+				"weight": 1,
+				"element": {
+					"type": "apoli:set_block",
+					"block": "minecraft:purple_wool"
+				}
+			},
+			{
+				"weight": 1,
+				"element": {
+					"type": "apoli:set_block",
+					"block": "minecraft:blue_wool"
+				}
+			},
+			{
+				"weight": 1,
+				"element": {
+					"type": "apoli:set_block",
+					"block": "minecraft:brown_wool"
+				}
+			},
+			{
+				"weight": 1,
+				"element": {
+					"type": "apoli:set_block",
+					"block": "minecraft:green_wool"
+				}
+			},
+			{
+				"weight": 1,
+				"element": {
+					"type": "apoli:set_block",
+					"block": "minecraft:red_wool"
+				}
+			},
+			{
+				"weight": 1,
+				"element": {
+					"type": "apoli:set_block",
+					"block": "minecraft:black_wool"
+				}
+			}
+		]
+	},
+	"item_condition": {
+		"type": "apoli:ingredient",
+		"ingredient": {
+			"tag": "minecraft:wool"
+		}
+	}
+
+}

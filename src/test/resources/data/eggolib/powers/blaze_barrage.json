@@ -1,0 +1,57 @@
+{
+
+	"type": "apoli:multiple",
+
+	"name": "Blaze Barrage",
+	"description": "Launches three Small Fireballs consecutively within a press of a keybind.",
+	"duration": {
+		"type": "apoli:cooldown",
+		"cooldown": 15,
+		"hud_render": {
+			"should_render": true,
+			"bar_index": 1
+		}
+	},
+
+	"launch": {
+		"type": "apoli:action_over_time",
+		"interval": 5,
+		"entity_action": {
+			"type": "apoli:and",
+			"actions": [
+				{
+					"type": "eggolib:fire_projectile",
+					"entity_type": "minecraft:small_fireball",
+					"divergence": 10
+				},
+				{
+					"type": "eggolib:play_sound",
+					"sound": "minecraft:entity.blaze.shoot"
+				}
+			]
+		},
+		"condition": {
+			"type": "apoli:resource",
+			"resource": "*:*_duration",
+			"comparison": ">",
+			"compare_to": 0
+		}
+	},
+
+	"trigger": {
+		"type": "apoli:active_self",
+		"entity_action": {
+			"type": "apoli:trigger_cooldown",
+			"power": "*:*_duration"
+		},
+		"cooldown": 100,
+		"hud_render": {
+			"should_render": true,
+			"bar_index": 2
+		},
+		"key": {
+			"key": "key.use"
+		}
+	}
+
+}

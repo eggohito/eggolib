@@ -1,0 +1,16 @@
+{
+
+	"type": "eggolib:prevent_critical_hit",
+
+    "name": "No Critical Hits",
+    "description": "Prevents you from dealing critical hits.",
+
+	"bientity_action": {
+		"type": "apoli:actor_action",
+		"action": {
+			"type": "apoli:execute_command",
+			"command": "title @s actionbar {\"text\": \"Cannot deal critical hits!\", \"color\": \"red\"}"
+		}
+	}
+	
+}

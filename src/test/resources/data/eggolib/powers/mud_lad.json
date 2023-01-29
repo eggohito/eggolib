@@ -1,0 +1,81 @@
+{
+
+    "type": "apoli:multiple",
+
+    "name": "Mud Lad",
+    "description": "Enables you to swim, phase, and only breathe in Mud blocks.",
+
+    "swim_through_mud": {
+        "type": "apoli:swimming",
+        "condition": {
+            "type": "eggolib:in_block",
+            "block_condition": {
+                "type": "apoli:block",
+                "block": "minecraft:mud"
+            },
+            "offset": "eyes"
+        }
+    },
+
+    "phase_through_mud": {
+        "type": "apoli:phasing",
+        "view_distance": 16.0,
+        "render_type": "blindness",
+        "block_condition": {
+            "type": "apoli:block",
+            "block": "minecraft:mud"
+        },
+        "phase_down_condition": {
+            "type": "apoli:sneaking",
+            "inverted": true
+        }
+    },
+
+    "hand_interaction_through_mud": {
+    	"type": "apoli:prevent_block_selection",
+    	"block_condition": {
+    		"type": "apoli:block",
+    		"block": "minecraft:mud"
+    	},
+    	"condition": {
+    		"type": "eggolib:in_block",
+    		"block_condition": {
+    			"type": "apoli:block",
+    			"block": "minecraft:mud"
+    		},
+    		"offset": "eyes"
+    	}
+    },
+
+    "vertical_velocity_in_mud": {
+        "type": "apoli:modify_falling",
+        "velocity": 0.008,
+        "take_fall_damage": false,
+        "condition": {
+            "type": "apoli:in_block_anywhere",
+            "block_condition": {
+                "type": "apoli:block",
+                "block": "minecraft:mud"
+            },
+            "comparison": ">=",
+            "compare_to": 1
+        }
+    },
+
+    "breathe_in_mud": {
+        "type": "eggolib:modify_breathing",
+        "breathable_block_condition": {
+            "type": "apoli:block",
+            "block": "minecraft:mud"
+        },
+        "gain_air_modifier": {
+            "operation": "add_base_late",
+            "value": -2
+        },
+        "particle": {
+            "type": "minecraft:block",
+            "params": "minecraft:mud"
+        }
+    }
+    
+}

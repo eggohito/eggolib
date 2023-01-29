@@ -1,0 +1,54 @@
+{
+	
+	"type": "eggolib:game_event_listener",
+	
+	"name": "For Whom the Bell Tolls",
+	"description": "Gives you a buff if a Bell block is rang within a 16 blocks radius.",
+	
+	"bientity_action": {
+		"type": "apoli:target_action",
+		"action": {
+			"type": "apoli:apply_effect",
+			"effects": [
+				{
+					"effect": "minecraft:speed",
+					"amplifier": 2,
+					"duration": 100
+				},
+				{
+					"effect": "minecraft:strength",
+					"amplifier": 2,
+					"duration": 100
+				}
+			]
+		}
+	},
+	"block_condition": {
+		"type": "apoli:or",
+		"conditions": [
+			{
+				"type": "apoli:block",
+				"block": "minecraft:bell"
+			},
+			{
+				"type": "apoli:and",
+				"conditions": [
+					{
+						"type": "apoli:block",
+						"block": "minecraft:note_block"
+					},
+					{
+						"type": "apoli:block_state",
+						"property": "instrument",
+						"enum": "bell"
+					}
+				]
+			}
+		]
+	},
+	"cooldown": 200,
+	"hud_render": {
+		"should_render": true
+	}
+	
+}

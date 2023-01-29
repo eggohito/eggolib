@@ -1,0 +1,19 @@
+{
+
+    "type": "eggolib:prevent_item_pickup",
+    "name": "Prevent Food Pickup",
+    "description": "Prevents you from picking up food items on the ground",
+
+    "bientity_action": {
+        "type": "apoli:target_action",
+        "action": {
+            "type": "apoli:execute_command",
+            "command": "title @s actionbar {\"text\": \"Cannot pick up food items!\", \"color\": \"red\"}"
+        }
+    },
+
+    "item_condition": {
+        "type": "apoli:food"
+    }
+    
+}

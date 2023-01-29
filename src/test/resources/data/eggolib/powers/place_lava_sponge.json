@@ -1,0 +1,32 @@
+{
+
+	"type": "eggolib:action_on_block_place",
+	
+	"name": "Place Lava Sponge",
+	"description": "Placing a Block of Wool will absorb nearby Lava fluids within an 8 blocks radius with the shape of a star.",
+
+	"place_to_action": {
+		"type": "eggolib:area_of_effect",
+		"radius": 8,
+		"shape": "star",
+		"block_action": {
+			"type": "apoli:set_block",
+			"block": "minecraft:air"
+		},
+		"block_condition": {
+			"type": "apoli:fluid",
+			"fluid_condition": {
+				"type": "apoli:in_tag",
+				"tag": "minecraft:lava"
+			}
+		}
+	},
+
+	"item_condition": {
+		"type": "apoli:ingredient",
+		"ingredient": {
+			"tag": "minecraft:wool"
+		}
+	}
+
+}

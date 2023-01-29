@@ -1,0 +1,16 @@
+{
+	"type": "eggolib:modify_bounciness",
+
+	"name": "Bouncy Sponge",
+	"description": "Makes the entity bounce on Sponge Blocks",
+
+	"block_condition": {
+		"type": "apoli:block",
+		"block": "minecraft:sponge"
+	},
+	"modifier": {
+		"operation": "add_base_early",
+		"value": 0.2
+	}
+	
+}

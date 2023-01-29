@@ -1,0 +1,142 @@
+{
+    "type": "apoli:multiple",
+    
+    "name": "KONAMI Code",
+    "description": "Enables you to do a key sequence upon pressing a keybind.",
+    
+    "badges": [
+        {
+            "type": "origins:keybind",
+            "sprite": "origins:textures/gui/badge/active.png",
+            "text": "Press %s to activate!"
+        }
+    ],
+
+    "duration": {
+        "type": "apoli:active_self",
+        "entity_action": {
+            "type": "apoli:nothing"
+        },
+        "cooldown": 200,
+        "hud_render": {
+            "should_render": true
+        },
+        "key": {
+            "key": "key.hotbar.9"
+        },
+        "condition": {
+            "type": "apoli:resource",
+            "resource": "*:*_sequence",
+            "comparison": "<=",
+            "compare_to": 1
+        }
+    },
+
+    "clean_up": {
+        "type": "apoli:action_over_time",
+        "interval": 1,
+        "entity_action": {
+            "type": "eggolib:modify_key_sequence",
+            "power": "*:*_sequence",
+            "operation": "set",
+            "keys": []
+        },
+        "condition": {
+            "type": "apoli:resource",
+            "resource": "*:*_duration",
+            "comparison": "==",
+            "compare_to": 1
+        }
+    },
+
+    "sequence": {
+        "type": "eggolib:action_on_key_sequence",
+        "success_action": {
+            "type": "apoli:and",
+            "actions": [
+                {
+                    "type": "apoli:execute_command",
+                    "command": "me casted 'KONAMI CODE'"
+                },
+                {
+                    "type": "apoli:change_resource",
+                    "resource": "*:*_duration",
+                    "change": -69420
+                }
+            ]
+        },
+        "fail_action": {
+            "type": "apoli:execute_command",
+            "command": "me failed to cast 'KONAMI CODE'"
+        },
+        "cooldown": 300,
+        "hud_render": {
+            "should_render": true,
+            "sprite_location": "origins:textures/gui/community/spiderkolo/resource_bar_01.png",
+            "bar_index": 9
+        },
+        "keys": [
+            {
+                "key": "key.jump",
+                "action": {
+                    "type": "apoli:execute_command",
+                    "command": "tellraw @s {\"text\": \"UP\"}"
+                }
+            },
+            {
+                "key": "key.sneak",
+                "action": {
+                    "type": "apoli:execute_command",
+                    "command": "tellraw @s {\"text\": \"DOWN\"}"
+                }
+            },
+            {
+                "key": "key.left",
+                "action": {
+                    "type": "apoli:execute_command",
+                    "command": "tellraw @s {\"text\": \"LEFT\"}"
+                }
+            },
+            {
+                "key": "key.right",
+                "action": {
+                    "type": "apoli:execute_command",
+                    "command": "tellraw @s {\"text\": \"RIGHT\"}"
+                }
+            },
+            {
+                "key": "key.attack",
+                "action": {
+                    "type": "apoli:execute_command",
+                    "command": "tellraw @s {\"text\": \"A (Attack)\"}"
+                }
+            },
+            {
+                "key": "key.use",
+                "action": {
+                    "type": "apoli:execute_command",
+                    "command": "tellraw @s {\"text\": \"B (Use)\"}"
+                }
+            }
+        ],
+        "key_sequence": [
+            "key.jump",
+            "key.jump",
+            "key.sneak",
+            "key.sneak",
+            "key.left",
+            "key.right",
+            "key.left",
+            "key.right",
+            "key.use",
+            "key.attack"
+        ],
+        "condition": {
+            "type": "apoli:resource",
+            "resource": "*:*_duration",
+            "comparison": ">=",
+            "compare_to": 1
+        }
+    }
+    
+}

@@ -1,0 +1,13 @@
+{
+
+	"type": "eggolib:modify_mouse_sensitivity",
+	
+	"name": "Low Mouse Sensitivity",
+	"description": "Lowers the mouse sensitivity by 50%.",
+
+	"modifier": {
+		"operation": "multiply_total_multiplicative",
+		"value": -0.5
+	}
+
+}

@@ -1,0 +1,17 @@
+{
+
+    "type": "eggolib:action_on_block_hit",
+    "name": "Punch Coal Block",
+    "description": "Upon punching a Block of Coal, a random speech is generated.",
+
+    "block_action": {
+        "type": "apoli:execute_command",
+        "command": "function eggolib:punch_coal_block/marker/summon"
+    },
+
+    "block_condition": {
+        "type": "apoli:block",
+        "block": "minecraft:coal_block"
+    }
+    
+}

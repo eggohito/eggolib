@@ -1,0 +1,16 @@
+{
+
+	"type": "eggolib:action_on_critical_hit",
+	
+	"name": "On Critical Hit",
+	"description": "Executes an action upon dealing critical hits.",
+
+	"bientity_action": {
+		"type": "apoli:target_action",
+		"action": {
+			"type": "apoli:execute_command",
+			"command": "say Ouch!!!"
+		}
+	}
+
+}

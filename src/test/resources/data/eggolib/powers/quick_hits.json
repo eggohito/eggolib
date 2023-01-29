@@ -1,0 +1,19 @@
+{
+    "type": "eggolib:modify_hurt_ticks",
+
+    "name": "Quick Hits",
+    "description": "Modifies the \"immunity frames\" of the entity to half only if an attacker exists.",
+
+    "bientity_condition": {
+        "type": "apoli:actor_condition",
+        "condition": {
+            "type": "apoli:exists"
+        }
+    },
+
+    "modifier": {
+        "operation": "multiply_total_multiplicative",
+        "value": -0.5
+    }
+    
+}
