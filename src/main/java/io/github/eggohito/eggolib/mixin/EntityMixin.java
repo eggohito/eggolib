@@ -56,11 +56,11 @@ public abstract class EntityMixin {
 
         Entity thisAsEntity = (Entity) (Object) this;
         PowerHolderComponent.KEY.maybeGet(thisAsEntity).ifPresent(
-            powerHolderComponent -> powerHolderComponent.getPowers(GameEventListenerPower.class).forEach(
-                gameEventListenerPower -> {
-                    if (gameEventListenerPower.gameEventHandler != null) callback.accept(gameEventListenerPower.gameEventHandler, serverWorld);
-                }
-            )
+            powerHolderComponent -> powerHolderComponent
+                .getPowers(GameEventListenerPower.class)
+                .stream()
+                .filter(GameEventListenerPower::canListen)
+                .forEach(gelp -> callback.accept(gelp.getGameEventHandler(), serverWorld))
         );
 
     }

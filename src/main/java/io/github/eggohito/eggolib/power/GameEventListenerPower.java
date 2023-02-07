@@ -9,6 +9,7 @@ import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.eggohito.eggolib.Eggolib;
 import io.github.eggohito.eggolib.data.EggolibDataTypes;
+import io.github.eggohito.eggolib.util.EntityOffset;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -38,40 +39,48 @@ public class GameEventListenerPower extends CooldownPower implements VibrationLi
     private final Predicate<CachedBlockPosition> blockCondition;
     private final Predicate<Pair<Entity, Entity>> biEntityCondition;
     
-    public final EntityGameEventHandler<VibrationListener> gameEventHandler;
+    private final EntityGameEventHandler<VibrationListener> gameEventHandler;
+    private final int range;
 
     private final List<GameEvent> acceptedGameEvents;
     private final TagKey<GameEvent> acceptedGameEventTag;
 
     public GameEventListenerPower(PowerType<?> powerType, LivingEntity livingEntity, Consumer<Triple<World, BlockPos, Direction>> blockAction, Consumer<Pair<Entity, Entity>> biEntityAction, Predicate<CachedBlockPosition> blockCondition, Predicate<Pair<Entity, Entity>> biEntityCondition, int cooldown, HudRender hudRender, int range, GameEvent gameEvent, List<GameEvent> gameEvents, TagKey<GameEvent> gameEventTag) {
+
         super(powerType, livingEntity, cooldown, hudRender);
+
         this.blockAction = blockAction;
         this.biEntityAction = biEntityAction;
         this.blockCondition = blockCondition;
         this.biEntityCondition = biEntityCondition;
-        this.gameEventHandler = new EntityGameEventHandler<>(
-            new VibrationListener(
-                getNewPositionSource(),
-                range,
-                this
-            )
-        );
+
+        this.gameEventHandler = new EntityGameEventHandler<>(null);
+        this.range = range;
+
         this.acceptedGameEvents = new ArrayList<>();
         if (gameEvent != null) this.acceptedGameEvents.add(gameEvent);
         if (gameEvents != null) this.acceptedGameEvents.addAll(gameEvents);
+
         this.acceptedGameEventTag = gameEventTag;
         this.setTicking();
+
+    }
+
+    public boolean canListen() {
+        return gameEventHandler != null && gameEventHandler.getListener() != null;
+    }
+
+    public EntityGameEventHandler<VibrationListener> getGameEventHandler() {
+        return gameEventHandler;
     }
 
     private EntityPositionSource getNewPositionSource() {
-        return new EntityPositionSource(
-            this.entity,
-            this.entity.getEyeHeight(this.entity.getPose())
-        );
+        return new EntityPositionSource(this.entity, this.entity.getEyeHeight(this.entity.getPose()));
     }
 
     @Override
     public void onAdded() {
+        this.gameEventHandler.setListener(new VibrationListener(getNewPositionSource(), range, this), this.entity.world);
         this.entity.updateEventHandler(EntityGameEventHandler::onEntitySetPos);
     }
 
@@ -83,7 +92,7 @@ public class GameEventListenerPower extends CooldownPower implements VibrationLi
     @Override
     public void tick() {
 
-        if (!canUse()) return;
+        if (!(canListen() && canUse())) return;
 
         this.gameEventHandler.getListener().positionSource = getNewPositionSource();
         this.gameEventHandler.getListener().tick(this.entity.world);
