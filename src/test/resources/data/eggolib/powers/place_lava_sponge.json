@@ -21,7 +21,6 @@
 			}
 		}
 	},
-
 	"item_condition": {
 		"type": "apoli:ingredient",
 		"ingredient": {

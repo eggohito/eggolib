@@ -1,0 +1,21 @@
+{
+
+	"type": "eggolib:action_on_block_place",
+
+	"name": "Infinite Glass Platform",
+	"description": "Lets you build up or bridge from one point to another using only two Glass-like blocks.",
+
+	"place_on_action": {
+		"type": "apoli:set_block",
+		"block": "minecraft:air"
+	},
+	"place_on_condition": {
+		"type": "apoli:in_tag",
+		"tag": "minecraft:impermeable"
+	},
+	"held_item_action": {
+		"type": "apoli:consume",
+		"amount": -1
+	}
+
+}

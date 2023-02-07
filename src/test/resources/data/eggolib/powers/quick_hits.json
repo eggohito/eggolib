@@ -10,7 +10,6 @@
             "type": "apoli:exists"
         }
     },
-
     "modifier": {
         "operation": "multiply_total_multiplicative",
         "value": -0.5

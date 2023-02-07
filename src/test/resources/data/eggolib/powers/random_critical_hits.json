@@ -1,0 +1,44 @@
+{
+
+	"type": "apoli:multiple",
+
+	"name": "Random Critical Hits",
+	"description": "Replaces vanilla's critical hit system with a random-based one.",
+
+	"prevent_vanilla": {
+		"type": "eggolib:prevent_critical_hit"
+	},
+
+	"implement_new": {
+		"type": "apoli:modify_damage_dealt",
+		"bientity_action": {
+			"type": "apoli:target_action",
+			"action": {
+				"type": "apoli:and",
+				"actions": [
+					{
+						"type": "apoli:execute_command",
+						"command": "execute anchored eyes positioned ^ ^ ^ run function eggolib:random_critical_hits/show_indicator"
+					},
+					{
+						"type": "apoli:spawn_particles",
+						"particle": {
+							"type": "minecraft:block",
+							"params": "minecraft:redstone_block"
+						},
+						"count": 16
+					}
+				]
+			}
+		},
+		"modifier": {
+			"operation": "multiply_total_multiplicative",
+			"value": 1
+		},
+		"condition": {
+			"type": "eggolib:chance",
+			"chance": 0.25
+		}
+	}
+
+}
