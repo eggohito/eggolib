@@ -2,7 +2,6 @@ package io.github.eggohito.eggolib.power;
 
 import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.power.ActiveInteractionPower;
-import io.github.apace100.apoli.power.InteractionPower;
 import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.apoli.power.factory.PowerFactory;
 import io.github.apace100.calio.data.SerializableData;
@@ -55,17 +54,17 @@ public class ActionOnBlockPlacePower extends ActiveInteractionPower {
 
     }
 
-    public void executeActions(Hand hand, BlockPos hitPos, BlockPos placementPos, Direction direction) {
-
+    public void executeBlockAndEntityActions(BlockPos hitPos, BlockPos placementPos, Direction direction) {
         if (placeOnAction != null) placeOnAction.accept(Triple.of(entity.world, hitPos, direction));
         if (placeToAction != null) placeToAction.accept(Triple.of(entity.world, placementPos, direction));
         if (entityAction != null) entityAction.accept(entity);
-        performActorItemStuff(this, (PlayerEntity) entity, hand);
+    }
 
+    public void executeItemActions(PlayerEntity playerEntity, Hand hand) {
+        performActorItemStuff(this, playerEntity, hand);
     }
 
     public static PowerFactory<?> getFactory() {
-
         return new PowerFactory<>(
             Eggolib.identifier("action_on_block_place"),
             new SerializableData()
@@ -96,10 +95,9 @@ public class ActionOnBlockPlacePower extends ActiveInteractionPower {
                 data.get("entity_action"),
                 data.get("place_to_action"),
                 data.get("place_on_action"),
-                data.getInt("priority")
+                data.get("priority")
             )
         ).allowCondition();
-
     }
 
 }

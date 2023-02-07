@@ -14,10 +14,13 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.util.List;
 
@@ -83,11 +86,11 @@ public class BlockItemMixin {
 
     }
 
-    @Inject(method = "place(Lnet/minecraft/item/ItemPlacementContext;)Lnet/minecraft/util/ActionResult;", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemPlacementContext;getBlockPos()Lnet/minecraft/util/math/BlockPos;"))
-    private void eggolib$actionOnBlockPlace(ItemPlacementContext context, CallbackInfoReturnable<ActionResult> cir) {
+    @Unique private ActiveInteractionPower.CallInstance<ActionOnBlockPlacePower> eggolib$aobppci;
 
-        PlayerEntity playerEntity = context.getPlayer();
-        ItemStack itemStack = context.getStack();
+    @Inject(method = "place(Lnet/minecraft/item/ItemPlacementContext;)Lnet/minecraft/util/ActionResult;", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;getBlockState(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/block/BlockState;"), locals = LocalCapture.CAPTURE_FAILHARD)
+    private void eggolib$actionOnBlockPlace(ItemPlacementContext context, CallbackInfoReturnable<ActionResult> cir, ItemPlacementContext itemPlacementContext, BlockState blockState, BlockPos blockPos, World world, PlayerEntity playerEntity, ItemStack itemStack) {
+
         BlockPos hitPos = ((ItemUsageContextAccessor) context).callGetHitResult().getBlockPos();
         BlockPos placementPos = context.getBlockPos();
         Direction direction = context.getSide();
@@ -95,16 +98,27 @@ public class BlockItemMixin {
 
         if (playerEntity == null) return;
 
-        ActiveInteractionPower.CallInstance<ActionOnBlockPlacePower> aobppci = new ActiveInteractionPower.CallInstance<>();
-        aobppci.add(playerEntity, ActionOnBlockPlacePower.class, aobpp -> aobpp.shouldExecute(hand, hitPos, placementPos, direction, itemStack));
+        eggolib$aobppci = new ActiveInteractionPower.CallInstance<>();
+        eggolib$aobppci.add(playerEntity, ActionOnBlockPlacePower.class, aobpp -> aobpp.shouldExecute(hand, hitPos, placementPos, direction, itemStack));
 
-        for (int i = aobppci.getMaxPriority(); i >= 0; i--) {
+        for (int i = eggolib$aobppci.getMaxPriority(); i >= 0; i--) {
+            if (!eggolib$aobppci.hasPowers(i)) continue;
+            eggolib$aobppci.getPowers(i).forEach(aobpp -> aobpp.executeBlockAndEntityActions(hitPos, placementPos, direction));
+        }
 
-            if (!aobppci.hasPowers(i)) continue;
+    }
 
-            List<ActionOnBlockPlacePower> aobpps = aobppci.getPowers(i);
-            aobpps.forEach(aobpp -> aobpp.executeActions(hand, hitPos, placementPos, direction));
+    @Inject(method = "place(Lnet/minecraft/item/ItemPlacementContext;)Lnet/minecraft/util/ActionResult;", at = @At("TAIL"))
+    private void eggolib$postActionOnBlockPlace(ItemPlacementContext context, CallbackInfoReturnable<ActionResult> cir) {
 
+        PlayerEntity playerEntity = context.getPlayer();
+        Hand hand = context.getHand();
+
+        if (playerEntity == null) return;
+
+        for (int i = eggolib$aobppci.getMaxPriority(); i >= 0; i--) {
+            if (!eggolib$aobppci.hasPowers(i)) continue;
+            eggolib$aobppci.getPowers(i).forEach(aobpp -> aobpp.executeItemActions(playerEntity, hand));
         }
 
     }
