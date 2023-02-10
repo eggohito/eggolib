@@ -192,7 +192,7 @@ modrinth {
 		uploadFile = remapJar
 		changelog = new File("${project.rootDir}/CHANGELOG.md").getText('UTF-8')
 
-		gameVersions = project.compatible_minecraft_versions.split(", ").toList() as ListProperty<String>
+		gameVersions = project.compatible_minecraft_versions.split(", ").toList()
 		loaders = project.compatible_mod_loaders.split(", ").collect { String loader -> loader.toLowerCase(Locale.ROOT) } as ListProperty<String>
 
 		dependencies {
