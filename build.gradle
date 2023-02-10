@@ -1,5 +1,8 @@
 plugins {
+	id 'com.github.breadmoirai.github-release' version '2.4.1'
+	id 'com.matthewprenger.cursegradle' version '1.4.0'
 	id 'fabric-loom' version '0.12-SNAPSHOT'
+	id 'com.modrinth.minotaur' version'2.+'
 	id 'maven-publish'
 }
 
@@ -144,5 +147,75 @@ publishing {
 		// Notice: This block does NOT have the same function as the block in the top level.
 		// The repositories here will be used for publishing your artifact, not for
 		// retrieving dependencies.
+	}
+}
+
+curseforge {
+	if (System.getenv("CURSEFORGE_TOKEN") != null) {
+
+		apiKey = System.getenv("CURSEFORGE_TOKEN")
+		project {
+
+			id = project.curseforge_id
+
+			changelog = new File("${project.rootDir}/CHANGELOG.md").getText('UTF-8')
+			changelogType = 'markdown'
+
+			releaseType = 'release'
+
+			project.compatible_minecraft_versions.split(", ").each { String minecraftVersion -> addGameVersion minecraftVersion }
+			project.compatible_java_versions.split(", ").each { String javaVersion -> addGameVersion javaVersion }
+			project.compatible_mod_loaders.split(", ").each { String modLoader -> addGameVersion modLoader }
+
+			mainArtifact(remapJar) {
+				displayName = "v${version} (${project.compatible_minecraft_versions})"
+				relations {
+					project.required_dependencies.split(", ").each { String project -> requiredDependency project }
+					project.optional_dependencies.split(", ").each { String project -> optionalDependency project }
+				}
+			}
+
+		}
+
+	}
+}
+
+modrinth {
+	if (System.getenv("MODRINTH_TOKEN") != null) {
+
+		token = System.getenv("MODRINTH_TOKEN")
+		projectId = project.modrinth_id
+
+		versionNumber = "v${version}-${project.github_commitish}"
+		versionType = "release"
+
+		uploadFile = remapJar
+		changelog = new File("${project.rootDir}/CHANGELOG.md").getText('UTF-8')
+
+		gameVersions = project.compatible_minecraft_versions.split(", ").toList() as ListProperty<String>
+		loaders = project.compatible_mod_loaders.split(", ").collect { String loader -> loader.toLowerCase(Locale.ROOT) } as ListProperty<String>
+
+		dependencies {
+			project.required_dependencies.split(", ").each { String project -> required.project = project }
+			project.optional_dependencies.split(", ").each { String project -> optional.version = project }
+		}
+
+	}
+}
+
+githubRelease {
+	if (System.getenv("GITHUB_TOKEN") != null) {
+
+		token = System.getenv("GITHUB_TOKEN")
+
+		owner = project.github_owner
+		repo = project.github_repo
+
+		tagName = "v${version}-${project.github_commitish}"
+		targetCommitish = project.github_commitish
+
+		releaseName = "${project.mod_name} v${version} (${project.compatible_minecraft_versions})"
+		body = new File("${project.rootDir}/CHANGELOG.md").getText('UTF-8')
+
 	}
 }
