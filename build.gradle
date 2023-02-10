@@ -196,8 +196,8 @@ modrinth {
 		loaders = project.compatible_mod_loaders.split(", ").collect { String loader -> loader.toLowerCase(Locale.ROOT) }
 
 		dependencies {
-			project.required_dependencies.split(", ").each { String project -> required.project = project }
-			project.optional_dependencies.split(", ").each { String project -> optional.version = project }
+			project.required_dependencies.split(", ").each { String project -> required.project project }
+			project.optional_dependencies.split(", ").each { String project -> optional.version project }
 		}
 
 	}
