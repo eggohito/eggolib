@@ -27,3 +27,8 @@ jobs:
 
       - name: Upload release artifacts
         run: ./gradlew build modrinth github --stacktrace
+
+      - name: Capture artifacts
+        with:
+            name: Artifacts
+            path: build/libs/
