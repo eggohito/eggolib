@@ -200,7 +200,7 @@ modrinth {
 
 		dependencies {
 			required_dependencies.split(", ").each { String project -> required.project project }
-			optional_dependencies.split(", ").each { String project -> optional.version project }
+			optional_dependencies.split(", ").each { String project -> optional.project project }
 		}
 
 	}
