@@ -188,6 +188,7 @@ modrinth {
 		token = System.getenv("MODRINTH_TOKEN")
 		projectId = modrinth_id
 
+		versionName = "eggolib v${version}"
 		versionNumber = "v${version}-${github_commitish}"
 		versionType = "release"
 
