@@ -10,7 +10,8 @@ env:
   CURSEFORGE_TOKEN: ${{ secrets.CURSEFORGE_TOKEN }}
 
 jobs:
-  release:
+  github-release:
+    name: Github Release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -25,11 +26,24 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x gradlew
 
-      - name: Upload release artifacts
-        run: ./gradlew build modrinth github --stacktrace
+      - name: Upload artifacts
+        run: ./gradlew github --stacktrace
 
-      - name: Capture artifacts
-        uses: actions/upload-artifact@v2
+  modrinth-release:
+    name: Modrinth Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Setup Java JDK
+        uses: actions/setup-java@v3
         with:
-            name: Artifacts
-            path: build/libs/
+          distribution: temurin
+          java-version: 17
+
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+
+      - name: Upload artifacts
+        run: ./gradlew modrinth --stacktrace
