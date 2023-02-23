@@ -26,7 +26,7 @@ public class ModifyBouncinessPower extends ValueModifyingPower {
     private final Consumer<Triple<World, BlockPos, Direction>> blockAction;
     private final Predicate<CachedBlockPosition> blockCondition;
 
-    public SavedBlockPosition landedOnBlockCache;
+    private SavedBlockPosition landedOnBlockCache;
 
     public ModifyBouncinessPower(PowerType<?> powerType, LivingEntity livingEntity, Consumer<Entity> entityAction, Consumer<Triple<World, BlockPos, Direction>> blockAction, Predicate<CachedBlockPosition> blockCondition, Modifier modifier, List<Modifier> modifiers) {
         super(powerType, livingEntity);
@@ -49,6 +49,11 @@ public class ModifyBouncinessPower extends ValueModifyingPower {
     public void executeActions() {
         if (blockAction != null && landedOnBlockCache != null) blockAction.accept(Triple.of(entity.world, landedOnBlockCache.getBlockPos(), Direction.UP));
         if (entityAction != null) entityAction.accept(entity);
+        clearCache();
+    }
+
+    public void clearCache() {
+        landedOnBlockCache = null;
     }
 
     public static PowerFactory<?> getFactory() {

@@ -6,19 +6,20 @@
     "mixins": [
         "BlockItemMixin",
         "BlockMixin",
-        "micalobia.breathinglib.BreathingInfoBuilderAccessor",
-        "apace100.calio.ClassDataRegistryAccessor",
         "EntityAccessor",
         "EntityMixin",
+        "FarmlandBlockMixin",
         "ItemEntityMixin",
         "ItemSlotArgumentTypeAccessor",
         "ItemStackMixin",
         "ItemUsageContextAccessor",
         "LivingEntityMixin",
         "PlayerEntityMixin",
-        "apace100.apoli.PowerHolderComponentImplMixin",
         "ProjectileEntityMixin",
-        "ServerPlayerInteractionManagerAccessor"
+        "ServerPlayerInteractionManagerAccessor",
+        "apace100.apoli.PowerHolderComponentImplMixin",
+        "apace100.calio.ClassDataRegistryAccessor",
+        "micalobia.breathinglib.BreathingInfoBuilderAccessor"
     ],
     "client": [
         "ClientPlayerEntityAccessor",
