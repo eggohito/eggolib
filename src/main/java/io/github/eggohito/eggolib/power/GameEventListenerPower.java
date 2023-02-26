@@ -9,7 +9,6 @@ import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.eggohito.eggolib.Eggolib;
 import io.github.eggohito.eggolib.data.EggolibDataTypes;
-import io.github.eggohito.eggolib.util.EntityOffset;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -115,8 +114,9 @@ public class GameEventListenerPower extends CooldownPower implements VibrationLi
         if (this.entity.world != world) return false;
         Entity actor = emitter.sourceEntity();
 
-        if (actor == null) return biEntityCondition == null && (blockCondition == null || blockCondition.test(new CachedBlockPosition(world, pos, true)));
-        else return !this.entity.equals(actor) && blockCondition == null && (biEntityCondition == null || biEntityCondition.test(new Pair<>(actor, this.entity)));
+        if (this.entity.equals(actor)) return false;
+        return (blockCondition == null || blockCondition.test(new CachedBlockPosition(world, pos, true))) ||
+               (biEntityCondition == null || biEntityCondition.test(new Pair<>(actor, this.entity)));
 
     }
 
@@ -151,9 +151,9 @@ public class GameEventListenerPower extends CooldownPower implements VibrationLi
                 data.get("bientity_action"),
                 data.get("block_condition"),
                 data.get("bientity_condition"),
-                data.getInt("cooldown"),
+                data.get("cooldown"),
                 data.get("hud_render"),
-                data.getInt("range"),
+                data.get("range"),
                 data.get("event"),
                 data.get("events"),
                 data.get("tag")
