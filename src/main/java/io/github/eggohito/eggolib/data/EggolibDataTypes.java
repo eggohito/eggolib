@@ -26,6 +26,7 @@ import net.minecraft.world.dimension.DimensionType;
 import java.util.EnumSet;
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class EggolibDataTypes {
 
     public static final SerializableDataType<ConditionFactory<RegistryEntry<DimensionType>>.Instance> DIMENSION_TYPE_CONDITION = new SerializableDataType<>(
@@ -219,66 +220,66 @@ public class EggolibDataTypes {
 
     public static final SerializableDataType<List<Pair<ArgumentWrapper<Integer>, ItemStack>>> GENERALIZED_POSITIONED_ITEM_STACKS = SerializableDataType.list(GENERALIZED_POSITIONED_ITEM_STACK);
 
-    public static final SerializableDataType<AbstractTeam.CollisionRule> ABSTRACT_TEAM_COLLISION_RULE = SerializableDataType.enumValue(AbstractTeam.CollisionRule.class);
+    public static final SerializableDataType<AbstractTeam.CollisionRule> COLLISION_RULE = SerializableDataType.enumValue(AbstractTeam.CollisionRule.class);
 
-    public static final SerializableDataType<AbstractTeam.VisibilityRule> ABSTRACT_TEAM_VISIBILITY_RULE = SerializableDataType.enumValue(AbstractTeam.VisibilityRule.class);
+    public static final SerializableDataType<AbstractTeam.VisibilityRule> VISIBILITY_RULE = SerializableDataType.enumValue(AbstractTeam.VisibilityRule.class);
 
-    public static final SerializableDataType<EggolibAbstractTeam> ABSTRACT_TEAM = SerializableDataType.compound(
-        EggolibAbstractTeam.class,
+    public static final SerializableDataType<EggolibTeam> TEAM = SerializableDataType.compound(
+        EggolibTeam.class,
         new SerializableData()
             .add("name", SerializableDataTypes.STRING, null)
             .add("friendly_fire", SerializableDataTypes.BOOLEAN, null)
             .add("show_friendly_invisibles", SerializableDataTypes.BOOLEAN, null)
-            .add("nametag_visibility", EggolibDataTypes.ABSTRACT_TEAM_VISIBILITY_RULE, null)
-            .add("death_message_visibility", EggolibDataTypes.ABSTRACT_TEAM_VISIBILITY_RULE, null)
-            .add("collision_rule", EggolibDataTypes.ABSTRACT_TEAM_COLLISION_RULE, null),
+            .add("nametag_visibility", EggolibDataTypes.VISIBILITY_RULE, null)
+            .add("death_message_visibility", EggolibDataTypes.VISIBILITY_RULE, null)
+            .add("collision_rule", EggolibDataTypes.COLLISION_RULE, null),
         data -> {
 
-            EggolibAbstractTeam eggolibAbstractTeam = new EggolibAbstractTeam();
+            EggolibTeam eggolibTeam = new EggolibTeam();
 
-            data.ifPresent("name", eggolibAbstractTeam::setName);
-            data.ifPresent("friendly_fire", eggolibAbstractTeam::setFriendlyFireAllowed);
-            data.ifPresent("show_friendly_invisibles", eggolibAbstractTeam::setShowFriendlyInvisibles);
-            data.ifPresent("nametag_visibility", eggolibAbstractTeam::setNametagVisibilityRule);
-            data.ifPresent("death_message_visibility", eggolibAbstractTeam::setDeathMessageVisibilityRule);
-            data.ifPresent("collision_rule", eggolibAbstractTeam::setCollisionRule);
+            data.ifPresent("name", eggolibTeam::setName);
+            data.ifPresent("friendly_fire", eggolibTeam::friendlyFireAllowed);
+            data.ifPresent("show_friendly_invisibles", eggolibTeam::showFriendlyInvisibles);
+            data.ifPresent("nametag_visibility", eggolibTeam::setNameTagVisibilityRule);
+            data.ifPresent("death_message_visibility", eggolibTeam::setDeathMessageVisibilityRule);
+            data.ifPresent("collision_rule", eggolibTeam::setCollisionRule);
 
-            return eggolibAbstractTeam;
+            return eggolibTeam;
 
         },
-        (serializableData, eggolibAbstractTeam) -> {
+        (serializableData, eggolibTeam) -> {
 
             SerializableData.Instance data = serializableData.new Instance();
 
-            data.set("name", eggolibAbstractTeam.getName());
-            data.set("friendly_fire", eggolibAbstractTeam.isFriendlyFireAllowed());
-            data.set("show_friendly_invisibles", eggolibAbstractTeam.shouldShowFriendlyInvisibles());
-            data.set("nametag_visibility", eggolibAbstractTeam.getNametagVisibilityRule());
-            data.set("death_message_visibility", eggolibAbstractTeam.getDeathMessageVisibilityRule());
-            data.set("collision_rule", eggolibAbstractTeam.getCollisionRule());
+            data.set("name", eggolibTeam.getName());
+            data.set("friendly_fire", eggolibTeam.isFriendlyFireAllowed());
+            data.set("show_friendly_invisibles", eggolibTeam.shouldShowFriendlyInvisibles());
+            data.set("nametag_visibility", eggolibTeam.getNameTagVisibilityRule());
+            data.set("death_message_visibility", eggolibTeam.getDeathMessageVisibilityRule());
+            data.set("collision_rule", eggolibTeam.getCollisionRule());
 
             return data;
 
         }
     );
 
-    public static final SerializableDataType<List<EggolibAbstractTeam>> ABSTRACT_TEAMS = SerializableDataType.list(ABSTRACT_TEAM);
+    public static final SerializableDataType<List<EggolibTeam>> TEAMS = SerializableDataType.list(TEAM);
 
-    public static final SerializableDataType<EggolibAbstractTeam> BACKWARDS_COMPATIBLE_ABSTRACT_TEAM = new SerializableDataType<>(
-        EggolibAbstractTeam.class,
-        ABSTRACT_TEAM::send,
-        ABSTRACT_TEAM::receive,
+    public static final SerializableDataType<EggolibTeam> BACKWARDS_COMPATIBLE_TEAM = new SerializableDataType<>(
+        EggolibTeam.class,
+        TEAM::send,
+        TEAM::receive,
         jsonElement -> {
-            if (!(jsonElement instanceof JsonPrimitive jsonPrimitive && jsonPrimitive.isString())) return ABSTRACT_TEAM.read(jsonElement);
+            if (!(jsonElement instanceof JsonPrimitive jsonPrimitive && jsonPrimitive.isString())) return TEAM.read(jsonElement);
             else {
-                EggolibAbstractTeam eggolibAbstractTeam = new EggolibAbstractTeam();
-                eggolibAbstractTeam.setName(jsonPrimitive.getAsString());
-                return eggolibAbstractTeam;
+                EggolibTeam eggolibTeam = new EggolibTeam();
+                eggolibTeam.setName(jsonPrimitive.getAsString());
+                return eggolibTeam;
             }
         }
     );
 
-    public static final SerializableDataType<List<EggolibAbstractTeam>> BACKWARDS_COMPATIBLE_ABSTRACT_TEAMS = SerializableDataType.list(BACKWARDS_COMPATIBLE_ABSTRACT_TEAM);
+    public static final SerializableDataType<List<EggolibTeam>> BACKWARDS_COMPATIBLE_TEAMS = SerializableDataType.list(BACKWARDS_COMPATIBLE_TEAM);
 
     public static final SerializableDataType<Integer> POSITIVE_INT = new SerializableDataType<>(
         Integer.class,
