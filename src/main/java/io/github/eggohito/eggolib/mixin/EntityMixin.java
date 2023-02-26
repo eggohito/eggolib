@@ -39,11 +39,6 @@ public abstract class EntityMixin {
         MiscComponent.KEY.maybeGet(this).ifPresent(miscComponent -> miscComponent.copyScoreboardTagsFrom(cir.getReturnValue()));
     }
 
-    @Inject(method = "isInvisible", at = @At("HEAD"), cancellable = true)
-    private void eggolib$invisibility(CallbackInfoReturnable<Boolean> cir) {
-        if (PowerHolderComponent.hasPower((Entity) (Object) this, EggolibInvisibilityPower.class)) cir.setReturnValue(true);
-    }
-
     @Inject(method = "isInvisibleTo", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;getScoreboardTeam()Lnet/minecraft/scoreboard/AbstractTeam;"), cancellable = true)
     private void eggolib$invisibilityException(PlayerEntity playerEntity, CallbackInfoReturnable<Boolean> cir) {
         if (PowerHolderComponent.hasPower((Entity) (Object) this, EggolibInvisibilityPower.class, eip -> !eip.doesApply(playerEntity))) cir.setReturnValue(false);

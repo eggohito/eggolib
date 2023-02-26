@@ -26,7 +26,6 @@
         "ClientPlayerInteractionManagerAccessor",
         "EntityRendererMixin",
         "GameOptionsMixin",
-        "LivingEntityRendererAccessor",
         "LivingEntityRendererMixin",
         "MouseMixin"
     ],

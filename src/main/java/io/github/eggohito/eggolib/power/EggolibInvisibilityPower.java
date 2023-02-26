@@ -1,7 +1,7 @@
 package io.github.eggohito.eggolib.power;
 
 import io.github.apace100.apoli.data.ApoliDataTypes;
-import io.github.apace100.apoli.power.Power;
+import io.github.apace100.apoli.power.InvisibilityPower;
 import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.apoli.power.factory.PowerFactory;
 import io.github.apace100.calio.data.SerializableData;
@@ -14,23 +14,17 @@ import net.minecraft.util.Pair;
 
 import java.util.function.Predicate;
 
-public class EggolibInvisibilityPower extends Power {
+public class EggolibInvisibilityPower extends InvisibilityPower {
 
     private final Predicate<Pair<Entity, Entity>> biEntityCondition;
-    private final boolean renderArmor;
 
-    public EggolibInvisibilityPower(PowerType<?> powerType, LivingEntity livingEntity, Predicate<Pair<Entity, Entity>> biEntityCondition, boolean renderArmor) {
-        super(powerType, livingEntity);
+    public EggolibInvisibilityPower(PowerType<?> powerType, LivingEntity livingEntity, Predicate<Pair<Entity, Entity>> biEntityCondition, boolean renderArmor, boolean renderOutline) {
+        super(powerType, livingEntity, renderArmor, renderOutline);
         this.biEntityCondition = biEntityCondition;
-        this.renderArmor = renderArmor;
     }
 
     public boolean doesApply(PlayerEntity viewer) {
         return biEntityCondition == null || biEntityCondition.test(new Pair<>(viewer, entity));
-    }
-
-    public boolean shouldRenderArmor() {
-        return renderArmor;
     }
 
     public static PowerFactory<?> getFactory() {
@@ -38,12 +32,14 @@ public class EggolibInvisibilityPower extends Power {
             Eggolib.identifier("invisibility"),
             new SerializableData()
                 .add("bientity_condition", ApoliDataTypes.BIENTITY_CONDITION, null)
-                .add("render_armor", SerializableDataTypes.BOOLEAN),
+                .add("render_armor", SerializableDataTypes.BOOLEAN, false)
+                .add("render_outline", SerializableDataTypes.BOOLEAN, false),
             data -> (powerType, livingEntity) -> new EggolibInvisibilityPower(
                 powerType,
                 livingEntity,
                 data.get("bientity_condition"),
-                data.getBoolean("render_armor")
+                data.get("render_armor"),
+                data.get("render_outline")
             )
         ).allowCondition();
     }
