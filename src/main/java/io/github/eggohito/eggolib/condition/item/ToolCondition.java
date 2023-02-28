@@ -19,39 +19,7 @@ public class ToolCondition {
         if (data.isPresent("tool_types")) toolTypes.addAll(data.get("tool_types"));
 
         if (toolTypes.isEmpty()) toolTypes.addAll(EnumSet.allOf(ToolType.class));
-
-        return hasMatchingToolType(toolTypes, itemStack);
-
-    }
-
-    private static boolean hasMatchingToolType(EnumSet<ToolType> toolTypes, ItemStack itemStack) {
-
-        int matches = 0;
-
-        for (ToolType tt : toolTypes) {
-            switch (tt) {
-                case AXE:
-                    if (itemStack.getItem() instanceof AxeItem) matches++;
-                    break;
-                case HOE:
-                    if (itemStack.getItem() instanceof HoeItem) matches++;
-                    break;
-                case PICKAXE:
-                    if (itemStack.getItem() instanceof PickaxeItem) matches++;
-                    break;
-                case SHOVEL:
-                    if (itemStack.getItem() instanceof ShovelItem) matches++;
-                    break;
-                case SWORD:
-                    if (itemStack.getItem() instanceof SwordItem) matches++;
-                    break;
-                case SHEARS:
-                    if (itemStack.getItem() instanceof ShearsItem) matches++;
-                    break;
-            }
-        }
-
-        return matches > 0;
+        return toolTypes.stream().anyMatch(toolType -> toolType.matches(itemStack));
 
     }
 
