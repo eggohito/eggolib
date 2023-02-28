@@ -6,22 +6,24 @@ import io.github.apace100.apoli.power.InventoryPower;
 import io.github.apace100.apoli.power.Power;
 import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
-import io.github.apace100.apoli.util.InventoryUtil;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
 import io.github.eggohito.eggolib.Eggolib;
-import io.github.eggohito.eggolib.util.EggolibInventoryUtil;
+import io.github.eggohito.eggolib.util.InventoryType;
+import io.github.eggohito.eggolib.util.InventoryUtil;
 import net.minecraft.entity.Entity;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class InventoryCondition {
 
     public static boolean condition(SerializableData.Instance data, Entity entity) {
 
-        InventoryUtil.InventoryType inventoryType = data.get("inventory_type");
-        int[] matches = {0};
+        InventoryType inventoryType = data.get("inventory_type");
+        AtomicInteger matches = new AtomicInteger();
 
         switch (inventoryType) {
-            case INVENTORY -> matches[0] = EggolibInventoryUtil.checkInventory(data, entity, null);
+            case INVENTORY -> matches.set(InventoryUtil.checkInventory(data, entity, null));
             case POWER -> {
 
                 if (!data.isPresent("power")) return false;
@@ -33,7 +35,7 @@ public class InventoryCondition {
                         Power targetPower = powerHolderComponent.getPower(targetPowerType);
                         if (!(targetPower instanceof InventoryPower inventoryPower)) return;
 
-                        matches[0] = EggolibInventoryUtil.checkInventory(data, entity, inventoryPower);
+                        matches.set(InventoryUtil.checkInventory(data, entity, inventoryPower));
 
                     }
                 );
@@ -41,7 +43,7 @@ public class InventoryCondition {
             }
         }
 
-        return matches[0] > 0;
+        return matches.get() > 0;
 
     }
 
@@ -49,7 +51,7 @@ public class InventoryCondition {
         return new ConditionFactory<>(
             Eggolib.identifier("inventory"),
             new SerializableData()
-                .add("inventory_type", SerializableDataType.enumValue(InventoryUtil.InventoryType.class), InventoryUtil.InventoryType.INVENTORY)
+                .add("inventory_type", SerializableDataType.enumValue(InventoryType.class), InventoryType.INVENTORY)
                 .add("item_condition", ApoliDataTypes.ITEM_CONDITION, null)
                 .add("slots", ApoliDataTypes.ITEM_SLOTS, null)
                 .add("slot", ApoliDataTypes.ITEM_SLOT, null)

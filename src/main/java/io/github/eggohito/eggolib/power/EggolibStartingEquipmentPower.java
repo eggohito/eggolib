@@ -9,7 +9,7 @@ import io.github.apace100.calio.util.ArgumentWrapper;
 import io.github.eggohito.eggolib.Eggolib;
 import io.github.eggohito.eggolib.data.EggolibDataTypes;
 import io.github.eggohito.eggolib.mixin.ItemSlotArgumentTypeAccessor;
-import io.github.eggohito.eggolib.util.EggolibInventoryUtil;
+import io.github.eggohito.eggolib.util.InventoryUtil;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.inventory.StackReference;
 import net.minecraft.item.ItemStack;
@@ -55,7 +55,7 @@ public class EggolibStartingEquipmentPower extends Power {
             boolean set = false;
 
             if (stackReference.get().isEmpty()) set = stackReference.set(stack);
-            if (!set) EggolibInventoryUtil.throwItem(entity, stack, false, true);
+            if (!set) InventoryUtil.throwItem(entity, stack, false, true);
 
         }
     }
@@ -74,7 +74,7 @@ public class EggolibStartingEquipmentPower extends Power {
                 }
             }
 
-            if (!set) EggolibInventoryUtil.throwItem(entity, stack, false, true);
+            if (!set) InventoryUtil.throwItem(entity, stack, false, true);
 
         }
     }

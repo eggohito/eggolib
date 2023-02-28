@@ -18,21 +18,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-public class EggolibInventoryUtil {
-
-    private static Set<Integer> slots;
-    private static Consumer<Entity> entityAction;
-    private static Predicate<ItemStack> itemCondition;
-    private static Consumer<Pair<World, ItemStack>> itemAction;
+public class InventoryUtil {
 
     public static int checkInventory(SerializableData.Instance data, Entity entity, InventoryPower inventoryPower) {
 
-        getSlots(data);
-        itemCondition = data.get("item_condition");
-        int[] matches = {0};
+        Set<Integer> slots = getSlots(data);
+        Predicate<ItemStack> itemCondition = data.get("item_condition");
+        AtomicInteger matches = new AtomicInteger();
 
         if (inventoryPower == null) slots
             .forEach(
@@ -45,7 +41,7 @@ public class EggolibInventoryUtil {
                     if (itemCondition == null || itemStack.isEmpty()) return;
                     else if (!itemCondition.test(itemStack)) return;
 
-                    matches[0]++;
+                    matches.incrementAndGet();
 
                 }
             );
@@ -60,22 +56,22 @@ public class EggolibInventoryUtil {
                         if (itemCondition == null || itemStack.isEmpty()) return;
                         else if (!itemCondition.test(itemStack)) return;
 
-                        matches[0]++;
+                        matches.incrementAndGet();
 
                     }
                 );
         }
 
-        return matches[0];
+        return matches.get();
 
     }
 
     public static void replaceInventory(SerializableData.Instance data, Entity entity, InventoryPower inventoryPower) {
 
-        getSlots(data);
-        itemAction = data.get("item_action");
-        entityAction = data.get("entity_action");
-        itemCondition = data.get("item_condition");
+        Set<Integer> slots = getSlots(data);
+        Consumer<Pair<World, ItemStack>> itemAction = data.get("item_action");
+        Consumer<Entity> entityAction = data.get("entity_action");
+        Predicate<ItemStack> itemCondition = data.get("item_condition");
 
         ItemStack replacementStack = data.get("stack");
         boolean mergeNbt = data.getBoolean("merge_nbt");
@@ -133,10 +129,10 @@ public class EggolibInventoryUtil {
 
     public static void dropInventory(SerializableData.Instance data, Entity entity, InventoryPower inventoryPower) {
 
-        getSlots(data);
-        itemAction = data.get("item_action");
-        entityAction = data.get("entity_action");
-        itemCondition = data.get("item_condition");
+        Set<Integer> slots = getSlots(data);
+        Consumer<Pair<World, ItemStack>> itemAction = data.get("item_action");
+        Consumer<Entity> entityAction = data.get("entity_action");
+        Predicate<ItemStack> itemCondition = data.get("item_condition");
 
         int amount = data.get("amount");
         boolean throwRandomly = data.getBoolean("throw_randomly");
@@ -251,7 +247,7 @@ public class EggolibInventoryUtil {
 
     }
 
-    public static void getSlots(SerializableData.Instance data) {
+    public static Set<Integer> getSlots(SerializableData.Instance data) {
 
         Set<Integer> itemSlots = new HashSet<>();
 
@@ -259,8 +255,7 @@ public class EggolibInventoryUtil {
         data.<List<ArgumentWrapper<Integer>>>ifPresent("slots", liaw -> itemSlots.addAll(liaw.stream().map(ArgumentWrapper::get).toList()));
 
         if (itemSlots.isEmpty()) itemSlots.addAll(ItemSlotArgumentTypeAccessor.getSlotMappings().values());
-
-        slots = itemSlots;
+        return itemSlots;
 
     }
 
