@@ -6,7 +6,7 @@ import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.eggohito.eggolib.Eggolib;
 import io.github.eggohito.eggolib.data.EggolibDataTypes;
-import io.github.eggohito.eggolib.util.EggolibScoreboardUtil;
+import io.github.eggohito.eggolib.util.ScoreboardUtil;
 
 public class LoopAction {
 
@@ -18,7 +18,7 @@ public class LoopAction {
         ActionFactory<T>.Instance afterAction = data.get("after_action");
         ActionFactory<T>.Instance action = data.get("action");
 
-        if (data.isPresent("score")) iterations = EggolibScoreboardUtil.getScore(data.get("score"));
+        if (data.isPresent("score")) iterations = ScoreboardUtil.getScore(data.get("score"));
         else if (data.isPresent("value")) iterations = data.getInt("value");
 
         if (iterations <= 0) return;

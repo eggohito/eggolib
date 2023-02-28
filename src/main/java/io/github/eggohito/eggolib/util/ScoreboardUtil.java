@@ -5,7 +5,7 @@ import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.util.Pair;
 
-public class EggolibScoreboardUtil {
+public class ScoreboardUtil {
 
     public static int getScore(Pair<String, String> nameAndObjective) {
 

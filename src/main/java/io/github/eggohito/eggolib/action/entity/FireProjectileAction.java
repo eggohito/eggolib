@@ -6,7 +6,7 @@ import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.eggohito.eggolib.Eggolib;
 import io.github.eggohito.eggolib.data.EggolibDataTypes;
-import io.github.eggohito.eggolib.util.EggolibMiscUtilServer;
+import io.github.eggohito.eggolib.util.MiscUtilServer;
 import io.github.eggohito.eggolib.util.EntityOffset;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -33,7 +33,7 @@ public class FireProjectileAction {
             EntityType<?> entityType = data.get("entity_type");
             NbtCompound entityNbt = data.get("tag");
 
-            Optional<Entity> opt$entityToFire = EggolibMiscUtilServer.getEntityWithPassengers(
+            Optional<Entity> opt$entityToFire = MiscUtilServer.getEntityWithPassengers(
                 serverWorld,
                 entityType,
                 entityNbt,

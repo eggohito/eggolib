@@ -4,7 +4,7 @@ import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.eggohito.eggolib.Eggolib;
 import io.github.eggohito.eggolib.data.EggolibDataTypes;
-import io.github.eggohito.eggolib.util.EggolibToolType;
+import io.github.eggohito.eggolib.util.ToolType;
 import net.minecraft.item.*;
 
 import java.util.EnumSet;
@@ -13,22 +13,22 @@ public class ToolCondition {
 
     public static boolean condition(SerializableData.Instance data, ItemStack itemStack) {
 
-        EnumSet<EggolibToolType> eggolibToolTypes = EnumSet.noneOf(EggolibToolType.class);
+        EnumSet<ToolType> toolTypes = EnumSet.noneOf(ToolType.class);
 
-        if (data.isPresent("tool_type")) eggolibToolTypes.add(data.get("tool_type"));
-        if (data.isPresent("tool_types")) eggolibToolTypes.addAll(data.get("tool_types"));
+        if (data.isPresent("tool_type")) toolTypes.add(data.get("tool_type"));
+        if (data.isPresent("tool_types")) toolTypes.addAll(data.get("tool_types"));
 
-        if (eggolibToolTypes.isEmpty()) eggolibToolTypes.addAll(EnumSet.allOf(EggolibToolType.class));
+        if (toolTypes.isEmpty()) toolTypes.addAll(EnumSet.allOf(ToolType.class));
 
-        return hasMatchingToolType(eggolibToolTypes, itemStack);
+        return hasMatchingToolType(toolTypes, itemStack);
 
     }
 
-    private static boolean hasMatchingToolType(EnumSet<EggolibToolType> eggolibToolTypes, ItemStack itemStack) {
+    private static boolean hasMatchingToolType(EnumSet<ToolType> toolTypes, ItemStack itemStack) {
 
         int matches = 0;
 
-        for (EggolibToolType tt : eggolibToolTypes) {
+        for (ToolType tt : toolTypes) {
             switch (tt) {
                 case AXE:
                     if (itemStack.getItem() instanceof AxeItem) matches++;

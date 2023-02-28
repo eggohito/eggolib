@@ -6,7 +6,7 @@ import io.github.eggohito.eggolib.Eggolib;
 import io.github.eggohito.eggolib.data.EggolibDataTypes;
 import io.github.eggohito.eggolib.mixin.ClientPlayerEntityAccessor;
 import io.github.eggohito.eggolib.networking.EggolibPackets;
-import io.github.eggohito.eggolib.util.EggolibMiscUtilClient;
+import io.github.eggohito.eggolib.util.MiscUtilClient;
 import io.github.eggohito.eggolib.util.EggolibPerspective;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -27,7 +27,7 @@ public class SetPerspectiveAction {
         if (playerEntity.world.isClient) {
             MinecraftClient minecraftClient = ((ClientPlayerEntityAccessor) playerEntity).getClient();
             minecraftClient.execute(
-                () -> EggolibMiscUtilClient.setPerspective(minecraftClient, eggolibPerspective)
+                () -> MiscUtilClient.setPerspective(minecraftClient, eggolibPerspective)
             );
         }
 

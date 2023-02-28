@@ -1,6 +1,6 @@
 package io.github.eggohito.eggolib.mixin;
 
-import io.github.eggohito.eggolib.util.EggolibMiscUtilClient;
+import io.github.eggohito.eggolib.util.MiscUtilClient;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.Perspective;
@@ -17,7 +17,7 @@ public abstract class GameOptionsMixin {
 
     @Inject(method = "setPerspective", at = @At("HEAD"))
     private void eggolib$getCurrentPerspective(Perspective perspective, CallbackInfo ci) {
-        EggolibMiscUtilClient.getPerspective(client, perspective);
+        MiscUtilClient.getPerspective(client, perspective);
     }
 
 }

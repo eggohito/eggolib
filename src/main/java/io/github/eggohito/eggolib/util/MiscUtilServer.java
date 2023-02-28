@@ -12,7 +12,7 @@ import net.minecraft.util.math.Vec3d;
 import javax.annotation.Nullable;
 import java.util.Optional;
 
-public class EggolibMiscUtilServer {
+public class MiscUtilServer {
 
     public static Optional<Entity> getEntityWithPassengers(ServerWorld serverWorld, EntityType<?> entityType, Vec3d pos, float yaw, float pitch) {
         return getEntityWithPassengers(serverWorld, entityType, null, pos, yaw, pitch);

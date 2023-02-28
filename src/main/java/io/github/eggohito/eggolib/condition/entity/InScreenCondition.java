@@ -6,7 +6,7 @@ import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.eggohito.eggolib.Eggolib;
 import io.github.eggohito.eggolib.mixin.ClientPlayerEntityAccessor;
 import io.github.eggohito.eggolib.networking.EggolibPackets;
-import io.github.eggohito.eggolib.util.EggolibMiscUtilClient;
+import io.github.eggohito.eggolib.util.MiscUtilClient;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.client.MinecraftClient;
@@ -33,7 +33,7 @@ public class InScreenCondition {
         if (entity.world.isClient) {
             MinecraftClient minecraftClient = ((ClientPlayerEntityAccessor) playerEntity).getClient();
             minecraftClient.execute(
-                () -> EggolibMiscUtilClient.isInScreen(minecraftClient, screenClassStrings)
+                () -> MiscUtilClient.isInScreen(minecraftClient, screenClassStrings)
             );
         }
 

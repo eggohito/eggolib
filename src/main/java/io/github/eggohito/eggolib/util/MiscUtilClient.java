@@ -19,7 +19,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @Environment(EnvType.CLIENT)
-public class EggolibMiscUtilClient {
+public class MiscUtilClient {
 
     @SuppressWarnings("rawtypes")
     public static void isInScreen(MinecraftClient minecraftClient, Set<String> screenClassStrings) {

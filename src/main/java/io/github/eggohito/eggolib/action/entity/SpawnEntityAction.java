@@ -5,7 +5,7 @@ import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.eggohito.eggolib.Eggolib;
-import io.github.eggohito.eggolib.util.EggolibMiscUtilServer;
+import io.github.eggohito.eggolib.util.MiscUtilServer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.NbtCompound;
@@ -23,7 +23,7 @@ public class SpawnEntityAction {
         EntityType<?> entityType = data.get("entity_type");
         NbtCompound entityNbt = data.get("tag");
 
-        Optional<Entity> opt$entityToSpawn = EggolibMiscUtilServer.getEntityWithPassengers(
+        Optional<Entity> opt$entityToSpawn = MiscUtilServer.getEntityWithPassengers(
             serverWorld,
             entityType,
             entityNbt,

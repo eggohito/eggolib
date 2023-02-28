@@ -11,7 +11,7 @@ import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.apace100.calio.util.ArgumentWrapper;
 import io.github.eggohito.eggolib.condition.EggolibConditionTypes;
 import io.github.eggohito.eggolib.util.*;
-import io.github.eggohito.eggolib.util.EggolibMathUtil.MathOperation;
+import io.github.eggohito.eggolib.util.MathUtil.MathOperation;
 import io.github.eggohito.eggolib.util.key.FunctionalKey;
 import io.github.eggohito.eggolib.util.key.TimedKey;
 import net.minecraft.item.Item;
@@ -38,13 +38,13 @@ public class EggolibDataTypes {
 
     public static final SerializableDataType<List<ConditionFactory<RegistryEntry<DimensionType>>.Instance>> DIMENSION_TYPE_CONDITIONS = SerializableDataType.list(DIMENSION_TYPE_CONDITION);
 
-    public static final SerializableDataType<MathOperation> MATH_OPERATION = SerializableDataType.enumValue(EggolibMathUtil.MathOperation.class);
+    public static final SerializableDataType<MathOperation> MATH_OPERATION = SerializableDataType.enumValue(MathUtil.MathOperation.class);
 
     public static final SerializableDataType<PowerOperation> POWER_OPERATION = SerializableDataType.enumValue(PowerOperation.class, SerializationHelper.buildEnumMap(PowerOperation.class, PowerOperation::getOperationName));
 
-    public static final SerializableDataType<EggolibToolType> TOOL_TYPE = SerializableDataType.enumValue(EggolibToolType.class);
+    public static final SerializableDataType<ToolType> TOOL_TYPE = SerializableDataType.enumValue(ToolType.class);
 
-    public static final SerializableDataType<EnumSet<EggolibToolType>> TOOL_TYPE_SET = SerializableDataType.enumSet(EggolibToolType.class, TOOL_TYPE);
+    public static final SerializableDataType<EnumSet<ToolType>> TOOL_TYPE_SET = SerializableDataType.enumSet(ToolType.class, TOOL_TYPE);
 
     public static final SerializableDataType<EggolibPerspective> PERSPECTIVE = SerializableDataType.enumValue(EggolibPerspective.class);
 

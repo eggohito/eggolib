@@ -18,7 +18,7 @@
 package io.github.eggohito.eggolib.networking;
 
 import io.github.eggohito.eggolib.Eggolib;
-import io.github.eggohito.eggolib.util.EggolibMiscUtilClient;
+import io.github.eggohito.eggolib.util.MiscUtilClient;
 import io.github.eggohito.eggolib.util.EggolibPerspective;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
@@ -82,7 +82,7 @@ public class EggolibPacketsS2C {
         }
 
         minecraftClient.execute(
-            () -> EggolibMiscUtilClient.isInScreen(minecraftClient, screenClassStrings)
+            () -> MiscUtilClient.isInScreen(minecraftClient, screenClassStrings)
         );
 
     }
@@ -93,7 +93,7 @@ public class EggolibPacketsS2C {
         EggolibPerspective eggolibPerspective = Enum.valueOf(EggolibPerspective.class, eggolibPerspectiveString);
 
         minecraftClient.execute(
-            () -> EggolibMiscUtilClient.setPerspective(minecraftClient, eggolibPerspective)
+            () -> MiscUtilClient.setPerspective(minecraftClient, eggolibPerspective)
         );
 
     }
@@ -101,7 +101,7 @@ public class EggolibPacketsS2C {
     private static void getPerspective(MinecraftClient minecraftClient, ClientPlayNetworkHandler clientPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
 
         minecraftClient.execute(
-            () -> EggolibMiscUtilClient.getPerspective(minecraftClient)
+            () -> MiscUtilClient.getPerspective(minecraftClient)
         );
 
     }
