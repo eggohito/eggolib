@@ -9,7 +9,7 @@ import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.apace100.calio.util.ArgumentWrapper;
-import io.github.eggohito.eggolib.registry.EggolibConditionTypes;
+import io.github.eggohito.eggolib.condition.EggolibConditionTypes;
 import io.github.eggohito.eggolib.util.*;
 import io.github.eggohito.eggolib.util.EggolibMathUtil.MathOperation;
 import io.github.eggohito.eggolib.util.key.FunctionalKey;
