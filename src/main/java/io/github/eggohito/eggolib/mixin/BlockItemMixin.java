@@ -2,14 +2,12 @@ package io.github.eggohito.eggolib.mixin;
 
 import io.github.apace100.apoli.power.ActiveInteractionPower;
 import io.github.eggohito.eggolib.power.ActionOnBlockPlacePower;
-import io.github.eggohito.eggolib.power.EggolibPreventItemUsePower;
 import io.github.eggohito.eggolib.power.PreventBlockPlacePower;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUsageContext;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
