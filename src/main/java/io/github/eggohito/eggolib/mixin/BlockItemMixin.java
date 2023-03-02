@@ -27,34 +27,6 @@ import java.util.List;
 @Mixin(BlockItem.class)
 public class BlockItemMixin {
 
-    @Inject(method = "useOnBlock", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/BlockItem;use(Lnet/minecraft/world/World;Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/util/Hand;)Lnet/minecraft/util/TypedActionResult;"), cancellable = true)
-    private void eggolib$preventBlockItemUse(ItemUsageContext context, CallbackInfoReturnable<ActionResult> cir) {
-
-        PlayerEntity playerEntity = context.getPlayer();
-        ItemStack itemStack = context.getStack();
-        Hand hand = context.getHand();
-
-        if (playerEntity == null) return;
-
-        int eggolib$preventItemUsePowers = 0;
-        ActiveInteractionPower.CallInstance<EggolibPreventItemUsePower> epiupci = new ActiveInteractionPower.CallInstance<>();
-        epiupci.add(playerEntity, EggolibPreventItemUsePower.class, epiup -> epiup.shouldExecute(hand, itemStack));
-
-        for (int i = epiupci.getMaxPriority(); i >= 0;  i--) {
-
-            if (!epiupci.hasPowers(i)) continue;
-
-            List<EggolibPreventItemUsePower> epiups = epiupci.getPowers(i);
-            eggolib$preventItemUsePowers += epiups.size();
-
-            epiups.forEach(epiup -> epiup.executeActions(hand));
-
-        }
-
-        if (eggolib$preventItemUsePowers > 0) cir.setReturnValue(ActionResult.FAIL);
-
-    }
-
     @Inject(method = "canPlace", at = @At("HEAD"), cancellable = true)
     private void eggolib$preventBlockPlace(ItemPlacementContext context, BlockState state, CallbackInfoReturnable<Boolean> cir) {
 

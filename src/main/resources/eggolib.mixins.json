@@ -11,7 +11,6 @@
         "FarmlandBlockMixin",
         "ItemEntityMixin",
         "ItemSlotArgumentTypeAccessor",
-        "ItemStackMixin",
         "ItemUsageContextAccessor",
         "LivingEntityMixin",
         "PlayerEntityMixin",
