@@ -119,7 +119,7 @@ public class GameEventListenerPower extends CooldownPower implements VibrationLi
         if (this.entity.world != world) return false;
         Entity actor = emitter.sourceEntity();
 
-        return (blockCondition == null || blockCondition.test(new CachedBlockPosition(world, pos, true))) ||
+        return (blockCondition == null || blockCondition.test(new CachedBlockPosition(world, pos, true))) &&
                (biEntityCondition == null || biEntityCondition.test(new Pair<>(actor, this.entity)));
 
     }
