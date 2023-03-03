@@ -8,6 +8,7 @@ import io.github.apace100.apoli.util.HudRender;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.eggohito.eggolib.Eggolib;
+import io.github.eggohito.eggolib.access.VibrationListenerAccess;
 import io.github.eggohito.eggolib.data.EggolibDataTypes;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.entity.Entity;
@@ -20,6 +21,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import net.minecraft.world.event.EntityPositionSource;
 import net.minecraft.world.event.GameEvent;
+import net.minecraft.world.event.PositionSource;
 import net.minecraft.world.event.listener.EntityGameEventHandler;
 import net.minecraft.world.event.listener.GameEventListener;
 import net.minecraft.world.event.listener.VibrationListener;
@@ -40,11 +42,12 @@ public class GameEventListenerPower extends CooldownPower implements VibrationLi
     
     private final EntityGameEventHandler<VibrationListener> gameEventHandler;
     private final int range;
+    private final boolean showParticle;
 
     private final List<GameEvent> acceptedGameEvents;
     private final TagKey<GameEvent> acceptedGameEventTag;
 
-    public GameEventListenerPower(PowerType<?> powerType, LivingEntity livingEntity, Consumer<Triple<World, BlockPos, Direction>> blockAction, Consumer<Pair<Entity, Entity>> biEntityAction, Predicate<CachedBlockPosition> blockCondition, Predicate<Pair<Entity, Entity>> biEntityCondition, int cooldown, HudRender hudRender, int range, GameEvent gameEvent, List<GameEvent> gameEvents, TagKey<GameEvent> gameEventTag) {
+    public GameEventListenerPower(PowerType<?> powerType, LivingEntity livingEntity, Consumer<Triple<World, BlockPos, Direction>> blockAction, Consumer<Pair<Entity, Entity>> biEntityAction, Predicate<CachedBlockPosition> blockCondition, Predicate<Pair<Entity, Entity>> biEntityCondition, int cooldown, HudRender hudRender, int range, GameEvent gameEvent, List<GameEvent> gameEvents, TagKey<GameEvent> gameEventTag, boolean showParticle) {
 
         super(powerType, livingEntity, cooldown, hudRender);
 
@@ -61,6 +64,7 @@ public class GameEventListenerPower extends CooldownPower implements VibrationLi
         if (gameEvents != null) this.acceptedGameEvents.addAll(gameEvents);
 
         this.acceptedGameEventTag = gameEventTag;
+        this.showParticle = showParticle;
         this.setTicking();
 
     }
@@ -73,14 +77,19 @@ public class GameEventListenerPower extends CooldownPower implements VibrationLi
         return gameEventHandler;
     }
 
-    private EntityPositionSource getNewPositionSource() {
+    private PositionSource getNewPositionSource() {
         return new EntityPositionSource(this.entity, this.entity.getEyeHeight(this.entity.getPose()));
     }
 
     @Override
     public void onAdded() {
-        this.gameEventHandler.setListener(new VibrationListener(getNewPositionSource(), range, this), this.entity.world);
+
+        VibrationListener vibrationListener = new VibrationListener(getNewPositionSource(), range, this);
+        ((VibrationListenerAccess) vibrationListener).showParticle(showParticle);
+
+        this.gameEventHandler.setListener(vibrationListener, this.entity.world);
         this.entity.updateEventHandler(EntityGameEventHandler::onEntitySetPos);
+
     }
 
     @Override
@@ -90,12 +99,8 @@ public class GameEventListenerPower extends CooldownPower implements VibrationLi
 
     @Override
     public void tick() {
-
         if (!(canListen() && canUse())) return;
-
-        this.gameEventHandler.getListener().positionSource = getNewPositionSource();
-        this.gameEventHandler.getListener().tick(this.entity.world);
-
+        ((VibrationListenerAccess) this.gameEventHandler.getListener()).tickWithPositionSource(this.entity.world, getNewPositionSource());
     }
 
     @Override
@@ -114,7 +119,6 @@ public class GameEventListenerPower extends CooldownPower implements VibrationLi
         if (this.entity.world != world) return false;
         Entity actor = emitter.sourceEntity();
 
-        if (this.entity.equals(actor)) return false;
         return (blockCondition == null || blockCondition.test(new CachedBlockPosition(world, pos, true))) ||
                (biEntityCondition == null || biEntityCondition.test(new Pair<>(actor, this.entity)));
 
@@ -143,7 +147,8 @@ public class GameEventListenerPower extends CooldownPower implements VibrationLi
                 .add("range", EggolibDataTypes.POSITIVE_INT, 16)
                 .add("event", SerializableDataTypes.GAME_EVENT, null)
                 .add("events", SerializableDataTypes.GAME_EVENTS, null)
-                .add("tag", SerializableDataTypes.GAME_EVENT_TAG, null),
+                .add("tag", SerializableDataTypes.GAME_EVENT_TAG, null)
+                .add("show_particle", SerializableDataTypes.BOOLEAN, true),
             data -> (powerType, livingEntity) -> new GameEventListenerPower(
                 powerType,
                 livingEntity,
@@ -156,7 +161,8 @@ public class GameEventListenerPower extends CooldownPower implements VibrationLi
                 data.get("range"),
                 data.get("event"),
                 data.get("events"),
-                data.get("tag")
+                data.get("tag"),
+                data.get("show_particle")
             )
         ).allowCondition();
     }
