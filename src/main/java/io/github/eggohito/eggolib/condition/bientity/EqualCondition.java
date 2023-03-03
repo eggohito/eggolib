@@ -6,7 +6,7 @@ import io.github.eggohito.eggolib.Eggolib;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Pair;
 
-public class SelfCondition {
+public class EqualCondition {
 
     public static boolean condition(SerializableData.Instance data, Pair<Entity, Entity> actorAndTarget) {
         return actorAndTarget.getLeft().equals(actorAndTarget.getRight());
@@ -14,9 +14,9 @@ public class SelfCondition {
 
     public static ConditionFactory<Pair<Entity, Entity>> getFactory() {
         return new ConditionFactory<>(
-            Eggolib.identifier("self"),
+            Eggolib.identifier("equal"),
             new SerializableData(),
-            SelfCondition::condition
+            EqualCondition::condition
         );
     }
 
