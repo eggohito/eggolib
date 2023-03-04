@@ -19,7 +19,7 @@ import net.minecraft.util.Pair;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-public class SelectAction {
+public class SelectorAction {
 
     public static void action(SerializableData.Instance data, Entity entity) {
 
@@ -57,12 +57,12 @@ public class SelectAction {
 
     public static ActionFactory<Entity> getFactory() {
         return new ActionFactory<>(
-            Eggolib.identifier("select"),
+            Eggolib.identifier("selector_action"),
             new SerializableData()
                 .add("selector", EggolibDataTypes.ENTITIES_SELECTOR)
                 .add("bientity_action", ApoliDataTypes.BIENTITY_ACTION, null)
                 .add("bientity_condition", ApoliDataTypes.BIENTITY_CONDITION, null),
-            SelectAction::action
+            SelectorAction::action
         );
     }
 
