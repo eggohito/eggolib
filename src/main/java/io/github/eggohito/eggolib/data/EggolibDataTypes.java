@@ -14,6 +14,8 @@ import io.github.eggohito.eggolib.util.*;
 import io.github.eggohito.eggolib.util.MathUtil.MathOperation;
 import io.github.eggohito.eggolib.util.key.FunctionalKey;
 import io.github.eggohito.eggolib.util.key.TimedKey;
+import net.minecraft.command.EntitySelector;
+import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
@@ -298,5 +300,13 @@ public class EggolibDataTypes {
     public static final SerializableDataType<List<Integer>> POSITIVE_INTS = SerializableDataType.list(POSITIVE_INT);
 
     public static final SerializableDataType<SoundCategory> SOUND_CATEGORY = SerializableDataType.enumValue(SoundCategory.class);
+
+    public static final SerializableDataType<ArgumentWrapper<EntitySelector>> PLAYER_SELECTOR = SerializableDataType.argumentType(EntityArgumentType.player());
+
+    public static final SerializableDataType<ArgumentWrapper<EntitySelector>> PLAYERS_SELECTOR = SerializableDataType.argumentType(EntityArgumentType.players());
+
+    public static final SerializableDataType<ArgumentWrapper<EntitySelector>> ENTITY_SELECTOR = SerializableDataType.argumentType(EntityArgumentType.entity());
+
+    public static final SerializableDataType<ArgumentWrapper<EntitySelector>> ENTITIES_SELECTOR = SerializableDataType.argumentType(EntityArgumentType.entities());
 
 }

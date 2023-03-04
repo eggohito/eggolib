@@ -26,6 +26,7 @@ public class EggolibEntityActions {
         register(PlaySoundAction.getFactory());
         register(RemovePowerAction.getFactory());
         register(SetPerspectiveAction.getFactory());
+        register(SelectAction.getFactory());
         register(SpawnEntityAction.getFactory());
     }
 
