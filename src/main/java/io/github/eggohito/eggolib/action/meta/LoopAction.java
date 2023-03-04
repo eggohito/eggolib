@@ -8,23 +8,23 @@ import io.github.eggohito.eggolib.Eggolib;
 import io.github.eggohito.eggolib.data.EggolibDataTypes;
 import io.github.eggohito.eggolib.util.ScoreboardUtil;
 
+import java.util.function.Consumer;
+
 public class LoopAction {
 
     public static <T> void action(SerializableData.Instance data, T t) {
 
-        int iterations = 0;
+        int maxIterations = 0;
 
-        ActionFactory<T>.Instance beforeAction = data.get("before_action");
-        ActionFactory<T>.Instance afterAction = data.get("after_action");
-        ActionFactory<T>.Instance action = data.get("action");
+        Consumer<T> beforeAction = data.get("before_action");
+        Consumer<T> afterAction = data.get("after_action");
+        Consumer<T> action = data.get("action");
 
-        if (data.isPresent("score")) iterations = ScoreboardUtil.getScore(data.get("score"));
-        else if (data.isPresent("value")) iterations = data.getInt("value");
-
-        if (iterations <= 0) return;
+        if (data.isPresent("score")) maxIterations = ScoreboardUtil.getScore(data.get("score"));
+        else if (data.isPresent("value")) maxIterations = data.getInt("value");
 
         if (beforeAction != null) beforeAction.accept(t);
-        for (int i = 0; i < iterations; i++) {
+        for (int i = 0; i < maxIterations; i++) {
             action.accept(t);
         }
         if (afterAction != null) afterAction.accept(t);
@@ -32,8 +32,7 @@ public class LoopAction {
     }
 
     public static <T> ActionFactory<T> getFactory(SerializableDataType<ActionFactory<T>.Instance> actionDataType) {
-
-        return new ActionFactory<T>(
+        return new ActionFactory<>(
             Eggolib.identifier("loop"),
             new SerializableData()
                 .add("before_action", actionDataType, null)
@@ -43,7 +42,6 @@ public class LoopAction {
                 .add("value", SerializableDataTypes.INT, null),
             LoopAction::action
         );
-
     }
 
 }

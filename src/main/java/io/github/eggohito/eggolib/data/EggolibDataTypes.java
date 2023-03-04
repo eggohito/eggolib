@@ -16,6 +16,7 @@ import io.github.eggohito.eggolib.util.key.FunctionalKey;
 import io.github.eggohito.eggolib.util.key.TimedKey;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.command.argument.EntityArgumentType;
+import net.minecraft.command.argument.ScoreHolderArgumentType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
@@ -40,6 +41,18 @@ public class EggolibDataTypes {
 
     public static final SerializableDataType<List<ConditionFactory<RegistryEntry<DimensionType>>.Instance>> DIMENSION_TYPE_CONDITIONS = SerializableDataType.list(DIMENSION_TYPE_CONDITION);
 
+    public static final SerializableDataType<ArgumentWrapper<EntitySelector>> PLAYER_SELECTOR = SerializableDataType.argumentType(EntityArgumentType.player());
+
+    public static final SerializableDataType<ArgumentWrapper<EntitySelector>> PLAYERS_SELECTOR = SerializableDataType.argumentType(EntityArgumentType.players());
+
+    public static final SerializableDataType<ArgumentWrapper<EntitySelector>> ENTITY_SELECTOR = SerializableDataType.argumentType(EntityArgumentType.entity());
+
+    public static final SerializableDataType<ArgumentWrapper<EntitySelector>> ENTITIES_SELECTOR = SerializableDataType.argumentType(EntityArgumentType.entities());
+
+    public static final SerializableDataType<ArgumentWrapper<ScoreHolderArgumentType.ScoreHolder>> SCORE_HOLDER = SerializableDataType.argumentType(ScoreHolderArgumentType.scoreHolder());
+
+    public static final SerializableDataType<ArgumentWrapper<ScoreHolderArgumentType.ScoreHolder>> SCORE_HOLDERS = SerializableDataType.argumentType(ScoreHolderArgumentType.scoreHolders());
+
     public static final SerializableDataType<MathOperation> MATH_OPERATION = SerializableDataType.enumValue(MathUtil.MathOperation.class);
 
     public static final SerializableDataType<PowerOperation> POWER_OPERATION = SerializableDataType.enumValue(PowerOperation.class, SerializationHelper.buildEnumMap(PowerOperation.class, PowerOperation::getOperationName));
@@ -52,19 +65,29 @@ public class EggolibDataTypes {
 
     public static final SerializableDataType<EnumSet<EggolibPerspective>> PERSPECTIVE_SET = SerializableDataType.enumSet(EggolibPerspective.class, PERSPECTIVE);
 
-    public static final SerializableDataType<Pair<String, String>> SCOREBOARD = SerializableDataType.compound(
+    public static final SerializableDataType<AbstractTeam.CollisionRule> COLLISION_RULE = SerializableDataType.enumValue(AbstractTeam.CollisionRule.class);
+
+    public static final SerializableDataType<AbstractTeam.VisibilityRule> VISIBILITY_RULE = SerializableDataType.enumValue(AbstractTeam.VisibilityRule.class);
+
+    public static final SerializableDataType<SoundCategory> SOUND_CATEGORY = SerializableDataType.enumValue(SoundCategory.class);
+
+    public static final SerializableDataType<Pair<ArgumentWrapper<ScoreHolderArgumentType.ScoreHolder>, String>> SCOREBOARD = SerializableDataType.compound(
         ClassUtil.castClass(Pair.class),
         new SerializableData()
-            .add("name", SerializableDataTypes.STRING)
+            .add("name", EggolibDataTypes.SCORE_HOLDER)
             .add("objective", SerializableDataTypes.STRING),
-        data -> new Pair<>(data.getString("name"), data.getString("objective")),
-        (serializableData, nameAndObjective) -> {
+        data -> new Pair<>(
+            data.get("name"),
+            data.get("objective")
+        ),
+        (serializableData, scoreHolderAndObjectiveName) -> {
 
-            SerializableData.Instance instance = serializableData.new Instance();
-            instance.set("name", nameAndObjective.getLeft());
-            instance.set("objective", nameAndObjective.getRight());
+            SerializableData.Instance data = serializableData.new Instance();
 
-            return instance;
+            data.set("name", scoreHolderAndObjectiveName.getLeft());
+            data.set("objective", scoreHolderAndObjectiveName.getRight());
+
+            return data;
 
         }
     );
@@ -222,10 +245,6 @@ public class EggolibDataTypes {
 
     public static final SerializableDataType<List<Pair<ArgumentWrapper<Integer>, ItemStack>>> GENERALIZED_POSITIONED_ITEM_STACKS = SerializableDataType.list(GENERALIZED_POSITIONED_ITEM_STACK);
 
-    public static final SerializableDataType<AbstractTeam.CollisionRule> COLLISION_RULE = SerializableDataType.enumValue(AbstractTeam.CollisionRule.class);
-
-    public static final SerializableDataType<AbstractTeam.VisibilityRule> VISIBILITY_RULE = SerializableDataType.enumValue(AbstractTeam.VisibilityRule.class);
-
     public static final SerializableDataType<EggolibTeam> TEAM = SerializableDataType.compound(
         EggolibTeam.class,
         new SerializableData()
@@ -298,15 +317,5 @@ public class EggolibDataTypes {
     );
 
     public static final SerializableDataType<List<Integer>> POSITIVE_INTS = SerializableDataType.list(POSITIVE_INT);
-
-    public static final SerializableDataType<SoundCategory> SOUND_CATEGORY = SerializableDataType.enumValue(SoundCategory.class);
-
-    public static final SerializableDataType<ArgumentWrapper<EntitySelector>> PLAYER_SELECTOR = SerializableDataType.argumentType(EntityArgumentType.player());
-
-    public static final SerializableDataType<ArgumentWrapper<EntitySelector>> PLAYERS_SELECTOR = SerializableDataType.argumentType(EntityArgumentType.players());
-
-    public static final SerializableDataType<ArgumentWrapper<EntitySelector>> ENTITY_SELECTOR = SerializableDataType.argumentType(EntityArgumentType.entity());
-
-    public static final SerializableDataType<ArgumentWrapper<EntitySelector>> ENTITIES_SELECTOR = SerializableDataType.argumentType(EntityArgumentType.entities());
 
 }
