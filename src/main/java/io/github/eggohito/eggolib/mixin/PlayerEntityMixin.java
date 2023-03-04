@@ -1,10 +1,6 @@
 package io.github.eggohito.eggolib.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import io.github.apace100.apoli.component.PowerHolderComponent;
-import io.github.apace100.apoli.power.ModifyDamageDealtPower;
-import io.github.apace100.apoli.power.ModifyDamageTakenPower;
-import io.github.apace100.apoli.power.ModifyProjectileDamagePower;
 import io.github.eggohito.eggolib.power.ActionOnCriticalHitPower;
 import io.github.eggohito.eggolib.power.PreventCriticalHitPower;
 import io.github.eggohito.eggolib.power.PrioritizedPower;
@@ -20,10 +16,10 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
+
+import java.util.List;
 
 @Mixin(PlayerEntity.class)
 public abstract class PlayerEntityMixin extends LivingEntity implements Nameable, CommandOutput {
@@ -46,17 +42,21 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Nameable
     @ModifyExpressionValue(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;isSprinting()Z", ordinal = 1))
     private boolean eggolib$preventCriticalHit(boolean originalValue) {
 
-        PrioritizedPower.SortedMap<PreventCriticalHitPower> pchpsm = new PrioritizedPower.SortedMap<>();
-        pchpsm.add(this, PreventCriticalHitPower.class, pchp -> pchp.doesApply(eggolib$cachedTarget, eggolib$cachedDamageSource, eggolib$cachedDamageAmount));
+        PrioritizedPower.CallInstance<PreventCriticalHitPower> pchpci = new PrioritizedPower.CallInstance<>();
+        pchpci.add(this, PreventCriticalHitPower.class, pchp -> pchp.doesApply(eggolib$cachedTarget, eggolib$cachedDamageSource, eggolib$cachedDamageAmount));
 
-        int count = 0;
-        for (int i = pchpsm.getMaxPriority(); i >= 0; i--) {
-            if (!pchpsm.hasPowers(i)) continue;
-            pchpsm.getPowers(i).forEach(pchp -> pchp.executeActions(eggolib$cachedTarget));
-            count++;
+        int preventCriticalHitPowers = 0;
+        for (int i = pchpci.getMaxPriority(); i >= pchpci.getMinPriority(); i--) {
+
+            if (!pchpci.hasPowers(i)) continue;
+            List<PreventCriticalHitPower> pchps = pchpci.getPowers(i);
+
+            preventCriticalHitPowers += pchps.size();
+            pchps.forEach(pchp -> pchp.executeActions(eggolib$cachedTarget));
+
         }
 
-        if (count > 0) return true;
+        if (preventCriticalHitPowers > 0) return true;
         else return originalValue;
 
     }
@@ -64,12 +64,12 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Nameable
     @Inject(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;addCritParticles(Lnet/minecraft/entity/Entity;)V"))
     private void eggolib$actionOnCriticalHit(Entity target, CallbackInfo ci) {
 
-        PrioritizedPower.SortedMap<ActionOnCriticalHitPower> aochpsm = new PrioritizedPower.SortedMap<>();
-        aochpsm.add(this, ActionOnCriticalHitPower.class, aochp -> aochp.doesApply(eggolib$cachedDamageSource, eggolib$cachedDamageAmount, eggolib$cachedTarget));
+        PrioritizedPower.CallInstance<ActionOnCriticalHitPower> aochpci = new PrioritizedPower.CallInstance<>();
+        aochpci.add(this, ActionOnCriticalHitPower.class, aochp -> aochp.doesApply(eggolib$cachedDamageSource, eggolib$cachedDamageAmount, eggolib$cachedTarget));
 
-        for (int i = aochpsm.getMaxPriority(); i >= 0; i--) {
-            if (!aochpsm.hasPowers(i)) continue;
-            aochpsm.getPowers(i).forEach(aochp -> aochp.executeActions(target));
+        for (int i = aochpci.getMaxPriority(); i >= aochpci.getMinPriority(); i--) {
+            if (!aochpci.hasPowers(i)) continue;
+            aochpci.getPowers(i).forEach(aochp -> aochp.executeActions(target));
         }
 
     }

@@ -37,22 +37,21 @@ public class BlockItemMixin {
 
         if (playerEntity == null) return;
 
-        int eggolib$preventBlockPlacePowers = 0;
+        int preventBlockPlacePowers = 0;
         ActiveInteractionPower.CallInstance<PreventBlockPlacePower> pbppci = new ActiveInteractionPower.CallInstance<>();
         pbppci.add(playerEntity, PreventBlockPlacePower.class, pbpp -> pbpp.doesPrevent(hand, hitPos, placementPos, direction, itemStack));
 
-        for (int i = pbppci.getMaxPriority(); i >= 0; i--) {
+        for (int i = pbppci.getMaxPriority(); i >= pbppci.getMaxPriority(); i--) {
 
             if (!pbppci.hasPowers(i)) continue;
-
             List<PreventBlockPlacePower> pbpps = pbppci.getPowers(i);
-            eggolib$preventBlockPlacePowers += pbpps.size();
 
+            preventBlockPlacePowers += pbpps.size();
             pbpps.forEach(pbpp -> pbpp.executeActions(hand, hitPos, placementPos, direction));
 
         }
 
-        if (eggolib$preventBlockPlacePowers > 0) cir.setReturnValue(false);
+        if (preventBlockPlacePowers > 0) cir.setReturnValue(false);
 
     }
 
@@ -71,7 +70,7 @@ public class BlockItemMixin {
         eggolib$aobppci = new ActiveInteractionPower.CallInstance<>();
         eggolib$aobppci.add(playerEntity, ActionOnBlockPlacePower.class, aobpp -> aobpp.shouldExecute(hand, hitPos, placementPos, direction, itemStack));
 
-        for (int i = eggolib$aobppci.getMaxPriority(); i >= 0; i--) {
+        for (int i = eggolib$aobppci.getMaxPriority(); i >= eggolib$aobppci.getMinPriority(); i--) {
             if (!eggolib$aobppci.hasPowers(i)) continue;
             eggolib$aobppci.getPowers(i).forEach(aobpp -> aobpp.executeBlockAndEntityActions(hitPos, placementPos, direction));
         }
@@ -86,7 +85,7 @@ public class BlockItemMixin {
 
         if (playerEntity == null) return;
 
-        for (int i = eggolib$aobppci.getMaxPriority(); i >= 0; i--) {
+        for (int i = eggolib$aobppci.getMaxPriority(); i >= eggolib$aobppci.getMinPriority(); i--) {
             if (!eggolib$aobppci.hasPowers(i)) continue;
             eggolib$aobppci.getPowers(i).forEach(aobpp -> aobpp.executeItemActions(playerEntity, hand));
         }

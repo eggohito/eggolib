@@ -7,6 +7,7 @@ import net.minecraft.entity.LivingEntity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -29,11 +30,11 @@ public class PrioritizedPower extends Power {
 
     /**
      *  A generalized implementation for sorting powers based on the power's specified priority value.
-     *  @param <T> the type of power classes in this map. <b>Only accepts classes that extend the {@link PrioritizedPower} class.</b>
+     *  @param <P> the type of power classes in this map. <b>Only accepts classes that extend the {@link PrioritizedPower} class.</b>
      */
-    public static class SortedMap<T extends PrioritizedPower> {
+    public static class CallInstance<P extends PrioritizedPower> {
 
-        private final HashMap<Integer, List<T>> prioritiesAndPowersMap = new HashMap<>();
+        private final HashMap<Integer, List<P>> prioritiesAndPowersMap = new HashMap<>();
         private int minPriority = Integer.MAX_VALUE;
         private int maxPriority = Integer.MIN_VALUE;
 
@@ -50,8 +51,8 @@ public class PrioritizedPower extends Power {
          *  @param livingEntity the source of the power
          *  @param powerClass the power class
          */
-        public <U extends T> void add(LivingEntity livingEntity, Class<U> powerClass) {
-            add(livingEntity, powerClass, null);
+        public void add(LivingEntity livingEntity, Class<P> powerClass) {
+            add(livingEntity, powerClass, p -> true);
         }
 
         /**
@@ -60,19 +61,19 @@ public class PrioritizedPower extends Power {
          * @param powerClass the power class
          * @param powerFilter the filter to use for filtering the stream
          */
-        public <U extends T> void add(LivingEntity livingEntity, Class<U> powerClass, Predicate<U> powerFilter) {
-            Stream<U> powerStream = PowerHolderComponent.getPowers(livingEntity, powerClass).stream().filter(power -> powerFilter == null || powerFilter.test(power));
+        public void add(LivingEntity livingEntity, Class<P> powerClass, Predicate<P> powerFilter) {
+            Stream<P> powerStream = PowerHolderComponent.getPowers(livingEntity, powerClass).stream().filter(powerFilter);
             powerStream.forEach(this::add);
         }
 
-        private void add(T t) {
+        private void add(P power) {
 
-            int priority = t.getPriority();
+            int priority = power.getPriority();
 
-            if (prioritiesAndPowersMap.containsKey(priority)) prioritiesAndPowersMap.get(priority).add(t);
+            if (prioritiesAndPowersMap.containsKey(priority)) prioritiesAndPowersMap.get(priority).add(power);
             else {
-                List<T> l = new ArrayList<>();
-                l.add(t);
+                List<P> l = new LinkedList<>();
+                l.add(power);
                 prioritiesAndPowersMap.put(priority, l);
             }
 
@@ -95,9 +96,9 @@ public class PrioritizedPower extends Power {
          *  @param priority an integer
          *  @return A {@link List} of the power classes if the priority key exists in the map. Otherwise, returns an empty {@link ArrayList}.
          */
-        public List<T> getPowers(int priority) {
+        public List<P> getPowers(int priority) {
             if (hasPowers(priority)) return prioritiesAndPowersMap.get(priority);
-            else return new ArrayList<>();
+            else return new LinkedList<>();
         }
 
     }

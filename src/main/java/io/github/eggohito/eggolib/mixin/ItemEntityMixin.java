@@ -1,6 +1,5 @@
 package io.github.eggohito.eggolib.mixin;
 
-import io.github.eggohito.eggolib.Eggolib;
 import io.github.eggohito.eggolib.power.ActionOnItemPickupPower;
 import io.github.eggohito.eggolib.power.PreventItemPickupPower;
 import io.github.eggohito.eggolib.power.PrioritizedPower;
@@ -16,57 +15,58 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Mixin(ItemEntity.class)
 public abstract class ItemEntityMixin {
 
     @Inject(method = "onPlayerCollision", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerInventory;insertStack(Lnet/minecraft/item/ItemStack;)Z"), cancellable = true)
-    private void eggolib$actionOnItemPickup(PlayerEntity playerEntity, CallbackInfo ci) {
+    private void eggolib$onItemPickup(PlayerEntity playerEntity, CallbackInfo ci) {
 
         ItemEntity thisAsItemEntity = (ItemEntity) (Object) this;
         ItemStack itemStack = thisAsItemEntity.getStack();
         UUID throwerUUID = thisAsItemEntity.getThrower();
 
         //  Get the thrower entity of this item entity
-        Entity[] singletonThrowerEntity = {null};
+        AtomicReference<Entity> atomicThrowerEntity = new AtomicReference<>();
 
-        if (Eggolib.minecraftServer != null && throwerUUID != null) {
-            for (ServerWorld serverWorld : Eggolib.minecraftServer.getWorlds()) {
-                singletonThrowerEntity[0] = serverWorld.getEntity(throwerUUID);
-                if (singletonThrowerEntity[0] != null) break;
+        if (thisAsItemEntity.getServer() != null && throwerUUID != null) {
+            for (ServerWorld serverWorld : thisAsItemEntity.getServer().getWorlds()) {
+                atomicThrowerEntity.set(serverWorld.getEntity(throwerUUID));
+                if (atomicThrowerEntity.get() != null) break;
             }
         }
 
-        //  PreventItemPickupPower
-        PrioritizedPower.SortedMap<PreventItemPickupPower> pippsm = new PrioritizedPower.SortedMap<>();
-        pippsm.add(playerEntity, PreventItemPickupPower.class, pipp -> pipp.doesPrevent(itemStack, singletonThrowerEntity[0]));
-        int j = 0;
+        //  Prevent the item entity from being picked up
+        PrioritizedPower.CallInstance<PreventItemPickupPower> pippci = new PrioritizedPower.CallInstance<>();
+        pippci.add(playerEntity, PreventItemPickupPower.class, pipp -> pipp.doesPrevent(itemStack, atomicThrowerEntity.get()));
+        int preventItemPickupPowers = 0;
 
-        for (int i = pippsm.getMaxPriority(); i >= 0; i--) {
+        for (int i = pippci.getMaxPriority(); i >= pippci.getMinPriority(); i--) {
 
-            if (!pippsm.hasPowers(i)) continue;
+            if (!pippci.hasPowers(i)) continue;
+            List<PreventItemPickupPower> pipps = pippci.getPowers(i);
 
-            List<PreventItemPickupPower> pipps = pippsm.getPowers(i);
-            pipps.forEach(pipp -> pipp.executeActions(itemStack, singletonThrowerEntity[0]));
-            j++;
+            preventItemPickupPowers += pipps.size();
+            pipps.forEach(pipp -> pipp.executeActions(itemStack, atomicThrowerEntity.get()));
 
         }
 
-        if (j > 0) {
+        if (preventItemPickupPowers > 0) {
             ci.cancel();
             return;
         }
 
-        //  ActionOnItemPickupPower
-        PrioritizedPower.SortedMap<ActionOnItemPickupPower> aoippsm = new PrioritizedPower.SortedMap<>();
-        aoippsm.add(playerEntity, ActionOnItemPickupPower.class, aoipp -> aoipp.doesApply(itemStack, singletonThrowerEntity[0]));
+        //  Execute an action upon the item entity being picked up
+        PrioritizedPower.CallInstance<ActionOnItemPickupPower> aoippci = new PrioritizedPower.CallInstance<>();
+        aoippci.add(playerEntity, ActionOnItemPickupPower.class, aoipp -> aoipp.doesApply(itemStack, atomicThrowerEntity.get()));
 
-        for (int i = aoippsm.getMaxPriority(); i >= 0; i--) {
+        for (int i = aoippci.getMaxPriority(); i >= aoippci.getMinPriority(); i--) {
 
-            if (!aoippsm.hasPowers(i)) continue;
+            if (!aoippci.hasPowers(i)) continue;
 
-            List<ActionOnItemPickupPower> aoipps = aoippsm.getPowers(i);
-            aoipps.forEach(aoipp -> aoipp.executeActions(itemStack, singletonThrowerEntity[0]));
+            List<ActionOnItemPickupPower> aoipps = aoippci.getPowers(i);
+            aoipps.forEach(aoipp -> aoipp.executeActions(itemStack, atomicThrowerEntity.get()));
 
         }
 
