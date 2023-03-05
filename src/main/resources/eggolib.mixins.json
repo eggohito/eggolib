@@ -27,7 +27,8 @@
         "EntityRendererMixin",
         "GameOptionsMixin",
         "LivingEntityRendererMixin",
-        "MouseMixin"
+        "MouseMixin",
+        "apace100.apoli.ApoliClientMixin"
     ],
     "server": [],
     "injectors": {

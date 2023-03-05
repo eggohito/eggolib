@@ -48,7 +48,7 @@ public class EggolibClient implements ClientModInitializer {
                 if (minecraftClient.player == null) return;
 
                 List<ActionOnKeySequencePower> powers = PowerHolderComponent.getPowers(minecraftClient.player, ActionOnKeySequencePower.class).stream().filter(Power::isActive).toList();
-                if (powers.size() <= 0) return;
+                if (powers.isEmpty()) return;
 
                 HashMap<ActionOnKeySequencePower, FunctionalKey> triggeredPowers = new HashMap<>();
                 HashMap<String, Boolean> currentKeyBindingStates = new HashMap<>();
@@ -69,7 +69,7 @@ public class EggolibClient implements ClientModInitializer {
                 }
 
                 previousKeyBindingStates = currentKeyBindingStates;
-                if (triggeredPowers.size() > 0) {
+                if (!triggeredPowers.isEmpty()) {
                     syncKeyPresses(triggeredPowers);
                     compareKeySequences(triggeredPowers);
                 }
@@ -77,6 +77,10 @@ public class EggolibClient implements ClientModInitializer {
             }
         );
 
+    }
+
+    public static void addPowerKeyBinding(String keyName, KeyBinding keyBinding) {
+        ID_TO_KEYBINDING_MAP.put(keyName, keyBinding);
     }
 
     private void syncKeyPresses(HashMap<ActionOnKeySequencePower, FunctionalKey> powerAndKeyMap) {
@@ -94,7 +98,7 @@ public class EggolibClient implements ClientModInitializer {
 
         }
 
-        if (powerIdAndKeyStringMap.size() <= 0) return;
+        if (powerIdAndKeyStringMap.isEmpty()) return;
 
         buffer.writeMap(powerIdAndKeyStringMap, PacketByteBuf::writeIdentifier, PacketByteBuf::writeString);
         ClientPlayNetworking.send(EggolibPackets.SYNC_KEY_PRESS, buffer);
@@ -123,7 +127,7 @@ public class EggolibClient implements ClientModInitializer {
 
         }
 
-        if (powerIdAndMatchingSequenceMap.size() <= 0) return;
+        if (powerIdAndMatchingSequenceMap.isEmpty()) return;
 
         buffer.writeMap(powerIdAndMatchingSequenceMap, PacketByteBuf::writeIdentifier, PacketByteBuf::writeBoolean);
         ClientPlayNetworking.send(EggolibPackets.END_KEY_SEQUENCE, buffer);
