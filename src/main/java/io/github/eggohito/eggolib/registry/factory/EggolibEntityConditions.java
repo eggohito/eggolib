@@ -19,6 +19,7 @@ public class EggolibEntityConditions {
         register(InScreenCondition.getFactory());
         register(InTeamCondition.getFactory());
         register(InventoryCondition.getFactory());
+        register(MoonPhaseCondition.getFactory());
         register(PermissionLevelCondition.getFactory());
         register(PerspectiveCondition.getFactory());
         register(ScoreboardCondition.getFactory());

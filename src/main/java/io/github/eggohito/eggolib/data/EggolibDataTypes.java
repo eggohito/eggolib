@@ -71,6 +71,10 @@ public class EggolibDataTypes {
 
     public static final SerializableDataType<SoundCategory> SOUND_CATEGORY = SerializableDataType.enumValue(SoundCategory.class);
 
+    public static final SerializableDataType<MoonPhase> MOON_PHASE = SerializableDataType.enumValue(MoonPhase.class);
+
+    public static final SerializableDataType<List<MoonPhase>> MOON_PHASES = SerializableDataType.list(MOON_PHASE);
+
     public static final SerializableDataType<Pair<ArgumentWrapper<ScoreHolderArgumentType.ScoreHolder>, String>> SCOREBOARD = SerializableDataType.compound(
         ClassUtil.castClass(Pair.class),
         new SerializableData()
