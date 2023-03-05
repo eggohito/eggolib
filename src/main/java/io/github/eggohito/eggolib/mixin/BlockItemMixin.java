@@ -41,7 +41,7 @@ public class BlockItemMixin {
         ActiveInteractionPower.CallInstance<PreventBlockPlacePower> pbppci = new ActiveInteractionPower.CallInstance<>();
         pbppci.add(playerEntity, PreventBlockPlacePower.class, pbpp -> pbpp.doesPrevent(hand, hitPos, placementPos, direction, itemStack));
 
-        for (int i = pbppci.getMaxPriority(); i >= pbppci.getMaxPriority(); i--) {
+        for (int i = pbppci.getMaxPriority(); i >= pbppci.getMinPriority(); i--) {
 
             if (!pbppci.hasPowers(i)) continue;
             List<PreventBlockPlacePower> pbpps = pbppci.getPowers(i);
