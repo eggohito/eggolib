@@ -1,6 +1,6 @@
 package io.github.eggohito.eggolib.util;
 
-import io.github.apace100.calio.ClassUtil;
+import com.google.common.collect.HashBiMap;
 import io.github.apace100.calio.data.ClassDataRegistry;
 import io.github.eggohito.eggolib.Eggolib;
 import io.github.eggohito.eggolib.mixin.apace100.calio.ClassDataRegistryAccessor;
@@ -9,54 +9,44 @@ import io.netty.buffer.Unpooled;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.option.Perspective;
 import net.minecraft.network.PacketByteBuf;
 
-import java.util.Collection;
 import java.util.Optional;
-import java.util.Set;
 
 @Environment(EnvType.CLIENT)
 public class MiscUtilClient {
 
     @SuppressWarnings("rawtypes")
-    public static void isInScreen(MinecraftClient minecraftClient, Set<String> screenClassStrings) {
+    public static void syncScreen(MinecraftClient client) {
 
-        if (minecraftClient.player == null) return;
+        if (client.player == null) return;
 
-        boolean matches = false;
-        PacketByteBuf buffer = new PacketByteBuf(Unpooled.buffer());
-        Optional<ClassDataRegistry> opt$inGameScreenCDR = ClassDataRegistry.get(ClassUtil.castClass(Screen.class));
+        String screenClassName = "";
+        PacketByteBuf buffer = PacketByteBufs.create();
+        Optional<ClassDataRegistry> opt$inGameScreenCDR = ClassDataRegistry.get(Screen.class);
 
-        if (opt$inGameScreenCDR.isPresent() && minecraftClient.currentScreen != null) {
+        if (opt$inGameScreenCDR.isPresent() && client.currentScreen != null) {
 
-            Class<?> currentScreenClass = minecraftClient.currentScreen.getClass();
             ClassDataRegistry<?> inGameScreenCDR = opt$inGameScreenCDR.get();
+            Class<?> screenClass = client.currentScreen.getClass();
 
-            if (screenClassStrings.isEmpty()) {
-                Collection<Class<?>> inGameScreenClasses = ((ClassDataRegistryAccessor) inGameScreenCDR).getMappings().values();
-                matches = inGameScreenClasses.contains(currentScreenClass);
-            }
-
-            else matches = screenClassStrings
-                .stream()
-                .map(inGameScreenCDR::mapStringToClass)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .anyMatch(inGameScreenClass -> inGameScreenClass.isAssignableFrom(currentScreenClass));
+            HashBiMap<String, Class<?>> inGameScreens = HashBiMap.create(((ClassDataRegistryAccessor) inGameScreenCDR).getMappings());
+            if (inGameScreens.containsValue(screenClass)) screenClassName = inGameScreens.inverse().get(screenClass);
 
         }
 
-        if (Eggolib.PLAYERS_IN_SCREEN.get(minecraftClient.player) != null && Eggolib.PLAYERS_IN_SCREEN.get(minecraftClient.player) == matches) return;
-        Eggolib.PLAYERS_IN_SCREEN.put(minecraftClient.player, matches);
+        if (Eggolib.PLAYERS_SCREEN.get(client.player) != null && Eggolib.PLAYERS_SCREEN.get(client.player).equals(screenClassName)) return;
+        Eggolib.PLAYERS_SCREEN.put(client.player, screenClassName);
 
-        buffer.writeInt(minecraftClient.player.getId());
-        buffer.writeBoolean(matches);
+        buffer.writeInt(client.player.getId());
+        buffer.writeString(screenClassName);
 
         ClientPlayNetworking.send(
-            EggolibPackets.IS_IN_SCREEN,
+            EggolibPackets.SYNC_SCREEN,
             buffer
         );
 

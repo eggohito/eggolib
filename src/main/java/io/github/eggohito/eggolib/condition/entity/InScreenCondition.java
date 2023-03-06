@@ -12,7 +12,6 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.util.HashSet;
@@ -23,36 +22,33 @@ public class InScreenCondition {
     public static boolean condition(SerializableData.Instance data, Entity entity) {
 
         if (!(entity instanceof PlayerEntity playerEntity)) return false;
+        if (!Eggolib.PLAYERS_SCREEN.containsKey(playerEntity)) initializeScreen(playerEntity);
 
-        Set<String> screenClassStrings = new HashSet<>();
-        PacketByteBuf buffer = PacketByteBufs.create();
+        Set<String> screenClassNames = new HashSet<>();
+        String currentScreenClassName = Eggolib.PLAYERS_SCREEN.get(playerEntity);
+        if (currentScreenClassName == null || currentScreenClassName.isEmpty()) return false;
 
-        data.ifPresent("screen", screenClassStrings::add);
-        data.ifPresent("screens", screenClassStrings::addAll);
+        data.ifPresent("screen", screenClassNames::add);
+        data.ifPresent("screens", screenClassNames::addAll);
 
-        if (entity.world.isClient) {
-            MinecraftClient minecraftClient = ((ClientPlayerEntityAccessor) playerEntity).getClient();
-            minecraftClient.execute(
-                () -> MiscUtilClient.isInScreen(minecraftClient, screenClassStrings)
+        return !screenClassNames.isEmpty() && screenClassNames.contains(currentScreenClassName);
+
+    }
+
+    public static void initializeScreen(PlayerEntity playerEntity) {
+
+        if (playerEntity.world.isClient) {
+            MinecraftClient client = ((ClientPlayerEntityAccessor) playerEntity).getClient();
+            client.execute(
+                () -> MiscUtilClient.syncScreen(client)
             );
         }
 
-        else {
-
-            buffer.writeInt(screenClassStrings.size());
-            for (String screenClassString : screenClassStrings) {
-                buffer.writeString(screenClassString);
-            }
-
-            ServerPlayNetworking.send(
-                (ServerPlayerEntity) playerEntity,
-                EggolibPackets.IS_IN_SCREEN,
-                buffer
-            );
-
-        }
-
-        return Eggolib.PLAYERS_IN_SCREEN.getOrDefault(playerEntity, false);
+        else ServerPlayNetworking.send(
+            (ServerPlayerEntity) playerEntity,
+            EggolibPackets.SYNC_SCREEN,
+            PacketByteBufs.empty()
+        );
 
     }
 

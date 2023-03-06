@@ -8,6 +8,7 @@ import io.github.eggohito.eggolib.networking.EggolibPackets;
 import io.github.eggohito.eggolib.networking.EggolibPacketsS2C;
 import io.github.eggohito.eggolib.power.ActionOnKeySequencePower;
 import io.github.eggohito.eggolib.util.Key;
+import io.github.eggohito.eggolib.util.MiscUtilClient;
 import io.github.eggohito.eggolib.util.key.FunctionalKey;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.api.ClientModInitializer;
@@ -46,6 +47,7 @@ public class EggolibClient implements ClientModInitializer {
             minecraftClient -> {
 
                 if (minecraftClient.player == null) return;
+                MiscUtilClient.syncScreen(minecraftClient);
 
                 List<ActionOnKeySequencePower> powers = PowerHolderComponent.getPowers(minecraftClient.player, ActionOnKeySequencePower.class).stream().filter(Power::isActive).toList();
                 if (powers.isEmpty()) return;

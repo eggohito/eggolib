@@ -17,7 +17,6 @@
         "ProjectileEntityMixin",
         "ServerPlayerInteractionManagerAccessor",
         "VibrationListenerMixin",
-        "apace100.apoli.PowerHolderComponentImplMixin",
         "apace100.calio.ClassDataRegistryAccessor",
         "micalobia.breathinglib.BreathingInfoBuilderAccessor"
     ],

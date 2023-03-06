@@ -31,7 +31,7 @@ public class Eggolib implements ModInitializer {
     public static final String MOD_ID = "eggolib";
     public static final Logger LOGGER = LoggerFactory.getLogger(Eggolib.class);
 
-    public static final HashMap<PlayerEntity, Boolean> PLAYERS_IN_SCREEN = new HashMap<>();
+    public static final HashMap<PlayerEntity, String> PLAYERS_SCREEN = new HashMap<>();
     public static final HashMap<PlayerEntity, String> PLAYERS_PERSPECTIVE = new HashMap<>();
 
     @Override
@@ -99,7 +99,7 @@ public class Eggolib implements ModInitializer {
         //  Remove the player from the HashMaps upon them disconnecting
         ServerPlayConnectionEvents.DISCONNECT.register(
             (serverPlayNetworkHandler, minecraftServer) -> {
-                PLAYERS_IN_SCREEN.remove(serverPlayNetworkHandler.player);
+                PLAYERS_SCREEN.remove(serverPlayNetworkHandler.player);
                 PLAYERS_PERSPECTIVE.remove(serverPlayNetworkHandler.player);
             }
         );

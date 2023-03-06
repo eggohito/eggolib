@@ -18,8 +18,8 @@
 package io.github.eggohito.eggolib.networking;
 
 import io.github.eggohito.eggolib.Eggolib;
-import io.github.eggohito.eggolib.util.MiscUtilClient;
 import io.github.eggohito.eggolib.util.EggolibPerspective;
+import io.github.eggohito.eggolib.util.MiscUtilClient;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import net.fabricmc.api.EnvType;
@@ -34,8 +34,6 @@ import net.minecraft.client.network.ClientLoginNetworkHandler;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.network.PacketByteBuf;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
@@ -47,7 +45,7 @@ public class EggolibPacketsS2C {
         ClientPlayConnectionEvents.INIT.register(
             (clientPlayNetworkHandler, minecraftClient) -> {
                 ClientPlayNetworking.registerReceiver(EggolibPackets.CLOSE_SCREEN, EggolibPacketsS2C::closeScreen);
-                ClientPlayNetworking.registerReceiver(EggolibPackets.IS_IN_SCREEN, EggolibPacketsS2C::isInScreen);
+                ClientPlayNetworking.registerReceiver(EggolibPackets.SYNC_SCREEN, EggolibPacketsS2C::syncScreen);
                 ClientPlayNetworking.registerReceiver(EggolibPackets.SET_PERSPECTIVE, EggolibPacketsS2C::setPerspective);
                 ClientPlayNetworking.registerReceiver(EggolibPackets.GET_PERSPECTIVE, EggolibPacketsS2C::getPerspective);
             }
@@ -73,18 +71,10 @@ public class EggolibPacketsS2C {
         );
     }
 
-    private static void isInScreen(MinecraftClient minecraftClient, ClientPlayNetworkHandler clientPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
-
-        int j = packetByteBuf.readInt();
-        Set<String> screenClassStrings = new HashSet<>();
-        for (int i = 0; i < j; i++) {
-            screenClassStrings.add(packetByteBuf.readString());
-        }
-
+    private static void syncScreen(MinecraftClient minecraftClient, ClientPlayNetworkHandler clientPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
         minecraftClient.execute(
-            () -> MiscUtilClient.isInScreen(minecraftClient, screenClassStrings)
+            () -> MiscUtilClient.syncScreen(minecraftClient)
         );
-
     }
 
     private static void setPerspective(MinecraftClient minecraftClient, ClientPlayNetworkHandler clientPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
