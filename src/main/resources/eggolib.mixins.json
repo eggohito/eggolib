@@ -26,6 +26,7 @@
         "EntityRendererMixin",
         "GameOptionsMixin",
         "LivingEntityRendererMixin",
+        "MinecraftClientMixin",
         "MouseMixin",
         "apace100.apoli.ApoliClientMixin"
     ],

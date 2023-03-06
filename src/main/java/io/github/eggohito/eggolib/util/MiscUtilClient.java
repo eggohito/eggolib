@@ -20,8 +20,12 @@ import java.util.Optional;
 @Environment(EnvType.CLIENT)
 public class MiscUtilClient {
 
-    @SuppressWarnings("rawtypes")
     public static void syncScreen(MinecraftClient client) {
+        syncScreen(client, client.currentScreen);
+    }
+
+    @SuppressWarnings("rawtypes")
+    public static void syncScreen(MinecraftClient client, Screen screen) {
 
         if (client.player == null) return;
 
@@ -29,10 +33,10 @@ public class MiscUtilClient {
         PacketByteBuf buffer = PacketByteBufs.create();
         Optional<ClassDataRegistry> opt$inGameScreenCDR = ClassDataRegistry.get(Screen.class);
 
-        if (opt$inGameScreenCDR.isPresent() && client.currentScreen != null) {
+        if (opt$inGameScreenCDR.isPresent() && screen != null) {
 
             ClassDataRegistry<?> inGameScreenCDR = opt$inGameScreenCDR.get();
-            Class<?> screenClass = client.currentScreen.getClass();
+            Class<?> screenClass = screen.getClass();
 
             HashBiMap<String, Class<?>> inGameScreens = HashBiMap.create(((ClassDataRegistryAccessor) inGameScreenCDR).getMappings());
             if (inGameScreens.containsValue(screenClass)) screenClassName = inGameScreens.inverse().get(screenClass);
@@ -50,6 +54,8 @@ public class MiscUtilClient {
             buffer
         );
 
+        Eggolib.LOGGER.warn(screenClassName);
+
     }
 
     public static void setPerspective(MinecraftClient minecraftClient, EggolibPerspective eggolibPerspective) {
@@ -65,7 +71,7 @@ public class MiscUtilClient {
     }
 
     public static void getPerspective(MinecraftClient minecraftClient) {
-        getPerspective(minecraftClient, null);
+        getPerspective(minecraftClient, minecraftClient.options.getPerspective());
     }
 
     public static void getPerspective(MinecraftClient minecraftClient, Perspective currentPerspective) {
@@ -73,7 +79,7 @@ public class MiscUtilClient {
         if (minecraftClient.player == null) return;
 
         PacketByteBuf buffer = new PacketByteBuf(Unpooled.buffer());
-        String currentEggolibPerspective = switch (currentPerspective != null ? currentPerspective : minecraftClient.options.getPerspective()) {
+        String currentEggolibPerspective = switch (currentPerspective) {
             case FIRST_PERSON -> EggolibPerspective.FIRST_PERSON.toString();
             case THIRD_PERSON_BACK -> EggolibPerspective.THIRD_PERSON_BACK.toString();
             case THIRD_PERSON_FRONT -> EggolibPerspective.THIRD_PERSON_FRONT.toString();
