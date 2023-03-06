@@ -83,16 +83,17 @@ public class MiscUtilClient {
         if (minecraftClient.player == null) return;
 
         PacketByteBuf buffer = new PacketByteBuf(Unpooled.buffer());
-        EggolibPerspective currentEggolibPerspective = switch (currentPerspective != null ? currentPerspective : minecraftClient.options.getPerspective()) {
-            case FIRST_PERSON -> EggolibPerspective.FIRST_PERSON;
-            case THIRD_PERSON_BACK -> EggolibPerspective.THIRD_PERSON_BACK;
-            case THIRD_PERSON_FRONT -> EggolibPerspective.THIRD_PERSON_FRONT;
+        String currentEggolibPerspective = switch (currentPerspective != null ? currentPerspective : minecraftClient.options.getPerspective()) {
+            case FIRST_PERSON -> EggolibPerspective.FIRST_PERSON.toString();
+            case THIRD_PERSON_BACK -> EggolibPerspective.THIRD_PERSON_BACK.toString();
+            case THIRD_PERSON_FRONT -> EggolibPerspective.THIRD_PERSON_FRONT.toString();
         };
 
-        Eggolib.PLAYERS_PERSPECTIVE.put(minecraftClient.player, currentEggolibPerspective.name());
+        if (Eggolib.PLAYERS_PERSPECTIVE.get(minecraftClient.player) != null && Eggolib.PLAYERS_PERSPECTIVE.get(minecraftClient.player).equalsIgnoreCase(currentEggolibPerspective)) return;
+        Eggolib.PLAYERS_PERSPECTIVE.put(minecraftClient.player, currentEggolibPerspective);
 
         buffer.writeInt(minecraftClient.player.getId());
-        buffer.writeString(currentEggolibPerspective.name());
+        buffer.writeString(currentEggolibPerspective);
 
         ClientPlayNetworking.send(
             EggolibPackets.GET_PERSPECTIVE,
