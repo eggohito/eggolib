@@ -26,12 +26,12 @@ public class InScreenCondition {
 
         Set<String> screenClassNames = new HashSet<>();
         String currentScreenClassName = Eggolib.PLAYERS_SCREEN.get(playerEntity);
-        if (currentScreenClassName == null || currentScreenClassName.isEmpty()) return false;
 
         data.ifPresent("screen", screenClassNames::add);
         data.ifPresent("screens", screenClassNames::addAll);
 
-        return !screenClassNames.isEmpty() && screenClassNames.contains(currentScreenClassName);
+        if (screenClassNames.isEmpty()) return currentScreenClassName != null;
+        else return screenClassNames.contains(currentScreenClassName);
 
     }
 

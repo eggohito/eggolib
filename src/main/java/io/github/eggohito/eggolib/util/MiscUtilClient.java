@@ -15,6 +15,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.option.Perspective;
 import net.minecraft.network.PacketByteBuf;
 
+import java.util.Objects;
 import java.util.Optional;
 
 @Environment(EnvType.CLIENT)
@@ -29,8 +30,7 @@ public class MiscUtilClient {
 
         if (client.player == null) return;
 
-        String screenClassName = "";
-        PacketByteBuf buffer = PacketByteBufs.create();
+        String screenClassName = null;
         Optional<ClassDataRegistry> opt$inGameScreenCDR = ClassDataRegistry.get(Screen.class);
 
         if (opt$inGameScreenCDR.isPresent() && screen != null) {
@@ -43,9 +43,10 @@ public class MiscUtilClient {
 
         }
 
-        if (Eggolib.PLAYERS_SCREEN.get(client.player) != null && Eggolib.PLAYERS_SCREEN.get(client.player).equals(screenClassName)) return;
+        if (Eggolib.PLAYERS_SCREEN.containsKey(client.player) && Objects.equals(Eggolib.PLAYERS_SCREEN.get(client.player), screenClassName)) return;
         Eggolib.PLAYERS_SCREEN.put(client.player, screenClassName);
 
+        PacketByteBuf buffer = PacketByteBufs.create();
         buffer.writeInt(client.player.getId());
         buffer.writeString(screenClassName);
 
@@ -53,6 +54,8 @@ public class MiscUtilClient {
             EggolibPackets.SYNC_SCREEN,
             buffer
         );
+
+        Eggolib.LOGGER.warn("Current screen: " + screenClassName);
 
     }
 
