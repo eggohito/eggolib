@@ -55,8 +55,6 @@ public class MiscUtilClient {
             buffer
         );
 
-        Eggolib.LOGGER.warn("Current screen: " + screenClassName);
-
     }
 
     public static void setPerspective(MinecraftClient minecraftClient, EggolibPerspective eggolibPerspective) {
