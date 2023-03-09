@@ -7,6 +7,7 @@ import io.github.eggohito.eggolib.Eggolib;
 import io.github.eggohito.eggolib.mixin.ClientPlayerEntityAccessor;
 import io.github.eggohito.eggolib.networking.EggolibPackets;
 import io.github.eggohito.eggolib.util.MiscUtilClient;
+import io.github.eggohito.eggolib.util.ScreenState;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.client.MinecraftClient;
@@ -25,13 +26,13 @@ public class InScreenCondition {
         if (!Eggolib.PLAYERS_SCREEN.containsKey(playerEntity)) initializeScreen(playerEntity);
 
         Set<String> screenClassNames = new HashSet<>();
-        String currentScreenClassName = Eggolib.PLAYERS_SCREEN.get(playerEntity);
+        ScreenState screenState = Eggolib.PLAYERS_SCREEN.get(playerEntity);
+        if (screenState == null) return false;
 
         data.ifPresent("screen", screenClassNames::add);
         data.ifPresent("screens", screenClassNames::addAll);
 
-        if (screenClassNames.isEmpty()) return currentScreenClassName != null;
-        else return screenClassNames.contains(currentScreenClassName);
+        return screenState.inAnyOr(screenClassNames);
 
     }
 

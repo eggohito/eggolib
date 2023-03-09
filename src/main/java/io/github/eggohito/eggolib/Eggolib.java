@@ -5,6 +5,7 @@ import io.github.eggohito.eggolib.integration.EggolibPowerIntegration;
 import io.github.eggohito.eggolib.networking.EggolibPacketsC2S;
 import io.github.eggohito.eggolib.registry.factory.*;
 import io.github.eggohito.eggolib.util.EggolibConfig;
+import io.github.eggohito.eggolib.util.ScreenState;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import me.shedaniel.autoconfig.serializer.PartitioningSerializer;
@@ -31,7 +32,7 @@ public class Eggolib implements ModInitializer {
     public static final String MOD_ID = "eggolib";
     public static final Logger LOGGER = LoggerFactory.getLogger(Eggolib.class);
 
-    public static final HashMap<PlayerEntity, String> PLAYERS_SCREEN = new HashMap<>();
+    public static final HashMap<PlayerEntity, ScreenState> PLAYERS_SCREEN = new HashMap<>();
     public static final HashMap<PlayerEntity, String> PLAYERS_PERSPECTIVE = new HashMap<>();
 
     @Override

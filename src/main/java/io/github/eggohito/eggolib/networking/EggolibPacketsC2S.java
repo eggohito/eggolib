@@ -24,6 +24,7 @@ import io.github.apace100.apoli.power.PowerTypeRegistry;
 import io.github.eggohito.eggolib.Eggolib;
 import io.github.eggohito.eggolib.power.ActionOnKeySequencePower;
 import io.github.eggohito.eggolib.util.Key;
+import io.github.eggohito.eggolib.util.ScreenState;
 import net.fabricmc.fabric.api.networking.v1.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -90,7 +91,10 @@ public class EggolibPacketsC2S {
     private static void syncScreen(MinecraftServer minecraftServer, ServerPlayerEntity serverPlayerEntity, ServerPlayNetworkHandler serverPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
 
         int entityId = packetByteBuf.readInt();
-        String screenClassName = packetByteBuf.readString();
+        boolean inScreen = packetByteBuf.readBoolean();
+        boolean unknownScreen = packetByteBuf.readBoolean();
+
+        ScreenState screenState = ScreenState.of(inScreen, inScreen && !unknownScreen ? packetByteBuf.readString() : null);
 
         minecraftServer.execute(
             () -> {
@@ -98,7 +102,7 @@ public class EggolibPacketsC2S {
                 Entity entity = serverPlayerEntity.getWorld().getEntityById(entityId);
                 if (!(entity instanceof PlayerEntity playerEntity)) return;
 
-                Eggolib.PLAYERS_SCREEN.put(playerEntity, screenClassName);
+                Eggolib.PLAYERS_SCREEN.put(playerEntity, screenState);
 
             }
         );

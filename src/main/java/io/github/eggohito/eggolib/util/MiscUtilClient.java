@@ -15,7 +15,6 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.option.Perspective;
 import net.minecraft.network.PacketByteBuf;
 
-import java.util.Objects;
 import java.util.Optional;
 
 @Environment(EnvType.CLIENT)
@@ -30,6 +29,8 @@ public class MiscUtilClient {
 
         if (client.player == null) return;
 
+        boolean inScreen = false;
+        boolean unknownScreen = false;
         String screenClassName = null;
         Optional<ClassDataRegistry> opt$inGameScreenCDR = ClassDataRegistry.get(Screen.class);
 
@@ -37,18 +38,24 @@ public class MiscUtilClient {
 
             ClassDataRegistry<?> inGameScreenCDR = opt$inGameScreenCDR.get();
             Class<?> screenClass = screen.getClass();
+            inScreen = true;
 
             HashBiMap<String, Class<?>> inGameScreens = HashBiMap.create(((ClassDataRegistryAccessor) inGameScreenCDR).getMappings());
             if (inGameScreens.containsValue(screenClass)) screenClassName = inGameScreens.inverse().get(screenClass);
+            else unknownScreen = true;
 
         }
 
-        if (Eggolib.PLAYERS_SCREEN.containsKey(client.player) && Objects.equals(Eggolib.PLAYERS_SCREEN.get(client.player), screenClassName)) return;
-        Eggolib.PLAYERS_SCREEN.put(client.player, screenClassName);
+        ScreenState screenState = ScreenState.of(inScreen, screenClassName);
+        if (Eggolib.PLAYERS_SCREEN.containsKey(client.player) && Eggolib.PLAYERS_SCREEN.get(client.player).equals(screenState)) return;
 
+        Eggolib.PLAYERS_SCREEN.put(client.player, screenState);
         PacketByteBuf buffer = PacketByteBufs.create();
+
         buffer.writeInt(client.player.getId());
-        buffer.writeString(screenClassName);
+        buffer.writeBoolean(inScreen);
+        buffer.writeBoolean(unknownScreen);
+        if (screenClassName != null) buffer.writeString(screenClassName);
 
         ClientPlayNetworking.send(
             EggolibPackets.SYNC_SCREEN,
