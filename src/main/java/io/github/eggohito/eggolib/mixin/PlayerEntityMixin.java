@@ -1,7 +1,9 @@
 package io.github.eggohito.eggolib.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.eggohito.eggolib.power.ActionOnCriticalHitPower;
+import io.github.eggohito.eggolib.power.CrawlingPower;
 import io.github.eggohito.eggolib.power.PreventCriticalHitPower;
 import io.github.eggohito.eggolib.power.PrioritizedPower;
 import net.minecraft.entity.Entity;
@@ -72,6 +74,11 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Nameable
             aochpci.getPowers(i).forEach(aochp -> aochp.executeActions(target));
         }
 
+    }
+
+    @Inject(method = "updatePose", at = @At("HEAD"), cancellable = true)
+    private void eggolib$forceCrawlPose(CallbackInfo ci) {
+        if (PowerHolderComponent.hasPower(this, CrawlingPower.class)) ci.cancel();
     }
 
 }

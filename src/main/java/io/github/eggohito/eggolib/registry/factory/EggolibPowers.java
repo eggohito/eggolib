@@ -13,6 +13,7 @@ public class EggolibPowers {
         register(ActionOnCriticalHitPower.getFactory());
         register(ActionOnItemPickupPower.getFactory());
         register(ActionOnKeySequencePower.getFactory());
+        register(CrawlingPower.getFactory());
         register(EggolibInvisibilityPower.getFactory());
         register(EggolibStartingEquipmentPower.getFactory());
         register(GameEventListenerPower.getFactory());
