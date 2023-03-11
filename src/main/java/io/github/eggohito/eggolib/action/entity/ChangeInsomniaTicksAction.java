@@ -14,6 +14,7 @@ import net.minecraft.stat.Stats;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
+@Deprecated(since = "1.5.0", forRemoval = true)
 public class ChangeInsomniaTicksAction {
 
     public static void action(SerializableData.Instance data, Entity entity) {

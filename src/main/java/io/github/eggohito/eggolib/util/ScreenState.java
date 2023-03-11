@@ -26,8 +26,7 @@ public class ScreenState {
     }
 
     public boolean inAnyOr(String... screenClassNames) {
-        if (screenClassName == null) return inScreen;
-        else return Arrays.asList(screenClassNames).contains(screenClassName);
+        return inAnyOr(Arrays.asList(screenClassNames));
     }
 
     public boolean inAnyOr(Collection<String> screenClassNames) {
