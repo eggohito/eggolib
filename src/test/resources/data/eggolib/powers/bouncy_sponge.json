@@ -2,7 +2,7 @@
 	"type": "eggolib:modify_bounciness",
 
 	"name": "Bouncy Sponge",
-	"description": "Makes the entity bounce on Sponge Blocks",
+	"description": "Makes you bounce on Sponge Blocks",
 
 	"block_condition": {
 		"type": "apoli:block",

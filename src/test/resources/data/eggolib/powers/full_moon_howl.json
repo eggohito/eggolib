@@ -1,0 +1,42 @@
+{
+
+	"type": "apoli:action_over_time",
+
+	"name": "Full Moon Howl",
+	"description": "When it's full moon (and night time), you will howl and gain buffs",
+
+	"rising_action": {
+		"type": "eggolib:play_sound",
+		"sound": "minecraft:entity.wolf.howl"
+	},
+	"entity_action": {
+		"type": "apoli:apply_effect",
+		"effects": [
+			{
+				"effect": "minecraft:regeneration",
+				"amplifier": 1,
+				"duration": 100
+			},
+			{
+				"effect": "minecraft:strength",
+				"amplifier": 1,
+				"duration": 100
+			}
+		]
+	},
+	"interval": 1,
+	"condition": {
+		"type": "apoli:and",
+		"conditions": [
+			{
+				"type": "eggolib:moon_phase",
+				"phase": "full_moon"
+			},
+			{
+				"type": "apoli:daytime",
+				"inverted": true
+			}
+		]
+	}
+
+}

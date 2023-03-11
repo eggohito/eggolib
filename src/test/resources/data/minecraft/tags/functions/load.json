@@ -1,6 +1,6 @@
 {
 	"values": [
 		"random:private/load",
-        "eggolib:private/load"
+        "eggolib:load"
 	]
 }

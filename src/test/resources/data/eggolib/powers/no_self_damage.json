@@ -1,0 +1,16 @@
+{
+
+	"type": "apoli:modify_damage_taken",
+
+	"name": "No Self Damage",
+	"description": "You cannot hurt yourself.",
+
+	"bientity_condition": {
+		"type": "eggolib:equal"
+	},
+	"modifier": {
+		"operation": "set_total",
+		"value": 0
+	}
+
+}

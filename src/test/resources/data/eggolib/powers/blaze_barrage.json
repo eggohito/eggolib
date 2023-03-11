@@ -4,6 +4,15 @@
 
 	"name": "Blaze Barrage",
 	"description": "Launches three Small Fireballs consecutively within a press of a keybind.",
+
+    "badges": [
+        {
+            "type": "origins:keybind",
+            "sprite": "origins:textures/gui/badge/active.png",
+            "text": "Press %s to activate!"
+        }
+    ],
+    
 	"duration": {
 		"type": "apoli:cooldown",
 		"cooldown": 15,

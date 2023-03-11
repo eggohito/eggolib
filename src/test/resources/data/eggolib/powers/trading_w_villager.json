@@ -1,0 +1,22 @@
+{
+
+	"type": "apoli:action_over_time",
+
+	"name": "Trading w/ Villager",
+	"description": "Checks if you're currently trading with a Villager",
+
+	"rising_action": {
+		"type": "apoli:execute_command",
+		"command": "me is currently trading with a Villager!"
+	},
+	"falling_action": {
+		"type": "apoli:execute_command",
+		"command": "me is no longer trading with a Villager."
+	},
+	"interval": 1,
+	"condition": {
+		"type": "eggolib:in_screen",
+		"screen": "merchant"
+	}
+
+}

@@ -1,0 +1,24 @@
+{
+
+	"type": "apoli:action_over_time",
+	
+	"name": "In Team with Invisible Nametag",
+	"description": "Says a response if you're in a team that has the `nametagVisibility` option set to `never`",
+
+	"rising_action": {
+		"type": "apoli:execute_command",
+		"command": "me is in a team that has the `nametagVisibility` option set to never!"
+	},
+	"falling_action": {
+		"type": "apoli:execute_command",
+		"command": "me is no longer in a team that has the `nametagVisibility` option set to never!"
+	},
+	"interval": 1,
+	"condition": {
+		"type": "eggolib:in_team",
+		"team": {
+			"nametagVisibility": "never"
+		}
+	}
+
+}

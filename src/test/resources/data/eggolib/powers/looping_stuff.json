@@ -1,0 +1,30 @@
+{
+	"type": "apoli:active_self",
+
+	"name": "Looping Stuff",
+	"description": "Makes you say \"Hello\" for a configurable amount of times (controlled by your score in the `test` scoreboard objective)",
+
+	"entity_action": {
+		"type": "eggolib:loop",
+		"before_action": {
+			"type": "apoli:execute_command",
+			"command": "tag @s add temp"
+		},
+		"action": {
+			"type": "apoli:execute_command",
+			"command": "say Hello!"
+		},
+		"after_action": {
+			"type": "apoli:execute_command",
+			"command": "tag @s remove temp"
+		},
+		"score": {
+			"name": "@e[tag = temp, limit = 1]",
+			"objective": "test"
+		}
+	},
+	"key": {
+		"key": "key.hotbar.9"
+	}
+
+}

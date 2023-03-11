@@ -1,0 +1,15 @@
+{
+
+	"type": "apoli:action_on_entity_use",
+
+	"name": "Get Leashed!",
+	"description": "Leashes the entity you interacted with.",
+
+	"bientity_action": {
+		"type": "eggolib:leash"
+	},
+	"item_condition": {
+		"type": "apoli:empty"
+	}
+
+}

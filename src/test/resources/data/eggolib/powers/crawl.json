@@ -1,0 +1,36 @@
+{
+
+	"type": "apoli:multiple",
+
+	"name": "Crawl",
+	"description": "Lets you crawl by holding a specific keybind",
+
+	"hold": {
+		"type": "apoli:cooldown",
+		"cooldown": 5
+	},
+
+	"hold_start": {
+		"type": "apoli:active_self",
+		"entity_action": {
+			"type": "apoli:trigger_cooldown",
+			"power": "*:*_hold"
+		},
+		"cooldown": 0,
+		"key": {
+			"key": "key.saveToolbarActivator",
+			"continuous": true
+		}
+	},
+
+	"main": {
+		"type": "eggolib:crawling",
+		"condition": {
+			"type": "apoli:resource",
+			"resource": "*:*_hold",
+			"comparison": ">",
+			"compare_to": 0
+		}
+	}
+
+}

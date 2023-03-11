@@ -1,0 +1,33 @@
+{
+
+	"type": "apoli:active_self",
+
+	"name": "Select Targets",
+	"description": "Lets you select Creepers with the `ignitable` tag and make them say \"Hello!\"",
+
+	"entity_action": {
+		"type": "eggolib:selector_action",
+		"selector": "@e[type = minecraft:creeper, tag = ignitable]",
+		"bientity_action": {
+			"type": "apoli:target_action",
+			"action": {
+				"type": "apoli:execute_command",
+				"command": "data modify entity @s ignited set value 1b"
+			}
+		}
+	},
+	"key": {
+		"key": "key.attack"
+	},
+	"condition": {
+		"type": "apoli:equipped_item",
+		"equipment_slot": "mainhand",
+		"item_condition": {
+			"type": "apoli:ingredient",
+			"ingredient": {
+				"item": "minecraft:flint_and_steel"
+			}
+		}
+	}
+	
+}
