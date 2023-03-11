@@ -20,13 +20,15 @@ public class LoopAction {
         Consumer<T> afterAction = data.get("after_action");
         Consumer<T> action = data.get("action");
 
+        if (beforeAction != null) beforeAction.accept(t);
+
         if (data.isPresent("score")) maxIterations = ScoreboardUtil.getScore(data.get("score"));
         else if (data.isPresent("value")) maxIterations = data.getInt("value");
 
-        if (beforeAction != null) beforeAction.accept(t);
         for (int i = 0; i < maxIterations; i++) {
             action.accept(t);
         }
+
         if (afterAction != null) afterAction.accept(t);
 
     }
