@@ -84,6 +84,9 @@ dependencies {
 	modImplementation "com.github.eggohito:BreathingLib:${project.breathing_lib_version}"
 	include "com.github.eggohito:BreathingLib:${project.breathing_lib_version}"
 
+	//	Trinkets by emilyploszaj
+	modImplementation "dev.emi:trinkets:${project.trinkets_version}"
+
 }
 
 processResources {

@@ -1,6 +1,7 @@
 package io.github.eggohito.eggolib;
 
 import io.github.apace100.apoli.util.NamespaceAlias;
+import io.github.eggohito.eggolib.compat.emi.trinkets.TrinketsCompat;
 import io.github.eggohito.eggolib.integration.EggolibPowerIntegration;
 import io.github.eggohito.eggolib.networking.EggolibPacketsC2S;
 import io.github.eggohito.eggolib.registry.factory.*;
@@ -90,6 +91,9 @@ public class Eggolib implements ModInitializer {
 
         //  Register callbacks used by some power types
         EggolibPowerIntegration.register();
+
+        //  Register power/action/condition types for other mods
+        FabricLoader.getInstance().getModContainer("trinkets").ifPresent(TrinketsCompat::init);
 
         //  Notify client/server that eggolib has been initialized and if it should perform a version check
         LOGGER.info("[{}] Version {} has been initialized. Egg!", MOD_ID, version);
