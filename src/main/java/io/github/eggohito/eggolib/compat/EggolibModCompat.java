@@ -1,5 +1,6 @@
 package io.github.eggohito.eggolib.compat;
 
+import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
 import io.github.apace100.calio.ClassUtil;
 import io.github.apace100.calio.data.ClassDataRegistry;
 import net.fabricmc.api.EnvType;
@@ -42,6 +43,17 @@ public class EggolibModCompat {
         ClassDataRegistry
             .getOrCreate(ClassUtil.castClass(Screen.class), "Screen")
             .addMapping(name, clazz);
+    }
+
+    public static <F extends ConditionFactory<?>> String getRegisteredConditionFactories(List<F> registeredFactories, String type) {
+
+        StringBuilder builder = new StringBuilder();
+        for (F registeredFactory : registeredFactories) {
+            builder.append("\t- ").append(registeredFactory.getSerializerId()).append(" (").append(type).append(")").append("\n");
+        }
+
+        return builder.toString();
+
     }
 
 }

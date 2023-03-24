@@ -26,20 +26,9 @@ public class TrinketsCompat extends EggolibModCompat {
                 Eggolib.MOD_ID,
                 getModName(trinkets),
                 getModAuthors(trinkets),
-                getRegisteredFactories(REGISTERED_ENTITY_CONDITIONS, "Entity Condition Type")
+                getRegisteredConditionFactories(REGISTERED_ENTITY_CONDITIONS, "Entity Condition Type")
             )
         );
-
-    }
-
-    public static <F extends ConditionFactory<?>> String getRegisteredFactories(List<F> registeredFactories, String type) {
-
-        StringBuilder builder = new StringBuilder();
-        for (F registeredFactory : registeredFactories) {
-            builder.append("\t- ").append(registeredFactory.getSerializerId()).append(" ").append(type).append("\n");
-        }
-
-        return builder.toString();
 
     }
 
