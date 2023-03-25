@@ -5,46 +5,44 @@ import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
 import io.github.apace100.apoli.util.Comparison;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
+import io.github.apace100.calio.util.ArgumentWrapper;
 import io.github.eggohito.eggolib.Eggolib;
+import io.github.eggohito.eggolib.data.EggolibDataTypes;
+import io.github.eggohito.eggolib.util.ScoreboardUtil;
+import net.minecraft.command.argument.ScoreHolderArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.scoreboard.Scoreboard;
-import net.minecraft.scoreboard.ScoreboardObjective;
+
+import java.util.Collections;
+import java.util.Optional;
 
 public class ScoreboardCondition {
 
     public static boolean condition(SerializableData.Instance data, Entity entity) {
 
-        String name = data.getString("name");
-        String objective = data.getString("objective");
+        ScoreHolderArgumentType.ScoreHolder name;
+        String objective = data.get("objective");
         Comparison comparison = data.get("comparison");
-        int compareTo = data.getInt("compare_to");
+        int compareTo = data.get("compare_to");
 
-        if (name == null) {
-            if (entity instanceof PlayerEntity playerEntity) name = playerEntity.getEntityName();
-            else name = entity.getUuidAsString();
-        }
+        if (data.isPresent("name")) name = data.<ArgumentWrapper<ScoreHolderArgumentType.ScoreHolder>>get("name").get();
+        else name = (source, players) -> Collections.singleton(entity instanceof PlayerEntity playerEntity ? playerEntity.getEntityName() : entity.getUuidAsString());
 
-        Scoreboard scoreboard = entity.world.getScoreboard();
-        ScoreboardObjective scoreboardObjective = scoreboard.getObjective(objective);
+        Optional<Integer> score = ScoreboardUtil.getScore(entity, name, objective);
+        return score.isPresent() && comparison.compare(score.get(), compareTo);
 
-        if (scoreboard.playerHasObjective(name, scoreboardObjective)) {
-            int score = scoreboard.getPlayerScore(name, scoreboardObjective).getScore();
-            return comparison.compare(score, compareTo);
-        }
-
-        return false;
     }
 
     public static ConditionFactory<Entity> getFactory() {
         return new ConditionFactory<>(
             Eggolib.identifier("scoreboard"),
             new SerializableData()
-                .add("name", SerializableDataTypes.STRING, null)
+                .add("name", EggolibDataTypes.SCORE_HOLDER, null)
                 .add("objective", SerializableDataTypes.STRING)
                 .add("comparison", ApoliDataTypes.COMPARISON)
                 .add("compare_to", SerializableDataTypes.INT),
             ScoreboardCondition::condition
         );
     }
+
 }

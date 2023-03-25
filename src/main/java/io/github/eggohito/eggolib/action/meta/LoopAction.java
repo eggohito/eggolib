@@ -22,7 +22,7 @@ public class LoopAction {
 
         if (beforeAction != null) beforeAction.accept(t);
 
-        if (data.isPresent("score")) maxIterations = ScoreboardUtil.getScore(data.get("score"));
+        if (data.isPresent("score")) maxIterations = ScoreboardUtil.getScore(data.get("score")).orElse(0);
         else if (data.isPresent("value")) maxIterations = data.getInt("value");
 
         for (int i = 0; i < maxIterations; i++) {

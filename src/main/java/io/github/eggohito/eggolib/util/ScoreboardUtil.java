@@ -1,9 +1,9 @@
 package io.github.eggohito.eggolib.util;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import io.github.apace100.calio.util.ArgumentWrapper;
 import io.github.eggohito.eggolib.Eggolib;
 import net.minecraft.command.argument.ScoreHolderArgumentType;
+import net.minecraft.entity.Entity;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.server.command.CommandOutput;
@@ -12,17 +12,19 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Pair;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Optional;
 
 public class ScoreboardUtil {
 
-    public static int getScore(ArgumentWrapper<ScoreHolderArgumentType.ScoreHolder> scoreHolder, String objectiveName) {
-        return getScore(new Pair<>(scoreHolder, objectiveName));
+    public static Optional<Integer> getScore(Pair<ScoreHolderArgumentType.ScoreHolder, String> scoreHolderAndObjectiveName) {
+        return getScore(null, scoreHolderAndObjectiveName.getLeft(), scoreHolderAndObjectiveName.getRight());
     }
 
-    public static int getScore(Pair<ArgumentWrapper<ScoreHolderArgumentType.ScoreHolder>, String> scoreHolderAndObjectiveName) {
+    public static Optional<Integer> getScore(@Nullable Entity invoker, ScoreHolderArgumentType.ScoreHolder scoreHolder, String objectiveName) {
 
-        int score = 0;
-        if (Eggolib.minecraftServer == null) return score;
+        if (Eggolib.minecraftServer == null) return Optional.empty();
 
         ServerCommandSource source = new ServerCommandSource(
             CommandOutput.DUMMY,
@@ -33,22 +35,19 @@ public class ScoreboardUtil {
             "@",
             Text.of("@"),
             Eggolib.minecraftServer,
-            null
+            invoker
         );
-
-        ScoreHolderArgumentType.ScoreHolder scoreHolder = scoreHolderAndObjectiveName.getLeft().get();
-        String objectiveName = scoreHolderAndObjectiveName.getRight();
 
         Scoreboard scoreboard = Eggolib.minecraftServer.getScoreboard();
         ScoreboardObjective scoreboardObjective = scoreboard.getObjective(objectiveName);
 
         try {
             String name = scoreHolder.getNames(source, scoreboard::getKnownPlayers).iterator().next();
-            if (scoreboard.playerHasObjective(name, scoreboardObjective)) score = scoreboard.getPlayerScore(name, scoreboardObjective).getScore();
+            if (scoreboard.playerHasObjective(name, scoreboardObjective)) return Optional.of(scoreboard.getPlayerScore(name, scoreboardObjective).getScore());
         }
         catch (CommandSyntaxException ignored) {}
 
-        return score;
+        return Optional.empty();
 
     }
 
