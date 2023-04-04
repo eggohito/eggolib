@@ -26,8 +26,8 @@ public class EggolibEntityConditions {
         register(ScoreboardCondition.getFactory());
     }
 
-    private static void register(ConditionFactory<Entity> conditionFactory) {
-        Registry.register(ApoliRegistries.ENTITY_CONDITION, conditionFactory.getSerializerId(), conditionFactory);
+    public static ConditionFactory<Entity> register(ConditionFactory<Entity> conditionFactory) {
+        return Registry.register(ApoliRegistries.ENTITY_CONDITION, conditionFactory.getSerializerId(), conditionFactory);
     }
 
 }

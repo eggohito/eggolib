@@ -14,7 +14,8 @@ public class EggolibItemConditions {
         register(ToolCondition.getFactory());
     }
 
-    private static void register(ConditionFactory<ItemStack> conditionFactory) {
-        Registry.register(ApoliRegistries.ITEM_CONDITION, conditionFactory.getSerializerId(), conditionFactory);
+    public static ConditionFactory<ItemStack> register(ConditionFactory<ItemStack> conditionFactory) {
+        return Registry.register(ApoliRegistries.ITEM_CONDITION, conditionFactory.getSerializerId(), conditionFactory);
     }
+
 }

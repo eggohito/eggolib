@@ -18,8 +18,8 @@ public class EggolibBiEntityActions {
         register(LoopAction.getFactory(ApoliDataTypes.BIENTITY_ACTION));
     }
 
-    private static void register(ActionFactory<Pair<Entity, Entity>> actionFactory) {
-        Registry.register(ApoliRegistries.BIENTITY_ACTION, actionFactory.getSerializerId(), actionFactory);
+    public static ActionFactory<Pair<Entity, Entity>> register(ActionFactory<Pair<Entity, Entity>> actionFactory) {
+        return Registry.register(ApoliRegistries.BIENTITY_ACTION, actionFactory.getSerializerId(), actionFactory);
     }
 
 }

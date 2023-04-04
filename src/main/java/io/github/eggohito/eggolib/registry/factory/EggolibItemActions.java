@@ -15,8 +15,8 @@ public class EggolibItemActions {
         register(LoopAction.getFactory(ApoliDataTypes.ITEM_ACTION));
     }
 
-    private static void register(ActionFactory<Pair<World, ItemStack>> actionFactory) {
-        Registry.register(ApoliRegistries.ITEM_ACTION, actionFactory.getSerializerId(), actionFactory);
+    public static ActionFactory<Pair<World, ItemStack>> register(ActionFactory<Pair<World, ItemStack>> actionFactory) {
+        return Registry.register(ApoliRegistries.ITEM_ACTION, actionFactory.getSerializerId(), actionFactory);
     }
 
 }

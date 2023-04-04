@@ -17,8 +17,8 @@ public class EggolibDamageConditions {
         register(NbtCondition.getFactory());
     }
 
-    public static void register(ConditionFactory<Pair<DamageSource, Float>> conditionFactory) {
-        Registry.register(ApoliRegistries.DAMAGE_CONDITION, conditionFactory.getSerializerId(), conditionFactory);
+    public static ConditionFactory<Pair<DamageSource, Float>> register(ConditionFactory<Pair<DamageSource, Float>> conditionFactory) {
+        return Registry.register(ApoliRegistries.DAMAGE_CONDITION, conditionFactory.getSerializerId(), conditionFactory);
     }
 
 }

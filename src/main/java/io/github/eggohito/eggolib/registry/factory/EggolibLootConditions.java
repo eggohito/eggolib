@@ -13,8 +13,8 @@ public class EggolibLootConditions {
         register(HasTagLootCondition.getIdAndType());
     }
 
-    private static void register(Pair<Identifier, LootConditionType> idAndType) {
-        Registry.register(Registries.LOOT_CONDITION_TYPE, idAndType.getLeft(), idAndType.getRight());
+    public static LootConditionType register(Pair<Identifier, LootConditionType> idAndType) {
+        return Registry.register(Registries.LOOT_CONDITION_TYPE, idAndType.getLeft(), idAndType.getRight());
     }
 
 }

@@ -42,8 +42,8 @@ public class EggolibDimensionTypeConditions {
 
     }
 
-    private static void register(ConditionFactory<RegistryEntry<DimensionType>> conditionFactory) {
-        Registry.register(EggolibRegistries.DIMENSION_TYPE_CONDITION, conditionFactory.getSerializerId(), conditionFactory);
+    public static ConditionFactory<RegistryEntry<DimensionType>> register(ConditionFactory<RegistryEntry<DimensionType>> conditionFactory) {
+        return Registry.register(EggolibRegistries.DIMENSION_TYPE_CONDITION, conditionFactory.getSerializerId(), conditionFactory);
     }
 
 }

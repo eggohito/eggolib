@@ -14,7 +14,8 @@ public class EggolibBlockConditions {
         register(ChanceCondition.getFactory());
     }
 
-    private static void register(ConditionFactory<CachedBlockPosition> conditionFactory) {
-        Registry.register(ApoliRegistries.BLOCK_CONDITION, conditionFactory.getSerializerId(), conditionFactory);
+    public static ConditionFactory<CachedBlockPosition> register(ConditionFactory<CachedBlockPosition> conditionFactory) {
+        return Registry.register(ApoliRegistries.BLOCK_CONDITION, conditionFactory.getSerializerId(), conditionFactory);
     }
+
 }

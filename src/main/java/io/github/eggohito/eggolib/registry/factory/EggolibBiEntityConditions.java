@@ -19,8 +19,8 @@ public class EggolibBiEntityConditions {
         register(HasMatchingTagCondition.getFactory());
     }
 
-    private static void register(ConditionFactory<Pair<Entity, Entity>> conditionFactory) {
-        Registry.register(ApoliRegistries.BIENTITY_CONDITION, conditionFactory.getSerializerId(), conditionFactory);
+    public static ConditionFactory<Pair<Entity, Entity>> register(ConditionFactory<Pair<Entity, Entity>> conditionFactory) {
+        return Registry.register(ApoliRegistries.BIENTITY_CONDITION, conditionFactory.getSerializerId(), conditionFactory);
     }
 
 }

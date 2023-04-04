@@ -28,8 +28,8 @@ public class EggolibPowers {
         register(PreventItemPickupPower.getFactory());
     }
 
-    private static void register(PowerFactory<?> serializer) {
-        Registry.register(ApoliRegistries.POWER_FACTORY, serializer.getSerializerId(), serializer);
+    public static PowerFactory<?> register(PowerFactory<?> powerFactory) {
+        return Registry.register(ApoliRegistries.POWER_FACTORY, powerFactory.getSerializerId(), powerFactory);
     }
 
 }

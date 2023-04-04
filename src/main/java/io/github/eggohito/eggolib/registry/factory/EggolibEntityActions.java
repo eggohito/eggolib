@@ -30,7 +30,8 @@ public class EggolibEntityActions {
         register(SpawnEntityAction.getFactory());
     }
 
-    private static void register(ActionFactory<Entity> actionFactory) {
-        Registry.register(ApoliRegistries.ENTITY_ACTION, actionFactory.getSerializerId(), actionFactory);
+    public static ActionFactory<Entity> register(ActionFactory<Entity> actionFactory) {
+        return Registry.register(ApoliRegistries.ENTITY_ACTION, actionFactory.getSerializerId(), actionFactory);
     }
+
 }

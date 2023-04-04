@@ -18,7 +18,8 @@ public class EggolibBlockActions {
         register(LoopAction.getFactory(ApoliDataTypes.BLOCK_ACTION));
     }
 
-    private static void register(ActionFactory<Triple<World, BlockPos, Direction>> actionFactory) {
-        Registry.register(ApoliRegistries.BLOCK_ACTION, actionFactory.getSerializerId(), actionFactory);
+    public static ActionFactory<Triple<World, BlockPos, Direction>> register(ActionFactory<Triple<World, BlockPos, Direction>> actionFactory) {
+        return Registry.register(ApoliRegistries.BLOCK_ACTION, actionFactory.getSerializerId(), actionFactory);
     }
+
 }
