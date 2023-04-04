@@ -1,13 +1,8 @@
 package io.github.eggohito.eggolib.compat;
 
-import io.github.apace100.calio.ClassUtil;
-import io.github.apace100.calio.data.ClassDataRegistry;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.metadata.ModMetadata;
 import net.fabricmc.loader.api.metadata.Person;
-import net.minecraft.client.gui.screen.Screen;
 
 import java.util.List;
 
@@ -35,13 +30,6 @@ public class EggolibModCompat {
 
         return stringBuilder.toString();
 
-    }
-
-    @Environment(EnvType.CLIENT)
-    public static void addScreenMapping(String name, Class<? extends Screen> clazz) {
-        ClassDataRegistry
-            .getOrCreate(ClassUtil.castClass(Screen.class), "Screen")
-            .addMapping(name, clazz);
     }
 
 }

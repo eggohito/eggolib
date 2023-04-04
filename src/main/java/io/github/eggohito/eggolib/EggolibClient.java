@@ -2,7 +2,7 @@ package io.github.eggohito.eggolib;
 
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.power.Power;
-import io.github.eggohito.eggolib.compat.EggolibOriginsCompat;
+import io.github.eggohito.eggolib.compat.apace100.origins.OriginsCompatClient;
 import io.github.eggohito.eggolib.data.EggolibClassDataClient;
 import io.github.eggohito.eggolib.networking.EggolibPackets;
 import io.github.eggohito.eggolib.networking.EggolibPacketsS2C;
@@ -39,7 +39,7 @@ public class EggolibClient implements ClientModInitializer {
         EggolibClassDataClient.register();
 
         //  Add Origins' screen classes to Eggolib's screen class data registry if it's loaded
-        FabricLoader.getInstance().getModContainer("origins").ifPresent(EggolibOriginsCompat::init);
+        FabricLoader.getInstance().getModContainer("origins").ifPresent(OriginsCompatClient::init);
 
         //  Track which keybinds the player is pressing
         ClientTickEvents.START_CLIENT_TICK.register(
