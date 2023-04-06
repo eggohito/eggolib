@@ -6,14 +6,13 @@ import net.fabricmc.loader.api.metadata.Person;
 
 import java.util.List;
 
-public class EggolibModCompat {
+public abstract class EggolibModCompat implements IEggolibModCompat {
 
-    public static String getModName(ModContainer modContainer) {
-        ModMetadata modMetadata = modContainer.getMetadata();
-        return modMetadata.getName();
+    public final String getModName(ModContainer modContainer) {
+        return modContainer.getMetadata().getName();
     }
 
-    public static String getModAuthors(ModContainer modContainer) {
+    public final String getModAuthors(ModContainer modContainer) {
 
         ModMetadata modMetadata = modContainer.getMetadata();
         StringBuilder stringBuilder = new StringBuilder();

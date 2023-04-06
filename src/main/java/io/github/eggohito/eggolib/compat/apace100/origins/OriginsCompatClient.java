@@ -11,7 +11,13 @@ import net.fabricmc.loader.api.ModContainer;
 @Environment(EnvType.CLIENT)
 public class OriginsCompatClient extends EggolibModCompatClient {
 
-    public static void init(ModContainer origins) {
+    @Override
+    public void init() {
+
+    }
+
+    @Override
+    public void initOn(ModContainer origins) {
 
         addScreenMapping("choose_origin", ChooseOriginScreen.class);
         addScreenMapping("view_origin", ViewOriginScreen.class);
@@ -26,6 +32,11 @@ public class OriginsCompatClient extends EggolibModCompatClient {
             )
         );
 
+    }
+
+    @Override
+    public String getCompatTarget() {
+        return "origins";
     }
 
 }

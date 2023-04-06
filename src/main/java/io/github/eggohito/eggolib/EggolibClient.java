@@ -2,7 +2,7 @@ package io.github.eggohito.eggolib;
 
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.power.Power;
-import io.github.eggohito.eggolib.compat.apace100.origins.OriginsCompatClient;
+import io.github.eggohito.eggolib.compat.IEggolibModCompat;
 import io.github.eggohito.eggolib.data.EggolibClassDataClient;
 import io.github.eggohito.eggolib.networking.EggolibPackets;
 import io.github.eggohito.eggolib.networking.EggolibPacketsS2C;
@@ -16,6 +16,7 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.entrypoint.EntrypointContainer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.network.PacketByteBuf;
@@ -38,8 +39,21 @@ public class EggolibClient implements ClientModInitializer {
         EggolibPacketsS2C.register();
         EggolibClassDataClient.register();
 
-        //  Add Origins' screen classes to Eggolib's screen class data registry if it's loaded
-        FabricLoader.getInstance().getModContainer("origins").ifPresent(OriginsCompatClient::init);
+        //  Initialize client compat. stuff
+        FabricLoader.getInstance()
+            .getEntrypointContainers("eggolib:compat/client", IEggolibModCompat.class)
+            .stream()
+            .map(EntrypointContainer::getEntrypoint)
+            .forEach(
+                iEggolibModCompat -> {
+
+                    String modCompatTarget = iEggolibModCompat.getCompatTarget();
+
+                    if (modCompatTarget == null) iEggolibModCompat.init();
+                    else FabricLoader.getInstance().getModContainer(modCompatTarget).ifPresent(iEggolibModCompat::initOn);
+
+                }
+            );
 
         //  Track which keybinds the player is pressing
         ClientTickEvents.START_CLIENT_TICK.register(

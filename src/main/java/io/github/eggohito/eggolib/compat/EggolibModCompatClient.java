@@ -9,21 +9,21 @@ import net.minecraft.client.gui.screen.Screen;
 import java.util.HashMap;
 
 @Environment(EnvType.CLIENT)
-public class EggolibModCompatClient extends EggolibModCompat {
+public abstract class EggolibModCompatClient extends EggolibModCompat {
 
-    private static final HashMap<String, Class<? extends Screen>> SCREEN_MAPPINGS = new HashMap<>();
+    private final HashMap<String, Class<? extends Screen>> REGISTERED_SCREEN_MAPPINGS = new HashMap<>();
 
-    public static void addScreenMapping(String name, Class<? extends Screen> clazz) {
+    public final void addScreenMapping(String name, Class<? extends Screen> clazz) {
         ClassDataRegistry
             .getOrCreate(ClassUtil.castClass(Screen.class), "Screen")
             .addMapping(name, clazz);
-        SCREEN_MAPPINGS.put(name, clazz);
+        REGISTERED_SCREEN_MAPPINGS.put(name, clazz);
     }
 
-    public static String formatScreenMappings() {
+    public final String formatScreenMappings() {
 
         StringBuilder builder = new StringBuilder();
-        SCREEN_MAPPINGS.forEach(
+        REGISTERED_SCREEN_MAPPINGS.forEach(
             (s, aClass) -> builder.append("\t- ").append(aClass.getName()).append("\t(mapped as \"").append(s).append("\")\n")
         );
 

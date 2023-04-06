@@ -1,6 +1,7 @@
 package io.github.eggohito.eggolib;
 
 import io.github.apace100.apoli.util.NamespaceAlias;
+import io.github.eggohito.eggolib.compat.IEggolibModCompat;
 import io.github.eggohito.eggolib.integration.EggolibPowerIntegration;
 import io.github.eggohito.eggolib.networking.EggolibPacketsC2S;
 import io.github.eggohito.eggolib.registry.factory.*;
@@ -13,6 +14,7 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.entrypoint.EntrypointContainer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
@@ -96,6 +98,22 @@ public class Eggolib implements ModInitializer {
         LOGGER.warn(
             String.format("[%1$s] Should %1$s perform a version check? %2$s", MOD_ID, config.server.performVersionCheck ? "Yes." : "No.")
         );
+
+        //  Initialize main compat. stuff
+        FabricLoader.getInstance()
+            .getEntrypointContainers("eggolib:compat", IEggolibModCompat.class)
+            .stream()
+            .map(EntrypointContainer::getEntrypoint)
+            .forEach(
+                iEggolibModCompat -> {
+
+                    String modCompatTarget = iEggolibModCompat.getCompatTarget();
+
+                    if (modCompatTarget == null) iEggolibModCompat.init();
+                    else FabricLoader.getInstance().getModContainer(modCompatTarget).ifPresent(iEggolibModCompat::initOn);
+
+                }
+            );
 
         //  Remove the player from the HashMaps upon them disconnecting
         ServerPlayConnectionEvents.DISCONNECT.register(
