@@ -20,6 +20,7 @@ public class EggolibPowers {
         register(ModelFlipPower.getFactory());
         register(ModifyBouncinessPower.getFactory());
         register(ModifyBreathingPower.getFactory());
+        register(ModifyFovPower.getFactory());
         register(ModifyHurtTicksPower.getFactory());
         register(ModifyLabelRenderPower.getFactory());
         register(ModifyMouseSensitivityPower.getFactory());

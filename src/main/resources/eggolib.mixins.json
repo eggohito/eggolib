@@ -21,6 +21,7 @@
         "micalobia.breathinglib.BreathingInfoBuilderAccessor"
     ],
     "client": [
+        "AbstractClientPlayerEntityMixin",
         "ClientPlayerEntityAccessor",
         "ClientPlayerInteractionManagerAccessor",
         "EntityRendererMixin",
