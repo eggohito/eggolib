@@ -6,9 +6,7 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
-import net.minecraft.text.Style;
 import net.minecraft.text.Text;
-import net.minecraft.text.Texts;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -32,11 +30,9 @@ public abstract class EntityRendererMixin<T extends Entity> {
         Optional<ModifyLabelRenderPower> modifyLabelRenderPower = PowerHolderComponent
             .getPowers(entity, ModifyLabelRenderPower.class)
             .stream()
-            .filter(mlrp -> mlrp.getReplacementText() != null)
             .max(Comparator.comparing(ModifyLabelRenderPower::getPriority));
 
-        if (modifyLabelRenderPower.isPresent()) return modifyLabelRenderPower.get().getReplacementText();
-        else return originalValue;
+        return modifyLabelRenderPower.map(ModifyLabelRenderPower::getReplacementText).orElse(originalValue);
 
     }
 
