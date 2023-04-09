@@ -1,0 +1,13 @@
+{
+	"type": "eggolib:modify_fov",
+
+	"name": "Zooooom",
+	"description": "Modifies your FOV to zoom",
+
+	"modifier": {
+		"operation": "add_base_early",
+		"value": -0.5
+	},
+	"affected_by_fov_effect_scale": false
+
+}

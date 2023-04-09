@@ -1,0 +1,32 @@
+{
+
+    "type": "apoli:multiple",
+
+    "name": "Name Label Prefix",
+    "description": "Adds a prefix to your name label",
+
+    "prep": {
+        "type": "apoli:action_on_callback",
+        "entity_action_gained": {
+            "type": "apoli:execute_command",
+            "command": "data modify storage eggolib:name_label prefix set value '{\"text\": \"IMPOSTOR\", \"color\": \"red\", \"bold\": true}'"
+        }
+    },
+
+    "apply": {
+        "type": "eggolib:modify_label_render",
+        "text": [
+            "[",
+            {
+                "storage": "eggolib:name_label",
+                "nbt": "prefix",
+                "interpret": true
+            },
+            "] ",
+            {
+                "selector": "@s"
+            }
+        ]
+    }
+
+}
