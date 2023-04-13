@@ -6,8 +6,10 @@ import io.github.apace100.apoli.power.InventoryPower;
 import io.github.apace100.apoli.power.Power;
 import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
+import io.github.apace100.apoli.util.Comparison;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
+import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.eggohito.eggolib.Eggolib;
 import io.github.eggohito.eggolib.util.InventoryType;
 import io.github.eggohito.eggolib.util.InventoryUtil;
@@ -21,6 +23,8 @@ public class InventoryCondition {
 
         InventoryType inventoryType = data.get("inventory_type");
         AtomicInteger matches = new AtomicInteger();
+        Comparison comparison = data.get("comparison");
+        int compareTo = data.get("compare_to");
 
         switch (inventoryType) {
             case INVENTORY -> matches.set(InventoryUtil.checkInventory(data, entity, null));
@@ -43,7 +47,7 @@ public class InventoryCondition {
             }
         }
 
-        return matches.get() > 0;
+        return comparison.compare(matches.get(), compareTo);
 
     }
 
@@ -55,7 +59,9 @@ public class InventoryCondition {
                 .add("item_condition", ApoliDataTypes.ITEM_CONDITION, null)
                 .add("slots", ApoliDataTypes.ITEM_SLOTS, null)
                 .add("slot", ApoliDataTypes.ITEM_SLOT, null)
-                .add("power", ApoliDataTypes.POWER_TYPE, null),
+                .add("power", ApoliDataTypes.POWER_TYPE, null)
+                .add("comparison", ApoliDataTypes.COMPARISON, Comparison.GREATER_THAN)
+                .add("compare_to", SerializableDataTypes.INT, 0),
             InventoryCondition::condition
         );
     }
