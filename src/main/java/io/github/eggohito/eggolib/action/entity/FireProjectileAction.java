@@ -37,7 +37,7 @@ public class FireProjectileAction {
                 serverWorld,
                 entityType,
                 entityNbt,
-                EntityOffset.EYES.get(entity),
+                EntityOffset.EYES.getPos(entity),
                 entity.getYaw(),
                 entity.getPitch()
             );

@@ -17,7 +17,7 @@ public class EggolibInBlockCondition {
     public static boolean condition(SerializableData.Instance data, Entity entity) {
 
         EntityOffset entityOffset = data.get("offset");
-        BlockPos blockPos = new BlockPos(entityOffset.get(entity));
+        BlockPos blockPos = entityOffset.getBlockPos(entity);
         Predicate<CachedBlockPosition> blockCondition = data.get("block_condition");
 
         return blockCondition.test(new CachedBlockPosition(entity.world, blockPos, true));

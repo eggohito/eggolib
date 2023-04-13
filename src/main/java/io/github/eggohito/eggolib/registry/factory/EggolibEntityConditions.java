@@ -16,6 +16,7 @@ public class EggolibEntityConditions {
         register(DimensionCondition.getFactory());
         register(EggolibBlockCollisionCondition.getFactory());
         register(EggolibInBlockCondition.getFactory());
+        register(ExposedToWeatherCondition.getFactory());
         register(HasTagCondition.getFactory());
         register(InScreenCondition.getFactory());
         register(InTeamCondition.getFactory());
