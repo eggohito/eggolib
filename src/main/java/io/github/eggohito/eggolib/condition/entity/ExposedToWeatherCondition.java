@@ -16,20 +16,30 @@ public class ExposedToWeatherCondition {
 
     public static boolean condition(SerializableData.Instance data, Entity entity) {
 
-        BlockPos blockPos = EntityOffset.EYES.getBlockPos(entity);
         Biome.Precipitation precipitation = data.get("weather");
         Boolean thundering = data.get("thundering");
 
-        return exposedToWeather(entity.world, blockPos, precipitation)
+        return exposedToWeather(entity, precipitation)
             && (thundering == null || (thundering && entity.world.isThundering()));
 
     }
 
+    private static boolean exposedToWeather(Entity entity, Biome.Precipitation precipitation) {
+
+        BlockPos downBlockPos = EntityOffset.FEET.getBlockPos(entity);
+        BlockPos upBlockPos = new BlockPos(downBlockPos.getX(), entity.getBoundingBox().maxY, downBlockPos.getZ());
+
+        return exposedToWeather(entity.world, downBlockPos, precipitation)
+            || exposedToWeather(entity.world, upBlockPos, precipitation);
+
+    }
+
     private static boolean exposedToWeather(World world, BlockPos blockPos, Biome.Precipitation precipitation) {
+        Biome biome = world.getBiome(blockPos).value();
         return world.isRaining()
             && world.isSkyVisible(blockPos)
             && world.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos).getY() < blockPos.getY()
-            && (precipitation == null || world.getBiome(blockPos).value().getPrecipitation() == precipitation);
+            && (precipitation == Biome.Precipitation.SNOW ? biome.isCold(blockPos) : (precipitation == null || biome.getPrecipitation() == precipitation));
     }
 
     public static ConditionFactory<Entity> getFactory() {
