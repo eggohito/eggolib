@@ -9,24 +9,32 @@
         "type": "apoli:action_on_callback",
         "entity_action_gained": {
             "type": "apoli:execute_command",
-            "command": "data modify storage eggolib:name_label prefix set value '{\"text\": \"IMPOSTOR\", \"color\": \"red\", \"bold\": true}'"
+            "command": "function eggolib:name_label_prefix/prep"
         }
     },
 
     "apply": {
         "type": "eggolib:modify_label_render",
+        "before_parse_action": {
+            "type": "apoli:execute_command",
+            "command": "function #rx.playerdb:api/v2/get/self"
+        },
         "text": [
             "[",
             {
-                "storage": "eggolib:name_label",
-                "nbt": "prefix",
+                "storage": "rx.playerdb:io",
+                "nbt": "player.data.eggolib.name_label.prefix",
                 "interpret": true
             },
             "] ",
             {
                 "selector": "@s"
             }
-        ]
+        ],
+        "after_parse_action": {
+            "type": "apoli:execute_command",
+            "command": "me has a replacement name label text that has been successfully parsed!"
+        }
     }
 
 }

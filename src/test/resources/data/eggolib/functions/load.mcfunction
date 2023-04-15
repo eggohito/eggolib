@@ -1,6 +1,7 @@
 #> eggolib:load
 #
-#@within tag/function minecraft:load
+#@within tag/function load:post_load
+#define storage rx.playerdb:io
 
 
 #   Forceload MinecraftPhi chunk
