@@ -2,6 +2,7 @@ package io.github.eggohito.eggolib.power;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.github.apace100.apoli.component.PowerHolderComponent;
+import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.apoli.power.factory.PowerFactory;
 import io.github.apace100.calio.data.SerializableData;
@@ -9,6 +10,7 @@ import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.eggohito.eggolib.Eggolib;
 import io.github.eggohito.eggolib.data.EggolibDataTypes;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -20,6 +22,7 @@ import net.minecraft.text.Texts;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 public class ModifyLabelRenderPower extends PrioritizedPower {
 
@@ -29,18 +32,23 @@ public class ModifyLabelRenderPower extends PrioritizedPower {
         HIDE_COMPLETELY
     }
 
+    private final Consumer<Entity> beforeParseAction;
+    private final Consumer<Entity> afterParseAction;
     private final RenderMode renderMode;
+    private final Text text;
     private final int tickRate;
 
-    private Text text;
     private Text replacementText;
+    private Integer initialTicks;
 
-    public ModifyLabelRenderPower(PowerType<?> powerType, LivingEntity livingEntity, Text text, RenderMode renderMode, int tickRate, int priority) {
+    public ModifyLabelRenderPower(PowerType<?> powerType, LivingEntity livingEntity, Consumer<Entity> beforeParseAction, Consumer<Entity> afterParseAction, Text text, RenderMode renderMode, int tickRate, int priority) {
         super(powerType, livingEntity, priority);
+        this.beforeParseAction = beforeParseAction;
+        this.afterParseAction = afterParseAction;
         this.text = text;
         this.renderMode = renderMode;
         this.tickRate = tickRate;
-        this.setTicking();
+        this.setTicking(true);
     }
 
     @Override
@@ -51,13 +59,24 @@ public class ModifyLabelRenderPower extends PrioritizedPower {
     @Override
     public void tick() {
 
-        if (entity.age % tickRate != 0) return;
+        if (isActive()) {
 
-        Optional<Text> rpt = parseText();
-        if (rpt.isEmpty() || Objects.equals(replacementText, rpt.get())) return;
+            if (initialTicks == null) {
+                initialTicks = entity.age % tickRate;
+                return;
+            }
 
-        replacementText = rpt.get();
-        PowerHolderComponent.syncPower(entity, this.getType());
+            if (entity.age % tickRate != initialTicks) return;
+
+            Optional<Text> parsedText = parseText();
+            if (parsedText.isEmpty() || Objects.equals(replacementText, parsedText.get())) return;
+
+            replacementText = parsedText.get();
+            PowerHolderComponent.syncPower(entity, this.getType());
+
+        }
+
+        else if (initialTicks != null) initialTicks = null;
 
     }
 
@@ -84,17 +103,19 @@ public class ModifyLabelRenderPower extends PrioritizedPower {
         return replacementText;
     }
 
-    public void setReplacementText(Text text) {
-        this.text = text;
-    }
-
     private Optional<Text> parseText() {
 
-        if (text == null) return Optional.empty();
+        if (text == null || entity.world.isClient) return Optional.empty();
 
         try {
+
+            if (beforeParseAction != null) beforeParseAction.accept(entity);
             ServerCommandSource source = new ServerCommandSource(CommandOutput.DUMMY, entity.getPos(), entity.getRotationClient(), (ServerWorld) entity.world, 2, entity.getEntityName(), entity.getName(), entity.world.getServer(), entity);
-            return Optional.of(Texts.parse(source, text, entity, 0));
+            Text parsedText = Texts.parse(source, text, entity, 0);
+
+            if (afterParseAction != null) afterParseAction.accept(entity);
+            return Optional.of(parsedText);
+
         }
 
         catch (CommandSyntaxException e) {
@@ -108,13 +129,17 @@ public class ModifyLabelRenderPower extends PrioritizedPower {
         return new PowerFactory<>(
             Eggolib.identifier("modify_label_render"),
             new SerializableData()
+                .add("before_parse_action", ApoliDataTypes.ENTITY_ACTION, null)
+                .add("after_parse_action", ApoliDataTypes.ENTITY_ACTION, null)
                 .add("text", SerializableDataTypes.TEXT, null)
                 .add("render_mode", SerializableDataType.enumValue(RenderMode.class), RenderMode.DEFAULT)
-                .add("tick_rate", EggolibDataTypes.POSITIVE_INT, 1)
+                .add("tick_rate", EggolibDataTypes.POSITIVE_INT, 20)
                 .add("priority", SerializableDataTypes.INT, 0),
             data -> (powerType, livingEntity) -> new ModifyLabelRenderPower(
                 powerType,
                 livingEntity,
+                data.get("before_parse_action"),
+                data.get("after_parse_action"),
                 data.get("text"),
                 data.get("render_mode"),
                 data.get("tick_rate"),
