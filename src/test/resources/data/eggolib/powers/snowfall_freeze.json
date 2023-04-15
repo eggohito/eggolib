@@ -1,0 +1,13 @@
+{
+
+	"type": "apoli:freeze",
+
+	"name": "Snowfall Freeze",
+	"description": "Freeze upon being exposed to snowfall weather",
+
+	"condition": {
+		"type": "eggolib:exposed_to_weather",
+		"weather": "snow"
+	}
+
+}
