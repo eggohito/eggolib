@@ -52,11 +52,6 @@ public class ModifyLabelRenderPower extends PrioritizedPower {
     }
 
     @Override
-    public void onGained() {
-        if (!entity.world.isClient) parseText().ifPresent(t -> replacementText = t);
-    }
-
-    @Override
     public void tick() {
 
         if (isActive()) {
@@ -70,6 +65,7 @@ public class ModifyLabelRenderPower extends PrioritizedPower {
 
             Optional<Text> parsedText = parseText();
             if (parsedText.isEmpty() || Objects.equals(replacementText, parsedText.get())) return;
+            if (afterParseAction != null) afterParseAction.accept(entity);
 
             replacementText = parsedText.get();
             PowerHolderComponent.syncPower(entity, this.getType());
@@ -110,10 +106,10 @@ public class ModifyLabelRenderPower extends PrioritizedPower {
         try {
 
             if (beforeParseAction != null) beforeParseAction.accept(entity);
+            
             ServerCommandSource source = new ServerCommandSource(CommandOutput.DUMMY, entity.getPos(), entity.getRotationClient(), (ServerWorld) entity.world, 2, entity.getEntityName(), entity.getName(), entity.world.getServer(), entity);
             Text parsedText = Texts.parse(source, text, entity, 0);
 
-            if (afterParseAction != null) afterParseAction.accept(entity);
             return Optional.of(parsedText);
 
         }
