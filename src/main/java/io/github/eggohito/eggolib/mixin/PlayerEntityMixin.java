@@ -38,19 +38,25 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Nameable
     private void eggolib$cacheVars(Entity target, CallbackInfo ci, float f, float g, float h, boolean bl, boolean bl2, int i, boolean bl3) {
         eggolib$cachedTarget = target;
         eggolib$cachedDamageAmount = f;
-        eggolib$cachedDamageSource = DamageSource.player((PlayerEntity) (Object) this);
+        eggolib$cachedDamageSource = this.getDamageSources().playerAttack((PlayerEntity) (Object) this);
     }
 
     @ModifyExpressionValue(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;isSprinting()Z", ordinal = 1))
     private boolean eggolib$preventCriticalHit(boolean originalValue) {
 
         PrioritizedPower.CallInstance<PreventCriticalHitPower> pchpci = new PrioritizedPower.CallInstance<>();
-        pchpci.add(this, PreventCriticalHitPower.class, pchp -> pchp.doesApply(eggolib$cachedTarget, eggolib$cachedDamageSource, eggolib$cachedDamageAmount));
+        pchpci.add(
+            this,
+            PreventCriticalHitPower.class,
+            pchp -> pchp.doesApply(eggolib$cachedTarget, eggolib$cachedDamageSource, eggolib$cachedDamageAmount)
+        );
 
         int preventCriticalHitPowers = 0;
         for (int i = pchpci.getMaxPriority(); i >= pchpci.getMinPriority(); i--) {
 
-            if (!pchpci.hasPowers(i)) continue;
+            if (!pchpci.hasPowers(i)) {
+                continue;
+            }
             List<PreventCriticalHitPower> pchps = pchpci.getPowers(i);
 
             preventCriticalHitPowers += pchps.size();
@@ -67,18 +73,30 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Nameable
     private void eggolib$actionOnCriticalHit(Entity target, CallbackInfo ci) {
 
         PrioritizedPower.CallInstance<ActionOnCriticalHitPower> aochpci = new PrioritizedPower.CallInstance<>();
-        aochpci.add(this, ActionOnCriticalHitPower.class, aochp -> aochp.doesApply(eggolib$cachedDamageSource, eggolib$cachedDamageAmount, eggolib$cachedTarget));
+        aochpci.add(
+            this,
+            ActionOnCriticalHitPower.class,
+            aochp -> aochp.doesApply(eggolib$cachedDamageSource, eggolib$cachedDamageAmount, eggolib$cachedTarget)
+        );
 
         for (int i = aochpci.getMaxPriority(); i >= aochpci.getMinPriority(); i--) {
-            if (!aochpci.hasPowers(i)) continue;
-            aochpci.getPowers(i).forEach(aochp -> aochp.executeActions(target));
+
+            if (!aochpci.hasPowers(i)) {
+                continue;
+            }
+
+            aochpci.getPowers(i)
+                .forEach(aochp -> aochp.executeActions(target));
+
         }
 
     }
 
     @Inject(method = "updatePose", at = @At("HEAD"), cancellable = true)
     private void eggolib$forceCrawlPose(CallbackInfo ci) {
-        if (PowerHolderComponent.hasPower(this, CrawlingPower.class)) ci.cancel();
+        if (PowerHolderComponent.hasPower(this, CrawlingPower.class)) {
+            ci.cancel();
+        }
     }
 
 }

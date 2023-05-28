@@ -52,7 +52,7 @@ public class HasTagLootCondition implements LootCondition {
         Entity entity = lootContext.get(LootContextParameters.THIS_ENTITY);
         if (entity == null) return false;
 
-        Set<String> scoreboardTags = entity.getScoreboardTags();
+        Set<String> scoreboardTags = entity.getCommandTags();
         Set<String> specifiedScoreboardTags = new HashSet<>();
 
         if (this.scoreboardTag != null) specifiedScoreboardTags.add(this.scoreboardTag);

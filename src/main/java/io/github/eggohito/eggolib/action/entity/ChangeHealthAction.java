@@ -6,9 +6,10 @@ import io.github.apace100.apoli.util.ResourceOperation;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.eggohito.eggolib.Eggolib;
-import io.github.eggohito.eggolib.content.EggolibDamageSources;
+import io.github.eggohito.eggolib.content.EggolibDamageTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.util.math.MathHelper;
 
 public class ChangeHealthAction {
@@ -18,18 +19,19 @@ public class ChangeHealthAction {
         if (!(entity instanceof LivingEntity livingEntity)) return;
 
         ResourceOperation operation = data.get("operation");
+        DamageSource healthUnderflowDamageSource = entity.getDamageSources().create(EggolibDamageTypes.CHANGE_HEALTH_UNDERFLOW);
 
         float newHealthValue = data.getFloat("change");
         float oldHealthValue = livingEntity.getHealth();
         float result = oldHealthValue + newHealthValue;
 
         if (operation == ResourceOperation.ADD) {
-            if (result <= 0F) livingEntity.damage(EggolibDamageSources.CHANGE_HEALTH_UNDERFLOW, livingEntity.getMaxHealth());
+            if (result <= 0F) livingEntity.damage(healthUnderflowDamageSource, livingEntity.getMaxHealth());
             else livingEntity.setHealth(MathHelper.clamp(result, 1.0F, livingEntity.getMaxHealth()));
         }
 
         else if (operation == ResourceOperation.SET) {
-            if (newHealthValue <= 0F) livingEntity.damage(EggolibDamageSources.CHANGE_HEALTH_UNDERFLOW, livingEntity.getMaxHealth());
+            if (newHealthValue <= 0F) livingEntity.damage(healthUnderflowDamageSource, livingEntity.getMaxHealth());
             else livingEntity.setHealth(MathHelper.clamp(newHealthValue, 1.0F, livingEntity.getMaxHealth()));
         }
     }

@@ -1,0 +1,7 @@
+{
+    "exhaustion": 0.1,
+    "death_message_type": "default",
+    "effects": "hurt",
+    "message_id": "eggolib.change_health_underflow",
+    "scaling": "always"
+}

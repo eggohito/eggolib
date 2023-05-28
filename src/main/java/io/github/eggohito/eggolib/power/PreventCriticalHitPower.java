@@ -28,12 +28,14 @@ public class PreventCriticalHitPower extends PrioritizedPower {
     }
 
     public boolean doesApply(Entity target, DamageSource damageSource, float damageAmount) {
-        return (damageCondition == null || damageCondition.test(new Pair<>(damageSource, damageAmount))) &&
-               (bientityCondition == null || bientityCondition.test(new Pair<>(entity, target)));
+        return (damageCondition == null || damageCondition.test(new Pair<>(damageSource, damageAmount)))
+            && (bientityCondition == null || bientityCondition.test(new Pair<>(entity, target)));
     }
 
     public void executeActions(Entity target) {
-        if (biEntityAction != null) biEntityAction.accept(new Pair<>(entity, target));
+        if (biEntityAction != null) {
+            biEntityAction.accept(new Pair<>(entity, target));
+        }
     }
 
     public static PowerFactory<?> getFactory() {
@@ -42,7 +44,7 @@ public class PreventCriticalHitPower extends PrioritizedPower {
             new SerializableData()
                 .add("bientity_action", ApoliDataTypes.BIENTITY_ACTION, null)
                 .add("bientity_condition", ApoliDataTypes.BIENTITY_CONDITION, null)
-                .add("damage_condition", SerializableDataTypes.DAMAGE_SOURCE, null)
+                .add("damage_condition", ApoliDataTypes.DAMAGE_CONDITION, null)
                 .add("priority", SerializableDataTypes.INT, 0),
             data -> (powerType, livingEntity) -> new PreventCriticalHitPower(
                 powerType,

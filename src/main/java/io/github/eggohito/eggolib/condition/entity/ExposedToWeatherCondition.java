@@ -26,8 +26,8 @@ public class ExposedToWeatherCondition {
 
     private static boolean exposedToWeather(Entity entity, Biome.Precipitation precipitation) {
 
-        BlockPos downBlockPos = EntityOffset.FEET.getBlockPos(entity);
-        BlockPos upBlockPos = new BlockPos(downBlockPos.getX(), entity.getBoundingBox().maxY, downBlockPos.getZ());
+        BlockPos downBlockPos = entity.getBlockPos();
+        BlockPos upBlockPos = BlockPos.ofFloored(downBlockPos.getX(), entity.getBoundingBox().maxY, downBlockPos.getZ());
 
         return exposedToWeather(entity.world, downBlockPos, precipitation)
             || exposedToWeather(entity.world, upBlockPos, precipitation);
@@ -39,7 +39,7 @@ public class ExposedToWeatherCondition {
         return world.isRaining()
             && world.isSkyVisible(blockPos)
             && world.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos).getY() < blockPos.getY()
-            && (precipitation == Biome.Precipitation.SNOW ? biome.isCold(blockPos) : (precipitation == null || biome.getPrecipitation() == precipitation));
+            && (precipitation == null || biome.getPrecipitation(blockPos) == precipitation);
     }
 
     public static ConditionFactory<Entity> getFactory() {

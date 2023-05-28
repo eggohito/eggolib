@@ -7,6 +7,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -25,21 +26,30 @@ public abstract class ItemEntityMixin {
 
         ItemEntity thisAsItemEntity = (ItemEntity) (Object) this;
         ItemStack itemStack = thisAsItemEntity.getStack();
-        UUID throwerUUID = thisAsItemEntity.getThrower();
+        UUID throwerUUID = ((ItemEntityAccessor) thisAsItemEntity).getThrower();
+
+        //  Only trigger the execution process on the server-side
+        MinecraftServer server = thisAsItemEntity.getServer();
+        if (server == null) {
+            return;
+        }
 
         //  Get the thrower entity of this item entity
-        AtomicReference<Entity> atomicThrowerEntity = new AtomicReference<>();
-
-        if (thisAsItemEntity.getServer() != null && throwerUUID != null) {
+        Entity throwerEntity = null;
+        if (throwerUUID != null) {
             for (ServerWorld serverWorld : thisAsItemEntity.getServer().getWorlds()) {
-                atomicThrowerEntity.set(serverWorld.getEntity(throwerUUID));
-                if (atomicThrowerEntity.get() != null) break;
+                if ((throwerEntity = serverWorld.getEntity(throwerUUID)) != null) {
+                    break;
+                }
             }
         }
 
+        //  Copy the thrower entity to an effectively final variable
+        Entity finalThrowerEntity = throwerEntity;
+
         //  Prevent the item entity from being picked up
         PrioritizedPower.CallInstance<PreventItemPickupPower> pippci = new PrioritizedPower.CallInstance<>();
-        pippci.add(playerEntity, PreventItemPickupPower.class, pipp -> pipp.doesPrevent(itemStack, atomicThrowerEntity.get()));
+        pippci.add(playerEntity, PreventItemPickupPower.class, pipp -> pipp.doesPrevent(itemStack, finalThrowerEntity));
         int preventItemPickupPowers = 0;
 
         for (int i = pippci.getMaxPriority(); i >= pippci.getMinPriority(); i--) {
@@ -48,7 +58,7 @@ public abstract class ItemEntityMixin {
             List<PreventItemPickupPower> pipps = pippci.getPowers(i);
 
             preventItemPickupPowers += pipps.size();
-            pipps.forEach(pipp -> pipp.executeActions(itemStack, atomicThrowerEntity.get()));
+            pipps.forEach(pipp -> pipp.executeActions(itemStack, finalThrowerEntity));
 
         }
 
@@ -57,16 +67,16 @@ public abstract class ItemEntityMixin {
             return;
         }
 
-        //  Execute an action upon the item entity being picked up
+        //  Execute action(s) upon the item entity being picked up
         PrioritizedPower.CallInstance<ActionOnItemPickupPower> aoippci = new PrioritizedPower.CallInstance<>();
-        aoippci.add(playerEntity, ActionOnItemPickupPower.class, aoipp -> aoipp.doesApply(itemStack, atomicThrowerEntity.get()));
+        aoippci.add(playerEntity, ActionOnItemPickupPower.class, aoipp -> aoipp.doesApply(itemStack, finalThrowerEntity));
 
         for (int i = aoippci.getMaxPriority(); i >= aoippci.getMinPriority(); i--) {
 
             if (!aoippci.hasPowers(i)) continue;
 
             List<ActionOnItemPickupPower> aoipps = aoippci.getPowers(i);
-            aoipps.forEach(aoipp -> aoipp.executeActions(itemStack, atomicThrowerEntity.get()));
+            aoipps.forEach(aoipp -> aoipp.executeActions(itemStack, finalThrowerEntity));
 
         }
 

@@ -1,9 +1,9 @@
 package io.github.eggohito.eggolib.power;
 
 import io.github.apace100.apoli.data.ApoliDataTypes;
-import io.github.apace100.apoli.power.ActiveInteractionPower;
 import io.github.apace100.apoli.power.InteractionPower;
 import io.github.apace100.apoli.power.PowerType;
+import io.github.apace100.apoli.power.Prioritized;
 import io.github.apace100.apoli.power.factory.PowerFactory;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
@@ -25,7 +25,7 @@ import java.util.EnumSet;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-public class PreventBlockPlacePower extends ActiveInteractionPower {
+public class PreventBlockPlacePower extends InteractionPower implements Prioritized<PreventBlockPlacePower> {
 
     private final Consumer<Entity> entityAction;
     private final Consumer<Triple<World, BlockPos, Direction>> placeToAction;
@@ -33,15 +33,22 @@ public class PreventBlockPlacePower extends ActiveInteractionPower {
     private final Predicate<CachedBlockPosition> placeToCondition;
     private final Predicate<CachedBlockPosition> placeOnCondition;
     private final EnumSet<Direction> directions;
+    private final int priority;
 
     public PreventBlockPlacePower(PowerType<?> powerType, LivingEntity livingEntity, EnumSet<Hand> hands, ActionResult actionResult, Predicate<ItemStack> itemCondition, Consumer<Pair<World, ItemStack>> heldItemAction, ItemStack resultItem, Consumer<Pair<World, ItemStack>> resultItemAction, Predicate<CachedBlockPosition> placeToCondition, Predicate<CachedBlockPosition> placeOnCondition, EnumSet<Direction> directions, Consumer<Entity> entityAction, Consumer<Triple<World, BlockPos, Direction>> placeToAction, Consumer<Triple<World, BlockPos, Direction>> placeOnAction, int priority) {
-        super(powerType, livingEntity, hands, actionResult, itemCondition, heldItemAction, resultItem, resultItemAction, priority);
+        super(powerType, livingEntity, hands, actionResult, itemCondition, heldItemAction, resultItem, resultItemAction);
         this.placeToCondition = placeToCondition;
         this.placeOnCondition = placeOnCondition;
         this.directions = directions;
         this.entityAction = entityAction;
         this.placeToAction = placeToAction;
         this.placeOnAction = placeOnAction;
+        this.priority = priority;
+    }
+
+    @Override
+    public int getPriority() {
+        return priority;
     }
 
     public boolean doesPrevent(Hand hand, BlockPos hitPos, BlockPos placementPos, Direction direction, ItemStack itemStack) {

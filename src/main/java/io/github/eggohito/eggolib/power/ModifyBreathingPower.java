@@ -140,7 +140,7 @@ public class ModifyBreathingPower extends PrioritizedPower {
                 .add("lose_air_modifier", Modifier.DATA_TYPE, null)
                 .add("lose_air_modifiers", Modifier.LIST_TYPE, null)
                 .add("lose_air_interval", EggolibDataTypes.POSITIVE_INT, null)
-                .add("damage_source", SerializableDataTypes.DAMAGE_SOURCE, null)
+                .add("damage_source", ApoliDataTypes.DAMAGE_SOURCE_DESCRIPTION, null)
                 .add("damage_modifier", Modifier.DATA_TYPE, null)
                 .add("damage_modifiers", Modifier.LIST_TYPE, null)
                 .add("damage_interval", EggolibDataTypes.POSITIVE_INT, null)

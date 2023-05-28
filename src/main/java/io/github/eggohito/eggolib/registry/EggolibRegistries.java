@@ -8,12 +8,8 @@ import net.minecraft.registry.Registry;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.world.dimension.DimensionType;
 
-public class EggolibRegistries {
+public interface EggolibRegistries {
 
-    public static final Registry<ConditionFactory<RegistryEntry<DimensionType>>> DIMENSION_TYPE_CONDITION;
-
-    static {
-        DIMENSION_TYPE_CONDITION = FabricRegistryBuilder.createSimple(ClassUtil.<ConditionFactory<RegistryEntry<DimensionType>>>castClass(ConditionFactory.class), Eggolib.identifier("dimension_type_condition")).buildAndRegister();
-    }
+    Registry<ConditionFactory<RegistryEntry<DimensionType>>> DIMENSION_TYPE_CONDITION = FabricRegistryBuilder.createSimple(EggolibRegistryKeys.DIMENSION_TYPE_CONDITION).buildAndRegister();
 
 }

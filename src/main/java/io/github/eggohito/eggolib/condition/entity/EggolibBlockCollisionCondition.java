@@ -27,8 +27,8 @@ public class EggolibBlockCollisionCondition {
         if (blockCondition != null) {
 
             int matchingBlocks = 0;
-            BlockPos minBlockPos = new BlockPos(offsetEntityBoundingBox.minX + 0.001, offsetEntityBoundingBox.minY + 0.001, offsetEntityBoundingBox.minZ + 0.001);
-            BlockPos maxBlockPos = new BlockPos(offsetEntityBoundingBox.maxX - 0.001, offsetEntityBoundingBox.maxY - 0.001, offsetEntityBoundingBox.maxZ - 0.001);
+            BlockPos minBlockPos = BlockPos.ofFloored(offsetEntityBoundingBox.minX + 0.001, offsetEntityBoundingBox.minY + 0.001, offsetEntityBoundingBox.minZ + 0.001);
+            BlockPos maxBlockPos = BlockPos.ofFloored(offsetEntityBoundingBox.maxX - 0.001, offsetEntityBoundingBox.maxY - 0.001, offsetEntityBoundingBox.maxZ - 0.001);
             BlockPos.Mutable mutBlockPos = new BlockPos.Mutable();
 
             for (int i = minBlockPos.getX(); i <= maxBlockPos.getX(); i++) {

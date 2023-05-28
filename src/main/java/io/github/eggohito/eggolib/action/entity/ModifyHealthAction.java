@@ -4,7 +4,7 @@ import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import io.github.apace100.apoli.util.modifier.Modifier;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.eggohito.eggolib.Eggolib;
-import io.github.eggohito.eggolib.content.EggolibDamageSources;
+import io.github.eggohito.eggolib.content.EggolibDamageTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 
@@ -20,7 +20,7 @@ public class ModifyHealthAction {
 
         if (newHealth > maxHealth) newHealth -= maxHealth;
 
-        if (newHealth <= 0F) livingEntity.damage(EggolibDamageSources.CHANGE_HEALTH_UNDERFLOW, maxHealth);
+        if (newHealth <= 0F) livingEntity.damage(entity.getDamageSources().create(EggolibDamageTypes.CHANGE_HEALTH_UNDERFLOW), maxHealth);
         else livingEntity.setHealth(newHealth);
 
     }

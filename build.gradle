@@ -74,14 +74,11 @@ dependencies {
 	modImplementation "com.jamieswhiteshirt:reach-entity-attributes:${project.reach_version}"
 
 	// Apoli by Apace100
-//	modImplementation "com.github.apace100:apoli:${project.apoli_version}"
-//	include "com.github.apace100:apoli:${project.apoli_version}"
-	modImplementation "com.github.eggohito:apoli:${project.apoli_version}"
-	include "com.github.eggohito:apoli:${project.apoli_version}"
+	modImplementation "com.github.apace100:apoli:${project.apoli_version}"
+	include "com.github.apace100:apoli:${project.apoli_version}"
 
 	// Origins by Apace100
-//	modImplementation "com.github.apace100:origins-fabric:${project.origins_version}"
-	modImplementation "com.github.eggohito:origins-fabric:${project.origins_version}"
+	modImplementation "com.github.apace100:origins-fabric:${project.origins_version}"
 
 	// BreathingLib (fork) by eggohito
 	modImplementation "com.github.eggohito:BreathingLib:${project.breathing_lib_version}"

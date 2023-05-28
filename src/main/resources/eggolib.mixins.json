@@ -9,6 +9,7 @@
         "EntityAccessor",
         "EntityMixin",
         "FarmlandBlockMixin",
+        "ItemEntityAccessor",
         "ItemEntityMixin",
         "ItemSlotArgumentTypeAccessor",
         "ItemUsageContextAccessor",

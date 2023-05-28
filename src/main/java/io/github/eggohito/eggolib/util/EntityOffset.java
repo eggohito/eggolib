@@ -23,7 +23,7 @@ public enum EntityOffset {
     }
 
     public BlockPos getBlockPos(Entity entity) {
-        return new BlockPos(getPos(entity));
+        return BlockPos.ofFloored(getPos(entity));
     }
 
     public Vec3d getOffset(Entity entity) {

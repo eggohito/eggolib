@@ -1,6 +1,6 @@
 package io.github.eggohito.eggolib.mixin;
 
-import io.github.apace100.apoli.power.ActiveInteractionPower;
+import io.github.apace100.apoli.power.Prioritized;
 import io.github.eggohito.eggolib.power.ActionOnBlockPlacePower;
 import io.github.eggohito.eggolib.power.PreventBlockPlacePower;
 import net.minecraft.block.BlockState;
@@ -25,25 +25,36 @@ import java.util.List;
 @Mixin(BlockItem.class)
 public abstract class BlockItemMixin {
 
+    @Unique private Prioritized.CallInstance<ActionOnBlockPlacePower> eggolib$aobppci;
+
     @Inject(method = "canPlace", at = @At("HEAD"), cancellable = true)
     private void eggolib$preventBlockPlace(ItemPlacementContext context, BlockState state, CallbackInfoReturnable<Boolean> cir) {
 
         PlayerEntity playerEntity = context.getPlayer();
+        if (playerEntity == null) {
+            return;
+        }
+
         ItemStack itemStack = context.getStack();
         BlockPos hitPos = ((ItemUsageContextAccessor) context).callGetHitResult().getBlockPos();
         BlockPos placementPos = context.getBlockPos();
         Direction direction = context.getSide();
         Hand hand = context.getHand();
 
-        if (playerEntity == null) return;
-
         int preventBlockPlacePowers = 0;
-        ActiveInteractionPower.CallInstance<PreventBlockPlacePower> pbppci = new ActiveInteractionPower.CallInstance<>();
-        pbppci.add(playerEntity, PreventBlockPlacePower.class, pbpp -> pbpp.doesPrevent(hand, hitPos, placementPos, direction, itemStack));
+        Prioritized.CallInstance<PreventBlockPlacePower> pbppci = new Prioritized.CallInstance<>();
+        pbppci.add(
+            playerEntity,
+            PreventBlockPlacePower.class,
+            pbpp -> pbpp.doesPrevent(hand, hitPos, placementPos, direction, itemStack)
+        );
 
         for (int i = pbppci.getMaxPriority(); i >= pbppci.getMinPriority(); i--) {
 
-            if (!pbppci.hasPowers(i)) continue;
+            if (!pbppci.hasPowers(i)) {
+                continue;
+            }
+
             List<PreventBlockPlacePower> pbpps = pbppci.getPowers(i);
 
             preventBlockPlacePowers += pbpps.size();
@@ -51,28 +62,40 @@ public abstract class BlockItemMixin {
 
         }
 
-        if (preventBlockPlacePowers > 0) cir.setReturnValue(false);
+        if (preventBlockPlacePowers > 0) {
+            cir.setReturnValue(false);
+        }
 
     }
 
-    @Unique private ActiveInteractionPower.CallInstance<ActionOnBlockPlacePower> eggolib$aobppci;
-
     @Inject(method = "place(Lnet/minecraft/item/ItemPlacementContext;)Lnet/minecraft/util/ActionResult;", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;getBlockState(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/block/BlockState;"), locals = LocalCapture.CAPTURE_FAILHARD)
     private void eggolib$actionOnBlockPlace(ItemPlacementContext context, CallbackInfoReturnable<ActionResult> cir, ItemPlacementContext itemPlacementContext, BlockState blockState, BlockPos blockPos, World world, PlayerEntity playerEntity, ItemStack itemStack) {
+
+        if (playerEntity == null) {
+            return;
+        }
 
         BlockPos hitPos = ((ItemUsageContextAccessor) context).callGetHitResult().getBlockPos();
         BlockPos placementPos = context.getBlockPos();
         Direction direction = context.getSide();
         Hand hand = context.getHand();
 
-        if (playerEntity == null) return;
-
-        eggolib$aobppci = new ActiveInteractionPower.CallInstance<>();
-        eggolib$aobppci.add(playerEntity, ActionOnBlockPlacePower.class, aobpp -> aobpp.shouldExecute(hand, hitPos, placementPos, direction, itemStack));
+        eggolib$aobppci = new Prioritized.CallInstance<>();
+        eggolib$aobppci.add(
+            playerEntity,
+            ActionOnBlockPlacePower.class,
+            aobpp -> aobpp.shouldExecute(hand, hitPos, placementPos, direction, itemStack)
+        );
 
         for (int i = eggolib$aobppci.getMaxPriority(); i >= eggolib$aobppci.getMinPriority(); i--) {
-            if (!eggolib$aobppci.hasPowers(i)) continue;
-            eggolib$aobppci.getPowers(i).forEach(aobpp -> aobpp.executeBlockAndEntityActions(hitPos, placementPos, direction));
+
+            if (!eggolib$aobppci.hasPowers(i)) {
+                continue;
+            }
+
+            eggolib$aobppci.getPowers(i)
+                .forEach(aobpp -> aobpp.executeBlockAndEntityActions(hitPos, placementPos, direction));
+
         }
 
     }
@@ -83,11 +106,19 @@ public abstract class BlockItemMixin {
         PlayerEntity playerEntity = context.getPlayer();
         Hand hand = context.getHand();
 
-        if (playerEntity == null) return;
+        if (playerEntity == null) {
+            return;
+        }
 
         for (int i = eggolib$aobppci.getMaxPriority(); i >= eggolib$aobppci.getMinPriority(); i--) {
-            if (!eggolib$aobppci.hasPowers(i)) continue;
-            eggolib$aobppci.getPowers(i).forEach(aobpp -> aobpp.executeItemActions(playerEntity, hand));
+
+            if (!eggolib$aobppci.hasPowers(i)) {
+                continue;
+            }
+
+            eggolib$aobppci.getPowers(i)
+                .forEach(aobpp -> aobpp.executeItemActions(playerEntity, hand));
+
         }
 
     }
