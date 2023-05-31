@@ -7,9 +7,9 @@ import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 
 public class EggolibPowerIntegration {
 
-    public static void register() {
-        AttackBlockCallback.EVENT.register(ActionOnBlockHitPower::integrateCallback);
-        BreathingCallback.EVENT.register(ModifyBreathingPower::integrateCallback);
-    }
+	public static void register() {
+		AttackBlockCallback.EVENT.register(ActionOnBlockHitPower::integrateCallback);
+		BreathingCallback.EVENT.register(ModifyBreathingPower::integrateCallback);
+	}
 
 }

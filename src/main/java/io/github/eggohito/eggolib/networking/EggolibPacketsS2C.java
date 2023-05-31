@@ -40,60 +40,60 @@ import java.util.function.Consumer;
 @Environment(EnvType.CLIENT)
 public class EggolibPacketsS2C {
 
-    public static void register() {
-        ClientLoginNetworking.registerGlobalReceiver(EggolibPackets.HANDSHAKE, EggolibPacketsS2C::handleHandshake);
-        ClientPlayConnectionEvents.INIT.register(
-            (clientPlayNetworkHandler, minecraftClient) -> {
-                ClientPlayNetworking.registerReceiver(EggolibPackets.CLOSE_SCREEN, EggolibPacketsS2C::closeScreen);
-                ClientPlayNetworking.registerReceiver(EggolibPackets.SYNC_SCREEN, EggolibPacketsS2C::syncScreen);
-                ClientPlayNetworking.registerReceiver(EggolibPackets.SET_PERSPECTIVE, EggolibPacketsS2C::setPerspective);
-                ClientPlayNetworking.registerReceiver(EggolibPackets.GET_PERSPECTIVE, EggolibPacketsS2C::getPerspective);
-            }
-        );
-    }
+	public static void register() {
+		ClientLoginNetworking.registerGlobalReceiver(EggolibPackets.HANDSHAKE, EggolibPacketsS2C::handleHandshake);
+		ClientPlayConnectionEvents.INIT.register(
+			(clientPlayNetworkHandler, minecraftClient) -> {
+				ClientPlayNetworking.registerReceiver(EggolibPackets.CLOSE_SCREEN, EggolibPacketsS2C::closeScreen);
+				ClientPlayNetworking.registerReceiver(EggolibPackets.SYNC_SCREEN, EggolibPacketsS2C::syncScreen);
+				ClientPlayNetworking.registerReceiver(EggolibPackets.SET_PERSPECTIVE, EggolibPacketsS2C::setPerspective);
+				ClientPlayNetworking.registerReceiver(EggolibPackets.GET_PERSPECTIVE, EggolibPacketsS2C::getPerspective);
+			}
+		);
+	}
 
-    private static CompletableFuture<PacketByteBuf> handleHandshake(MinecraftClient minecraftClient, ClientLoginNetworkHandler clientLoginNetworkHandler, PacketByteBuf packetByteBuf, Consumer<GenericFutureListener<? extends Future<? super Void>>> genericFutureListenerConsumer) {
+	private static CompletableFuture<PacketByteBuf> handleHandshake(MinecraftClient minecraftClient, ClientLoginNetworkHandler clientLoginNetworkHandler, PacketByteBuf packetByteBuf, Consumer<GenericFutureListener<? extends Future<? super Void>>> genericFutureListenerConsumer) {
 
-        PacketByteBuf buffer = PacketByteBufs.create();
-        buffer.writeInt(Eggolib.semanticVersion.length);
+		PacketByteBuf buffer = PacketByteBufs.create();
+		buffer.writeInt(Eggolib.semanticVersion.length);
 
-        for (int i = 0; i < Eggolib.semanticVersion.length; i++) {
-            buffer.writeInt(Eggolib.semanticVersion[i]);
-        }
+		for (int i = 0; i < Eggolib.semanticVersion.length; i++) {
+			buffer.writeInt(Eggolib.semanticVersion[i]);
+		}
 
-        return CompletableFuture.completedFuture(buffer);
+		return CompletableFuture.completedFuture(buffer);
 
-    }
+	}
 
-    private static void closeScreen(MinecraftClient minecraftClient, ClientPlayNetworkHandler clientPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
-        minecraftClient.execute(
-            () -> minecraftClient.setScreen(null)
-        );
-    }
+	private static void closeScreen(MinecraftClient minecraftClient, ClientPlayNetworkHandler clientPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
+		minecraftClient.execute(
+			() -> minecraftClient.setScreen(null)
+		);
+	}
 
-    private static void syncScreen(MinecraftClient minecraftClient, ClientPlayNetworkHandler clientPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
-        minecraftClient.execute(
-            () -> MiscUtilClient.syncScreen(minecraftClient)
-        );
-    }
+	private static void syncScreen(MinecraftClient minecraftClient, ClientPlayNetworkHandler clientPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
+		minecraftClient.execute(
+			() -> MiscUtilClient.syncScreen(minecraftClient)
+		);
+	}
 
-    private static void setPerspective(MinecraftClient minecraftClient, ClientPlayNetworkHandler clientPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
+	private static void setPerspective(MinecraftClient minecraftClient, ClientPlayNetworkHandler clientPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
 
-        String eggolibPerspectiveString = packetByteBuf.readString();
-        EggolibPerspective eggolibPerspective = Enum.valueOf(EggolibPerspective.class, eggolibPerspectiveString);
+		String eggolibPerspectiveString = packetByteBuf.readString();
+		EggolibPerspective eggolibPerspective = Enum.valueOf(EggolibPerspective.class, eggolibPerspectiveString);
 
-        minecraftClient.execute(
-            () -> MiscUtilClient.setPerspective(minecraftClient, eggolibPerspective)
-        );
+		minecraftClient.execute(
+			() -> MiscUtilClient.setPerspective(minecraftClient, eggolibPerspective)
+		);
 
-    }
+	}
 
-    private static void getPerspective(MinecraftClient minecraftClient, ClientPlayNetworkHandler clientPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
+	private static void getPerspective(MinecraftClient minecraftClient, ClientPlayNetworkHandler clientPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
 
-        minecraftClient.execute(
-            () -> MiscUtilClient.getPerspective(minecraftClient)
-        );
+		minecraftClient.execute(
+			() -> MiscUtilClient.getPerspective(minecraftClient)
+		);
 
-    }
+	}
 
 }

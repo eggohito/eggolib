@@ -8,15 +8,16 @@ import net.minecraft.item.ItemStack;
 
 public class BlockItemCondition {
 
-    public static boolean condition(SerializableData.Instance data, ItemStack itemStack) {
-        return (itemStack.getItem() instanceof BlockItem);
-    }
+	public static boolean condition(SerializableData.Instance data, ItemStack itemStack) {
+		return itemStack.getItem() instanceof BlockItem;
+	}
 
-    public static ConditionFactory<ItemStack> getFactory() {
-        return new ConditionFactory<>(
-            Eggolib.identifier("block_item"),
-            new SerializableData(),
-            BlockItemCondition::condition
-        );
-    }
+	public static ConditionFactory<ItemStack> getFactory() {
+		return new ConditionFactory<>(
+			Eggolib.identifier("block_item"),
+			new SerializableData(),
+			BlockItemCondition::condition
+		);
+	}
+
 }

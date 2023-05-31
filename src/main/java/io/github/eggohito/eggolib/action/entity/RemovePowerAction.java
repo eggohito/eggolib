@@ -13,35 +13,36 @@ import java.util.List;
 
 public class RemovePowerAction {
 
-    public static void action(SerializableData.Instance data, Entity entity) {
+	public static void action(SerializableData.Instance data, Entity entity) {
 
-        PowerHolderComponent.KEY.maybeGet(entity).ifPresent(
-            powerHolderComponent -> {
+		PowerHolderComponent component = PowerHolderComponent.KEY.maybeGet(entity).orElse(null);
+		if (component == null) {
+			return;
+		}
 
-                PowerType<?> targetPowerType = data.get("power");
-                if (targetPowerType == null) return;
+		PowerType<?> targetPowerType = data.get("power");
+		if (targetPowerType == null) {
+			return;
+		}
 
-                List<Identifier> targetPowerSources = powerHolderComponent.getSources(targetPowerType);
-                for (Identifier targetPowerSource : targetPowerSources) {
-                    powerHolderComponent.removePower(targetPowerType, targetPowerSource);
-                }
+		List<Identifier> targetPowerSources = component.getSources(targetPowerType);
+		for (Identifier targetPowerSource : targetPowerSources) {
+			component.removePower(targetPowerType, targetPowerSource);
+		}
 
-                if (targetPowerSources.size() > 0) {
-                    powerHolderComponent.sync();
-                }
+		if (!targetPowerSources.isEmpty()) {
+			component.sync();
+		}
 
-            }
-        );
+	}
 
-    }
-
-    public static ActionFactory<Entity> getFactory() {
-        return new ActionFactory<>(
-            Eggolib.identifier("remove_power"),
-            new SerializableData()
-                .add("power", ApoliDataTypes.POWER_TYPE),
-            RemovePowerAction::action
-        );
-    }
+	public static ActionFactory<Entity> getFactory() {
+		return new ActionFactory<>(
+			Eggolib.identifier("remove_power"),
+			new SerializableData()
+				.add("power", ApoliDataTypes.POWER_TYPE),
+			RemovePowerAction::action
+		);
+	}
 
 }

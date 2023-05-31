@@ -8,16 +8,16 @@ import net.minecraft.world.dimension.DimensionType;
 
 public class IsUltrawarmCondition {
 
-    public static boolean condition(SerializableData.Instance data, RegistryEntry<DimensionType> dimensionTypeRegistryEntry) {
-        return dimensionTypeRegistryEntry.value().ultrawarm();
-    }
+	public static boolean condition(SerializableData.Instance data, RegistryEntry<DimensionType> dimensionTypeRegistryEntry) {
+		return dimensionTypeRegistryEntry.value().ultrawarm();
+	}
 
-    public static ConditionFactory<RegistryEntry<DimensionType>> getFactory() {
-        return new ConditionFactory<>(
-            Eggolib.identifier("is_ultrawarm"),
-            new SerializableData(),
-            IsUltrawarmCondition::condition
-        );
-    }
+	public static ConditionFactory<RegistryEntry<DimensionType>> getFactory() {
+		return new ConditionFactory<>(
+			Eggolib.identifier("is_ultrawarm"),
+			new SerializableData(),
+			IsUltrawarmCondition::condition
+		);
+	}
 
 }

@@ -40,145 +40,160 @@ import java.util.HashMap;
 
 public class EggolibPacketsC2S {
 
-    public static void register() {
-        if (Eggolib.config.server.performVersionCheck) {
-            ServerLoginConnectionEvents.QUERY_START.register(EggolibPacketsC2S::handshake);
-            ServerLoginNetworking.registerGlobalReceiver(EggolibPackets.HANDSHAKE, EggolibPacketsC2S::handleHandshakeReply);
-        }
-        ServerPlayNetworking.registerGlobalReceiver(EggolibPackets.SYNC_SCREEN, EggolibPacketsC2S::syncScreen);
-        ServerPlayNetworking.registerGlobalReceiver(EggolibPackets.GET_PERSPECTIVE, EggolibPacketsC2S::getPerspective);
-        ServerPlayNetworking.registerGlobalReceiver(EggolibPackets.SYNC_KEY_PRESS, EggolibPacketsC2S::syncKeyPress);
-        ServerPlayNetworking.registerGlobalReceiver(EggolibPackets.END_KEY_SEQUENCE, EggolibPacketsC2S::endKeySequence);
-    }
+	public static void register() {
+		if (Eggolib.config.server.performVersionCheck) {
+			ServerLoginConnectionEvents.QUERY_START.register(EggolibPacketsC2S::handshake);
+			ServerLoginNetworking.registerGlobalReceiver(EggolibPackets.HANDSHAKE, EggolibPacketsC2S::handleHandshakeReply);
+		}
+		ServerPlayNetworking.registerGlobalReceiver(EggolibPackets.SYNC_SCREEN, EggolibPacketsC2S::syncScreen);
+		ServerPlayNetworking.registerGlobalReceiver(EggolibPackets.GET_PERSPECTIVE, EggolibPacketsC2S::getPerspective);
+		ServerPlayNetworking.registerGlobalReceiver(EggolibPackets.SYNC_KEY_PRESS, EggolibPacketsC2S::syncKeyPress);
+		ServerPlayNetworking.registerGlobalReceiver(EggolibPackets.END_KEY_SEQUENCE, EggolibPacketsC2S::endKeySequence);
+	}
 
-    private static void handshake(ServerLoginNetworkHandler serverLoginNetworkHandler, MinecraftServer minecraftServer, PacketSender packetSender, ServerLoginNetworking.LoginSynchronizer loginSynchronizer) {
-        packetSender.sendPacket(EggolibPackets.HANDSHAKE, PacketByteBufs.empty());
-    }
+	private static void handshake(ServerLoginNetworkHandler serverLoginNetworkHandler, MinecraftServer minecraftServer, PacketSender packetSender, ServerLoginNetworking.LoginSynchronizer loginSynchronizer) {
+		packetSender.sendPacket(EggolibPackets.HANDSHAKE, PacketByteBufs.empty());
+	}
 
-    private static void handleHandshakeReply(MinecraftServer minecraftServer, ServerLoginNetworkHandler serverLoginNetworkHandler, boolean understood, PacketByteBuf packetByteBuf, ServerLoginNetworking.LoginSynchronizer loginSynchronizer, PacketSender packetSender) {
+	private static void handleHandshakeReply(MinecraftServer minecraftServer, ServerLoginNetworkHandler serverLoginNetworkHandler, boolean understood, PacketByteBuf packetByteBuf, ServerLoginNetworking.LoginSynchronizer loginSynchronizer, PacketSender packetSender) {
 
-        if (understood) {
+		if (understood) {
 
-            int clientSemVerLength = packetByteBuf.readInt();
-            int[] clientSemVer = new int[clientSemVerLength];
+			int clientSemVerLength = packetByteBuf.readInt();
+			int[] clientSemVer = new int[clientSemVerLength];
 
-            boolean mismatch = clientSemVerLength != Eggolib.semanticVersion.length;
+			boolean mismatch = clientSemVerLength != Eggolib.semanticVersion.length;
 
-            for (int i = 0; i < clientSemVerLength; i++) {
-                clientSemVer[i] = packetByteBuf.readInt();
-                if (i < clientSemVerLength - 1 && clientSemVer[i] != Eggolib.semanticVersion[i]) mismatch = true;
-            }
+			for (int i = 0; i < clientSemVerLength; i++) {
+				clientSemVer[i] = packetByteBuf.readInt();
+				if (i < clientSemVerLength - 1 && clientSemVer[i] != Eggolib.semanticVersion[i]) {
+					mismatch = true;
+				}
+			}
 
-            if (mismatch) {
+			if (mismatch) {
 
-                StringBuilder clientVersionString = new StringBuilder();
+				StringBuilder clientVersionString = new StringBuilder();
 
-                for (int i = 0; i < clientSemVerLength; i++) {
-                    clientVersionString.append(clientSemVer[i]);
-                    if (i < clientSemVerLength - 1) clientVersionString.append(".");
-                }
+				for (int i = 0; i < clientSemVerLength; i++) {
+					clientVersionString.append(clientSemVer[i]);
+					if (i < clientSemVerLength - 1) {
+						clientVersionString.append(".");
+					}
+				}
 
-                serverLoginNetworkHandler.disconnect(Text.translatable("disconnect.eggolib.version_mismatch", Eggolib.version, clientVersionString));
+				serverLoginNetworkHandler.disconnect(Text.translatable("disconnect.eggolib.version_mismatch", Eggolib.version, clientVersionString));
 
-            }
+			}
 
-        }
+		} else {
+			serverLoginNetworkHandler.disconnect(Text.translatable("This server requires you to install Eggolib (v%s) to join.", Eggolib.version));
+		}
 
-        else serverLoginNetworkHandler.disconnect(Text.translatable("This server requires you to install Eggolib (v%s) to join.", Eggolib.version));
+	}
 
-    }
+	private static void syncScreen(MinecraftServer minecraftServer, ServerPlayerEntity serverPlayerEntity, ServerPlayNetworkHandler serverPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
 
-    private static void syncScreen(MinecraftServer minecraftServer, ServerPlayerEntity serverPlayerEntity, ServerPlayNetworkHandler serverPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
+		int entityId = packetByteBuf.readInt();
+		boolean inScreen = packetByteBuf.readBoolean();
+		boolean unknownScreen = packetByteBuf.readBoolean();
 
-        int entityId = packetByteBuf.readInt();
-        boolean inScreen = packetByteBuf.readBoolean();
-        boolean unknownScreen = packetByteBuf.readBoolean();
+		ScreenState screenState = ScreenState.of(inScreen, inScreen && !unknownScreen ? packetByteBuf.readString() : null);
 
-        ScreenState screenState = ScreenState.of(inScreen, inScreen && !unknownScreen ? packetByteBuf.readString() : null);
+		minecraftServer.execute(
+			() -> {
 
-        minecraftServer.execute(
-            () -> {
+				Entity entity = serverPlayerEntity.getWorld().getEntityById(entityId);
+				if (!(entity instanceof PlayerEntity playerEntity)) {
+					return;
+				}
 
-                Entity entity = serverPlayerEntity.getWorld().getEntityById(entityId);
-                if (!(entity instanceof PlayerEntity playerEntity)) return;
+				Eggolib.PLAYERS_SCREEN.put(playerEntity, screenState);
 
-                Eggolib.PLAYERS_SCREEN.put(playerEntity, screenState);
+			}
+		);
 
-            }
-        );
+	}
 
-    }
+	private static void getPerspective(MinecraftServer minecraftServer, ServerPlayerEntity serverPlayerEntity, ServerPlayNetworkHandler serverPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
 
-    private static void getPerspective(MinecraftServer minecraftServer, ServerPlayerEntity serverPlayerEntity, ServerPlayNetworkHandler serverPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
+		int entityId = packetByteBuf.readInt();
+		String eggolibPerspectiveString = packetByteBuf.readString();
 
-        int entityId = packetByteBuf.readInt();
-        String eggolibPerspectiveString = packetByteBuf.readString();
+		minecraftServer.execute(
+			() -> {
 
-        minecraftServer.execute(
-            () -> {
+				Entity entity = serverPlayerEntity.getWorld().getEntityById(entityId);
+				if (!(entity instanceof PlayerEntity playerEntity)) {
+					return;
+				}
 
-                Entity entity = serverPlayerEntity.getWorld().getEntityById(entityId);
-                if (!(entity instanceof PlayerEntity playerEntity)) return;
+				Eggolib.PLAYERS_PERSPECTIVE.put(playerEntity, eggolibPerspectiveString);
 
-                Eggolib.PLAYERS_PERSPECTIVE.put(playerEntity, eggolibPerspectiveString);
+			}
+		);
 
-            }
-        );
+	}
 
-    }
+	private static void syncKeyPress(MinecraftServer minecraftServer, ServerPlayerEntity serverPlayerEntity, ServerPlayNetworkHandler serverPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
 
-    private static void syncKeyPress(MinecraftServer minecraftServer, ServerPlayerEntity serverPlayerEntity, ServerPlayNetworkHandler serverPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
+		HashMap<Identifier, String> powerIdAndKeyStringMap = new HashMap<>(
+			packetByteBuf.readMap(PacketByteBuf::readIdentifier, PacketByteBuf::readString)
+		);
 
-        HashMap<Identifier, String> powerIdAndKeyStringMap = new HashMap<>(
-            packetByteBuf.readMap(PacketByteBuf::readIdentifier, PacketByteBuf::readString)
-        );
+		minecraftServer.execute(
+			() -> {
 
-        minecraftServer.execute(
-            () -> {
+				PowerHolderComponent powerHolderComponent = PowerHolderComponent.KEY.get(serverPlayerEntity);
+				for (Identifier powerId : powerIdAndKeyStringMap.keySet()) {
 
-                PowerHolderComponent powerHolderComponent = PowerHolderComponent.KEY.get(serverPlayerEntity);
-                for (Identifier powerId : powerIdAndKeyStringMap.keySet()) {
+					PowerType<?> powerType = PowerTypeRegistry.get(powerId);
+					Power power = powerHolderComponent.getPower(powerType);
 
-                    PowerType<?> powerType = PowerTypeRegistry.get(powerId);
-                    Power power = powerHolderComponent.getPower(powerType);
+					if (!(power instanceof ActionOnKeySequencePower actionOnKeySequencePower)) {
+						continue;
+					}
 
-                    if (!(power instanceof ActionOnKeySequencePower actionOnKeySequencePower)) continue;
+					Key key = new Key(powerIdAndKeyStringMap.get(powerId));
+					actionOnKeySequencePower.addKeyToSequence(key);
 
-                    Key key = new Key(powerIdAndKeyStringMap.get(powerId));
-                    actionOnKeySequencePower.addKeyToSequence(key);
+				}
 
-                }
+			}
+		);
 
-            }
-        );
+	}
 
-    }
+	private static void endKeySequence(MinecraftServer minecraftServer, ServerPlayerEntity serverPlayerEntity, ServerPlayNetworkHandler serverPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
 
-    private static void endKeySequence(MinecraftServer minecraftServer, ServerPlayerEntity serverPlayerEntity, ServerPlayNetworkHandler serverPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
+		HashMap<Identifier, Boolean> powerIdAndMatchingSequenceMap = new HashMap<>(
+			packetByteBuf.readMap(PacketByteBuf::readIdentifier, PacketByteBuf::readBoolean)
+		);
 
-        HashMap<Identifier, Boolean> powerIdAndMatchingSequenceMap = new HashMap<>(
-            packetByteBuf.readMap(PacketByteBuf::readIdentifier, PacketByteBuf::readBoolean)
-        );
+		minecraftServer.execute(
+			() -> {
 
-        minecraftServer.execute(
-            () -> {
+				PowerHolderComponent powerHolderComponent = PowerHolderComponent.KEY.get(serverPlayerEntity);
+				for (Identifier powerId : powerIdAndMatchingSequenceMap.keySet()) {
 
-                PowerHolderComponent powerHolderComponent = PowerHolderComponent.KEY.get(serverPlayerEntity);
-                for (Identifier powerId : powerIdAndMatchingSequenceMap.keySet()) {
+					PowerType<?> powerType = PowerTypeRegistry.get(powerId);
+					Power power = powerHolderComponent.getPower(powerType);
 
-                    PowerType<?> powerType = PowerTypeRegistry.get(powerId);
-                    Power power = powerHolderComponent.getPower(powerType);
+					if (!(power instanceof ActionOnKeySequencePower actionOnKeySequencePower)) {
+						continue;
+					}
 
-                    if (!(power instanceof ActionOnKeySequencePower actionOnKeySequencePower)) continue;
+					if (powerIdAndMatchingSequenceMap.get(powerId)) {
+						actionOnKeySequencePower.onSuccess();
+					} else {
+						actionOnKeySequencePower.onFail();
+					}
 
-                    if (powerIdAndMatchingSequenceMap.get(powerId)) actionOnKeySequencePower.onSuccess();
-                    else actionOnKeySequencePower.onFail();
+				}
 
-                }
+			}
+		);
 
-            }
-        );
-
-    }
+	}
 
 }

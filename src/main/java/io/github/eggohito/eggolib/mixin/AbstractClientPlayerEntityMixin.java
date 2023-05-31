@@ -22,30 +22,33 @@ import java.util.List;
 @Mixin(AbstractClientPlayerEntity.class)
 public abstract class AbstractClientPlayerEntityMixin extends PlayerEntity {
 
-    @Unique private float eggolib$startingFovMultiplier;
+	@Unique
+	private float eggolib$startingFovMultiplier;
 
-    public AbstractClientPlayerEntityMixin(World world, BlockPos pos, float yaw, GameProfile gameProfile) {
-        super(world, pos, yaw, gameProfile);
-    }
+	public AbstractClientPlayerEntityMixin(World world, BlockPos pos, float yaw, GameProfile gameProfile) {
+		super(world, pos, yaw, gameProfile);
+	}
 
-    @Inject(method = "getFovMultiplier", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/AbstractClientPlayerEntity;getAbilities()Lnet/minecraft/entity/player/PlayerAbilities;", ordinal = 0), locals = LocalCapture.CAPTURE_FAILHARD)
-    private void eggolib$getStartingFov(CallbackInfoReturnable<Float> cir, float f) {
-        eggolib$startingFovMultiplier = f;
-    }
+	@Inject(method = "getFovMultiplier", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/AbstractClientPlayerEntity;getAbilities()Lnet/minecraft/entity/player/PlayerAbilities;", ordinal = 0), locals = LocalCapture.CAPTURE_FAILHARD)
+	private void eggolib$getStartingFov(CallbackInfoReturnable<Float> cir, float f) {
+		eggolib$startingFovMultiplier = f;
+	}
 
-    @WrapOperation(method = "getFovMultiplier", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/MathHelper;lerp(FFF)F"))
-    private float eggolib$modifyFov(float delta, float start, float end, Operation<Float> original) {
+	@WrapOperation(method = "getFovMultiplier", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/MathHelper;lerp(FFF)F"))
+	private float eggolib$modifyFov(float delta, float start, float end, Operation<Float> original) {
 
-        List<ModifyFovPower> mfps = PowerHolderComponent.getPowers(this, ModifyFovPower.class);
-        if (mfps.isEmpty()) return original.call(delta, start, end);
+		List<ModifyFovPower> mfps = PowerHolderComponent.getPowers(this, ModifyFovPower.class);
+		if (mfps.isEmpty()) {
+			return original.call(delta, start, end);
+		}
 
-        boolean affectedByFovEffectScale = mfps.stream().anyMatch(ModifyFovPower::isAffectedByFovEffectScale);
+		boolean affectedByFovEffectScale = mfps.stream().anyMatch(ModifyFovPower::isAffectedByFovEffectScale);
 
-        float newEnd = PowerHolderComponent.modify(this, ModifyFovPower.class, (affectedByFovEffectScale ? end : eggolib$startingFovMultiplier));
-        float newDelta = affectedByFovEffectScale ? delta : start;
+		float newEnd = PowerHolderComponent.modify(this, ModifyFovPower.class, (affectedByFovEffectScale ? end : eggolib$startingFovMultiplier));
+		float newDelta = affectedByFovEffectScale ? delta : start;
 
-        return MathHelper.lerp(newDelta,  start, newEnd);
+		return MathHelper.lerp(newDelta, start, newEnd);
 
-    }
+	}
 
 }

@@ -17,48 +17,53 @@ import java.util.function.Predicate;
 
 public class PreventItemPickupPower extends PrioritizedPower {
 
-    private final Consumer<Pair<Entity, Entity>> biEntityAction;
-    private final Consumer<Pair<World, ItemStack>> itemAction;
+	private final Consumer<Pair<Entity, Entity>> biEntityAction;
+	private final Consumer<Pair<World, ItemStack>> itemAction;
 
-    private final Predicate<Pair<Entity, Entity>> biEntityCondition;
-    private final Predicate<ItemStack> itemCondition;
+	private final Predicate<Pair<Entity, Entity>> biEntityCondition;
+	private final Predicate<ItemStack> itemCondition;
 
-    public PreventItemPickupPower(PowerType<?> powerType, LivingEntity livingEntity, Consumer<Pair<Entity, Entity>> biEntityAction, Consumer<Pair<World, ItemStack>> itemAction, Predicate<Pair<Entity, Entity>> biEntityCondition, Predicate<ItemStack> itemCondition, int priority) {
-        super(powerType, livingEntity, priority);
-        this.biEntityAction = biEntityAction;
-        this.itemAction = itemAction;
-        this.biEntityCondition = biEntityCondition;
-        this.itemCondition = itemCondition;
-    }
+	public PreventItemPickupPower(PowerType<?> powerType, LivingEntity livingEntity, Consumer<Pair<Entity, Entity>> biEntityAction, Consumer<Pair<World, ItemStack>> itemAction, Predicate<Pair<Entity, Entity>> biEntityCondition, Predicate<ItemStack> itemCondition, int priority) {
+		super(powerType, livingEntity, priority);
+		this.biEntityAction = biEntityAction;
+		this.itemAction = itemAction;
+		this.biEntityCondition = biEntityCondition;
+		this.itemCondition = itemCondition;
+	}
 
-    public boolean doesPrevent(ItemStack itemStack, Entity thrower) {
-        return (itemCondition == null || itemCondition.test(itemStack)) && (biEntityCondition == null || biEntityCondition.test(new Pair<>(thrower, entity)));
-    }
+	public boolean doesPrevent(ItemStack itemStack, Entity thrower) {
+		return (itemCondition == null || itemCondition.test(itemStack))
+			&& (biEntityCondition == null || biEntityCondition.test(new Pair<>(thrower, entity)));
+	}
 
-    public void executeActions(ItemStack itemStack, Entity thrower) {
-        if (itemAction != null) itemAction.accept(new Pair<>(entity.world, itemStack));
-        if (biEntityAction != null) biEntityAction.accept(new Pair<>(thrower, entity));
-    }
+	public void executeActions(ItemStack itemStack, Entity thrower) {
+		if (itemAction != null) {
+			itemAction.accept(new Pair<>(entity.world, itemStack));
+		}
+		if (biEntityAction != null) {
+			biEntityAction.accept(new Pair<>(thrower, entity));
+		}
+	}
 
-    public static PowerFactory<?> getFactory() {
-        return new PowerFactory<>(
-            Eggolib.identifier("prevent_item_pickup"),
-            new SerializableData()
-                .add("bientity_action", ApoliDataTypes.BIENTITY_ACTION, null)
-                .add("item_action", ApoliDataTypes.ITEM_ACTION, null)
-                .add("bientity_condition", ApoliDataTypes.BIENTITY_CONDITION, null)
-                .add("item_condition", ApoliDataTypes.ITEM_CONDITION, null)
-                .add("priority", SerializableDataTypes.INT, 0),
-            data -> (powerType, livingEntity) -> new PreventItemPickupPower(
-                powerType,
-                livingEntity,
-                data.get("bientity_action"),
-                data.get("item_action"),
-                data.get("bientity_condition"),
-                data.get("item_condition"),
-                data.getInt("priority")
-            )
-        ).allowCondition();
-    }
+	public static PowerFactory<?> getFactory() {
+		return new PowerFactory<>(
+			Eggolib.identifier("prevent_item_pickup"),
+			new SerializableData()
+				.add("bientity_action", ApoliDataTypes.BIENTITY_ACTION, null)
+				.add("item_action", ApoliDataTypes.ITEM_ACTION, null)
+				.add("bientity_condition", ApoliDataTypes.BIENTITY_CONDITION, null)
+				.add("item_condition", ApoliDataTypes.ITEM_CONDITION, null)
+				.add("priority", SerializableDataTypes.INT, 0),
+			data -> (powerType, livingEntity) -> new PreventItemPickupPower(
+				powerType,
+				livingEntity,
+				data.get("bientity_action"),
+				data.get("item_action"),
+				data.get("bientity_condition"),
+				data.get("item_condition"),
+				data.getInt("priority")
+			)
+		).allowCondition();
+	}
 
 }

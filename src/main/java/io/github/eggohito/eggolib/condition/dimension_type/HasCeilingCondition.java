@@ -8,16 +8,16 @@ import net.minecraft.world.dimension.DimensionType;
 
 public class HasCeilingCondition {
 
-    public static boolean condition(SerializableData.Instance data, RegistryEntry<DimensionType> dimensionTypeRegistryEntry) {
-        return dimensionTypeRegistryEntry.value().hasCeiling();
-    }
+	public static boolean condition(SerializableData.Instance data, RegistryEntry<DimensionType> dimensionTypeRegistryEntry) {
+		return dimensionTypeRegistryEntry.value().hasCeiling();
+	}
 
-    public static ConditionFactory<RegistryEntry<DimensionType>> getFactory() {
-        return new ConditionFactory<>(
-            Eggolib.identifier("has_ceiling"),
-            new SerializableData(),
-            HasCeilingCondition::condition
-        );
-    }
+	public static ConditionFactory<RegistryEntry<DimensionType>> getFactory() {
+		return new ConditionFactory<>(
+			Eggolib.identifier("has_ceiling"),
+			new SerializableData(),
+			HasCeilingCondition::condition
+		);
+	}
 
 }

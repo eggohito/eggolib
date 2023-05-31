@@ -8,16 +8,16 @@ import net.minecraft.world.dimension.DimensionType;
 
 public class HasSkylightCondition {
 
-    public static boolean condition(SerializableData.Instance data, RegistryEntry<DimensionType> dimensionTypeRegistryEntry) {
-        return dimensionTypeRegistryEntry.value().hasSkyLight();
-    }
+	public static boolean condition(SerializableData.Instance data, RegistryEntry<DimensionType> dimensionTypeRegistryEntry) {
+		return dimensionTypeRegistryEntry.value().hasSkyLight();
+	}
 
-    public static ConditionFactory<RegistryEntry<DimensionType>> getFactory() {
-        return new ConditionFactory<>(
-            Eggolib.identifier("has_skylight"),
-            new SerializableData(),
-            HasSkylightCondition::condition
-        );
-    }
+	public static ConditionFactory<RegistryEntry<DimensionType>> getFactory() {
+		return new ConditionFactory<>(
+			Eggolib.identifier("has_skylight"),
+			new SerializableData(),
+			HasSkylightCondition::condition
+		);
+	}
 
 }

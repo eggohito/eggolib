@@ -19,27 +19,32 @@ import java.util.Optional;
 @Mixin(EntityRenderer.class)
 public abstract class EntityRendererMixin<T extends Entity> {
 
-    @Inject(method = "renderLabelIfPresent", at = @At("HEAD"), cancellable = true)
-    private void eggolib$completelyHideLabel(T entity, Text text, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
-        if (PowerHolderComponent.hasPower(entity, ModifyLabelRenderPower.class, mlrp -> mlrp.getMode() == ModifyLabelRenderPower.RenderMode.HIDE_COMPLETELY)) ci.cancel();
-    }
+	@Inject(method = "renderLabelIfPresent", at = @At("HEAD"), cancellable = true)
+	private void eggolib$completelyHideLabel(T entity, Text text, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
+		if (PowerHolderComponent.hasPower(entity, ModifyLabelRenderPower.class, mlrp -> mlrp.getMode() == ModifyLabelRenderPower.RenderMode.HIDE_COMPLETELY)) {
+			ci.cancel();
+		}
+	}
 
-    @ModifyVariable(method = "renderLabelIfPresent", at = @At(value = "HEAD"), argsOnly = true)
-    private Text eggolib$replaceLabelText(Text originalValue, T entity) {
+	@ModifyVariable(method = "renderLabelIfPresent", at = @At(value = "HEAD"), argsOnly = true)
+	private Text eggolib$replaceLabelText(Text originalValue, T entity) {
 
-        Optional<ModifyLabelRenderPower> modifyLabelRenderPower = PowerHolderComponent
-            .getPowers(entity, ModifyLabelRenderPower.class)
-            .stream()
-            .max(Comparator.comparing(ModifyLabelRenderPower::getPriority));
+		Optional<ModifyLabelRenderPower> modifyLabelRenderPower = PowerHolderComponent
+			.getPowers(entity, ModifyLabelRenderPower.class)
+			.stream()
+			.max(Comparator.comparing(ModifyLabelRenderPower::getPriority));
 
-        return modifyLabelRenderPower.map(ModifyLabelRenderPower::getReplacementText).orElse(originalValue);
+		return modifyLabelRenderPower.map(ModifyLabelRenderPower::getReplacementText).orElse(originalValue);
 
-    }
+	}
 
-    @ModifyVariable(method = "renderLabelIfPresent", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;push()V"), ordinal = 0)
-    private boolean eggolib$partiallyHideLabel(boolean originalValue, T entity, Text text, MatrixStack matrices, VertexConsumerProvider vertexConsumerProvider, int light) {
-        if (PowerHolderComponent.hasPower(entity, ModifyLabelRenderPower.class, mlrp -> mlrp.getMode() == ModifyLabelRenderPower.RenderMode.HIDE_PARTIALLY)) return false;
-        else return originalValue;
-    }
+	@ModifyVariable(method = "renderLabelIfPresent", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;push()V"), ordinal = 0)
+	private boolean eggolib$partiallyHideLabel(boolean originalValue, T entity, Text text, MatrixStack matrices, VertexConsumerProvider vertexConsumerProvider, int light) {
+		if (PowerHolderComponent.hasPower(entity, ModifyLabelRenderPower.class, mlrp -> mlrp.getMode() == ModifyLabelRenderPower.RenderMode.HIDE_PARTIALLY)) {
+			return false;
+		} else {
+			return originalValue;
+		}
+	}
 
 }

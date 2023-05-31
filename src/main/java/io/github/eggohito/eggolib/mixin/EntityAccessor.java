@@ -7,6 +7,7 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 @Mixin(Entity.class)
 public interface EntityAccessor {
 
-    @Invoker
-    int callGetPermissionLevel();
+	@Invoker
+	int callGetPermissionLevel();
+
 }

@@ -11,44 +11,47 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 
-import java.util.Optional;
 import java.util.function.Consumer;
 
 public class SpawnEntityAction {
 
-    public static void action(SerializableData.Instance data, Entity entity) {
+	public static void action(SerializableData.Instance data, Entity entity) {
 
-        if (!(entity.world instanceof ServerWorld serverWorld)) return;
+		if (!entity.world.isClient) {
+			return;
+		}
 
-        EntityType<?> entityType = data.get("entity_type");
-        NbtCompound entityNbt = data.get("tag");
+		ServerWorld serverWorld = (ServerWorld) entity.world;
+		EntityType<?> entityType = data.get("entity_type");
+		NbtCompound entityNbt = data.get("tag");
 
-        Optional<Entity> opt$entityToSpawn = MiscUtilServer.getEntityWithPassengers(
-            serverWorld,
-            entityType,
-            entityNbt,
-            entity.getPos(),
-            entity.getYaw(),
-            entity.getPitch()
-        );
+		Entity entityToSpawn = MiscUtilServer.getEntityWithPassengers(
+			serverWorld,
+			entityType,
+			entityNbt,
+			entity.getPos(),
+			entity.getYaw(),
+			entity.getPitch()
+		).orElse(null);
 
-        if (opt$entityToSpawn.isEmpty()) return;
-        Entity entityToSpawn = opt$entityToSpawn.get();
+		if (entityToSpawn == null) {
+			return;
+		}
 
-        serverWorld.spawnNewEntityAndPassengers(entityToSpawn);
-        data.<Consumer<Entity>>ifPresent("entity_action", entityAction -> entityAction.accept(entityToSpawn));
+		serverWorld.spawnNewEntityAndPassengers(entityToSpawn);
+		data.<Consumer<Entity>>ifPresent("entity_action", entityAction -> entityAction.accept(entityToSpawn));
 
-    }
+	}
 
-    public static ActionFactory<Entity> getFactory() {
-        return new ActionFactory<>(
-            Eggolib.identifier("spawn_entity"),
-            new SerializableData()
-                .add("entity_type", SerializableDataTypes.ENTITY_TYPE)
-                .add("tag", SerializableDataTypes.NBT, null)
-                .add("entity_action", ApoliDataTypes.ENTITY_ACTION, null),
-            SpawnEntityAction::action
-        );
-    }
+	public static ActionFactory<Entity> getFactory() {
+		return new ActionFactory<>(
+			Eggolib.identifier("spawn_entity"),
+			new SerializableData()
+				.add("entity_type", SerializableDataTypes.ENTITY_TYPE)
+				.add("tag", SerializableDataTypes.NBT, null)
+				.add("entity_action", ApoliDataTypes.ENTITY_ACTION, null),
+			SpawnEntityAction::action
+		);
+	}
 
 }

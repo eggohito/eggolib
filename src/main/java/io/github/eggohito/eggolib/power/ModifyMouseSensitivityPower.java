@@ -12,30 +12,32 @@ import java.util.List;
 
 public class ModifyMouseSensitivityPower extends ValueModifyingPower {
 
-    public ModifyMouseSensitivityPower(PowerType<?> powerType, LivingEntity livingEntity) {
-        super(powerType, livingEntity);
-    }
+	public ModifyMouseSensitivityPower(PowerType<?> powerType, LivingEntity livingEntity, Modifier modifier, List<Modifier> modifiers) {
 
-    public static PowerFactory<?> getFactory() {
-        return new PowerFactory<>(
-            Eggolib.identifier("modify_mouse_sensitivity"),
-            new SerializableData()
-                .add("modifier", Modifier.DATA_TYPE, null)
-                .add("modifiers", Modifier.LIST_TYPE, null),
-            data -> (powerType, livingEntity) -> {
+		super(powerType, livingEntity);
 
-                ModifyMouseSensitivityPower mmsp = new ModifyMouseSensitivityPower(
-                    powerType,
-                    livingEntity
-                );
+		if (modifier != null) {
+			this.addModifier(modifier);
+		}
+		if (modifiers != null) {
+			modifiers.forEach(this::addModifier);
+		}
 
-                data.ifPresent("modifier", mmsp::addModifier);
-                data.<List<Modifier>>ifPresent("modifiers", mods -> mods.forEach(mmsp::addModifier));
+	}
 
-                return mmsp;
-
-            }
-        ).allowCondition();
-    }
+	public static PowerFactory<?> getFactory() {
+		return new PowerFactory<>(
+			Eggolib.identifier("modify_mouse_sensitivity"),
+			new SerializableData()
+				.add("modifier", Modifier.DATA_TYPE, null)
+				.add("modifiers", Modifier.LIST_TYPE, null),
+			data -> (powerType, livingEntity) -> new ModifyMouseSensitivityPower(
+				powerType,
+				livingEntity,
+				data.get("modifier"),
+				data.get("modifiers")
+			)
+		).allowCondition();
+	}
 
 }

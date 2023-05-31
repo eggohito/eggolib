@@ -10,28 +10,26 @@ import net.minecraft.registry.Registry;
 
 public class EggolibEntityActions {
 
-    public static void register() {
-        register(CalculateResourceAction.getFactory());
-        register(ChangeHealthAction.getFactory());
-        register(ChangeInsomniaTicksAction.getFactory());
-        register(CloseScreenAction.getFactory());
-        register(EggolibDamageAction.getFactory());
-        register(EggolibDropInventoryAction.getFactory());
-        register(EggolibReplaceInventoryAction.getFactory());
-        register(FireProjectileAction.getFactory());
-        register(LoopAction.getFactory(ApoliDataTypes.ENTITY_ACTION));
-        register(ModifyHealthAction.getFactory());
-        register(ModifyKeySequenceAction.getFactory());
-        register(OpenInventoryAction.getFactory());
-        register(PlaySoundAction.getFactory());
-        register(RemovePowerAction.getFactory());
-        register(SetPerspectiveAction.getFactory());
-        register(SelectorAction.getFactory());
-        register(SpawnEntityAction.getFactory());
-    }
+	public static void register() {
+		register(CalculateResourceAction.getFactory());
+		register(ChangeHealthAction.getFactory());
+		register(ChangeInsomniaTicksAction.getFactory());
+		register(CloseScreenAction.getFactory());
+		register(DamageAction.getFactory());
+		register(FireProjectileAction.getFactory());
+		register(LoopAction.getFactory(ApoliDataTypes.ENTITY_ACTION));
+		register(ModifyHealthAction.getFactory());
+		register(ModifyKeySequenceAction.getFactory());
+		register(OpenInventoryAction.getFactory());
+		register(PlaySoundAction.getFactory());
+		register(RemovePowerAction.getFactory());
+		register(SetPerspectiveAction.getFactory());
+		register(SelectorAction.getFactory());
+		register(SpawnEntityAction.getFactory());
+	}
 
-    public static ActionFactory<Entity> register(ActionFactory<Entity> actionFactory) {
-        return Registry.register(ApoliRegistries.ENTITY_ACTION, actionFactory.getSerializerId(), actionFactory);
-    }
+	public static ActionFactory<Entity> register(ActionFactory<Entity> actionFactory) {
+		return Registry.register(ApoliRegistries.ENTITY_ACTION, actionFactory.getSerializerId(), actionFactory);
+	}
 
 }

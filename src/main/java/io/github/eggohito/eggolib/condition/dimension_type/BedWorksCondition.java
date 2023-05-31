@@ -8,16 +8,16 @@ import net.minecraft.world.dimension.DimensionType;
 
 public class BedWorksCondition {
 
-    public static boolean condition(SerializableData.Instance data, RegistryEntry<DimensionType> dimensionTypeRegistryEntry) {
-        return dimensionTypeRegistryEntry.value().bedWorks();
-    }
+	public static boolean condition(SerializableData.Instance data, RegistryEntry<DimensionType> dimensionTypeRegistryEntry) {
+		return dimensionTypeRegistryEntry.value().bedWorks();
+	}
 
-    public static ConditionFactory<RegistryEntry<DimensionType>> getFactory() {
-        return new ConditionFactory<>(
-            Eggolib.identifier("bed_works"),
-            new SerializableData(),
-            BedWorksCondition::condition
-        );
-    }
+	public static ConditionFactory<RegistryEntry<DimensionType>> getFactory() {
+		return new ConditionFactory<>(
+			Eggolib.identifier("bed_works"),
+			new SerializableData(),
+			BedWorksCondition::condition
+		);
+	}
 
 }

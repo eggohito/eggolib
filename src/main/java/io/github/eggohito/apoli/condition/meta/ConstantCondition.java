@@ -8,17 +8,17 @@ import io.github.apace100.calio.data.SerializableDataTypes;
 
 public class ConstantCondition {
 
-    public static <T> boolean condition(SerializableData.Instance data, T t) {
-        return data.getBoolean("value");
-    }
+	public static <T> boolean condition(SerializableData.Instance data, T t) {
+		return data.getBoolean("value");
+	}
 
-    public static <T> ConditionFactory<T> getFactory(SerializableDataType<ConditionFactory<T>.Instance> dataType) {
-        return new ConditionFactory<>(
-            Apoli.identifier("constant"),
-            new SerializableData()
-                .add("value", SerializableDataTypes.BOOLEAN),
-            ConstantCondition::condition
-        );
-    }
+	public static <T> ConditionFactory<T> getFactory(SerializableDataType<ConditionFactory<T>.Instance> dataType) {
+		return new ConditionFactory<>(
+			Apoli.identifier("constant"),
+			new SerializableData()
+				.add("value", SerializableDataTypes.BOOLEAN),
+			ConstantCondition::condition
+		);
+	}
 
 }

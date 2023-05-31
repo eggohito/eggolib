@@ -10,40 +10,50 @@ import io.github.eggohito.eggolib.Eggolib;
 import io.github.eggohito.eggolib.data.EggolibDataTypes;
 import io.github.eggohito.eggolib.util.PowerOperation;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 
 public class CalculateResourceAction {
 
-    public static void action(SerializableData.Instance data, Entity entity) {
+	public static void action(SerializableData.Instance data, Entity entity) {
 
-        if (!(entity instanceof LivingEntity livingEntity)) return;
+		PowerHolderComponent component = PowerHolderComponent.KEY.maybeGet(entity).orElse(null);
+		if (component == null) {
+			return;
+		}
 
-        PowerHolderComponent phc = PowerHolderComponent.KEY.get(livingEntity);
+		PowerType<?> targetPowerType = data.get("target");
+		if (targetPowerType == null) {
+			return;
+		}
 
-        PowerType<?> targetPowerType = data.get("target");
-        if (targetPowerType == null) return;
-        Power targetPower = phc.getPower(targetPowerType);
-        if (targetPower == null) return;
+		Power targetPower = component.getPower(targetPowerType);
+		if (targetPower == null) {
+			return;
+		}
 
-        PowerType<?> sourcePowerType = data.get("source");
-        if (sourcePowerType == null) return;
-        Power sourcePower = phc.getPower(sourcePowerType);
-        if (sourcePower == null) return;
+		PowerType<?> sourcePowerType = data.get("source");
+		if (sourcePowerType == null) {
+			return;
+		}
 
-        PowerOperation powerOperation = data.get("operation");
-        powerOperation.operate(targetPower, sourcePower);
+		Power sourcePower = component.getPower(sourcePowerType);
+		if (sourcePower == null) {
+			return;
+		}
 
-    }
+		PowerOperation powerOperation = data.get("operation");
+		powerOperation.operate(targetPower, sourcePower);
 
-    public static ActionFactory<Entity> getFactory() {
-        return new ActionFactory<>(
-            Eggolib.identifier("calculate_resource"),
-            new SerializableData()
-                .add("target", ApoliDataTypes.POWER_TYPE)
-                .add("operation", EggolibDataTypes.POWER_OPERATION, PowerOperation.ADD)
-                .add("source", ApoliDataTypes.POWER_TYPE),
-            CalculateResourceAction::action
-        );
-    }
+	}
+
+	public static ActionFactory<Entity> getFactory() {
+		return new ActionFactory<>(
+			Eggolib.identifier("calculate_resource"),
+			new SerializableData()
+				.add("target", ApoliDataTypes.POWER_TYPE)
+				.add("operation", EggolibDataTypes.POWER_OPERATION, PowerOperation.ADD)
+				.add("source", ApoliDataTypes.POWER_TYPE),
+			CalculateResourceAction::action
+		);
+	}
 
 }

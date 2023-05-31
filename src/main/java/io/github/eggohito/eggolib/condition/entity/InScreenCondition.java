@@ -20,47 +20,53 @@ import java.util.Set;
 
 public class InScreenCondition {
 
-    public static boolean condition(SerializableData.Instance data, Entity entity) {
+	public static boolean condition(SerializableData.Instance data, Entity entity) {
 
-        if (!(entity instanceof PlayerEntity playerEntity)) return false;
-        if (!Eggolib.PLAYERS_SCREEN.containsKey(playerEntity)) initializeScreen(playerEntity);
+		if (!(entity instanceof PlayerEntity playerEntity)) {
+			return false;
+		}
+		if (!Eggolib.PLAYERS_SCREEN.containsKey(playerEntity)) {
+			initializeScreen(playerEntity);
+		}
 
-        Set<String> screenClassNames = new HashSet<>();
-        ScreenState screenState = Eggolib.PLAYERS_SCREEN.get(playerEntity);
-        if (screenState == null) return false;
+		Set<String> screenClassNames = new HashSet<>();
+		ScreenState screenState = Eggolib.PLAYERS_SCREEN.get(playerEntity);
+		if (screenState == null) {
+			return false;
+		}
 
-        data.ifPresent("screen", screenClassNames::add);
-        data.ifPresent("screens", screenClassNames::addAll);
+		data.ifPresent("screen", screenClassNames::add);
+		data.ifPresent("screens", screenClassNames::addAll);
 
-        return screenState.inAnyOr(screenClassNames);
+		return screenState.inAnyOr(screenClassNames);
 
-    }
+	}
 
-    public static void initializeScreen(PlayerEntity playerEntity) {
+	public static void initializeScreen(PlayerEntity playerEntity) {
 
-        if (playerEntity.world.isClient) {
-            MinecraftClient client = ((ClientPlayerEntityAccessor) playerEntity).getClient();
-            client.execute(
-                () -> MiscUtilClient.syncScreen(client)
-            );
-        }
+		if (playerEntity.world.isClient) {
+			MinecraftClient client = ((ClientPlayerEntityAccessor) playerEntity).getClient();
+			client.execute(
+				() -> MiscUtilClient.syncScreen(client)
+			);
+		} else {
+			ServerPlayNetworking.send(
+				(ServerPlayerEntity) playerEntity,
+				EggolibPackets.SYNC_SCREEN,
+				PacketByteBufs.empty()
+			);
+		}
 
-        else ServerPlayNetworking.send(
-            (ServerPlayerEntity) playerEntity,
-            EggolibPackets.SYNC_SCREEN,
-            PacketByteBufs.empty()
-        );
+	}
 
-    }
-
-    public static ConditionFactory<Entity> getFactory() {
-        return new ConditionFactory<>(
-            Eggolib.identifier("in_screen"),
-            new SerializableData()
-                .add("screen", SerializableDataTypes.STRING, null)
-                .add("screens", SerializableDataTypes.STRINGS, null),
-            InScreenCondition::condition
-        );
-    }
+	public static ConditionFactory<Entity> getFactory() {
+		return new ConditionFactory<>(
+			Eggolib.identifier("in_screen"),
+			new SerializableData()
+				.add("screen", SerializableDataTypes.STRING, null)
+				.add("screens", SerializableDataTypes.STRINGS, null),
+			InScreenCondition::condition
+		);
+	}
 
 }

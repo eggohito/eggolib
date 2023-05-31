@@ -11,23 +11,23 @@ import net.minecraft.world.dimension.DimensionType;
 
 public class CoordinateScaleCondition {
 
-    public static boolean condition(SerializableData.Instance data, RegistryEntry<DimensionType> dimensionTypeRegistryEntry) {
+	public static boolean condition(SerializableData.Instance data, RegistryEntry<DimensionType> dimensionTypeRegistryEntry) {
 
-        Comparison comparison = data.get("comparison");
-        double specifiedValue = data.getDouble("compare_to");
+		Comparison comparison = data.get("comparison");
+		double specifiedValue = data.getDouble("compare_to");
 
-        return comparison.compare(dimensionTypeRegistryEntry.value().coordinateScale(), specifiedValue);
+		return comparison.compare(dimensionTypeRegistryEntry.value().coordinateScale(), specifiedValue);
 
-    }
+	}
 
-    public static ConditionFactory<RegistryEntry<DimensionType>> getFactory() {
-        return new ConditionFactory<>(
-            Eggolib.identifier("coordinate_scale"),
-            new SerializableData()
-                .add("comparison", ApoliDataTypes.COMPARISON)
-                .add("compare_to", SerializableDataTypes.DOUBLE),
-            CoordinateScaleCondition::condition
-        );
-    }
+	public static ConditionFactory<RegistryEntry<DimensionType>> getFactory() {
+		return new ConditionFactory<>(
+			Eggolib.identifier("coordinate_scale"),
+			new SerializableData()
+				.add("comparison", ApoliDataTypes.COMPARISON)
+				.add("compare_to", SerializableDataTypes.DOUBLE),
+			CoordinateScaleCondition::condition
+		);
+	}
 
 }

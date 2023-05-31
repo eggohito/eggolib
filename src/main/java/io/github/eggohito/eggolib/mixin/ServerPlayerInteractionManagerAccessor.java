@@ -8,10 +8,10 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(ServerPlayerInteractionManager.class)
 public interface ServerPlayerInteractionManagerAccessor {
 
-    @Accessor("miningPos")
-    BlockPos breakingBlockPos();
+	@Accessor("miningPos")
+	BlockPos breakingBlockPos();
 
-    @Accessor("mining")
-    boolean breakingBlock();
+	@Accessor("mining")
+	boolean breakingBlock();
 
 }

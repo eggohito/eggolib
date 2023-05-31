@@ -14,29 +14,36 @@ import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 
 public class OpenInventoryAction {
 
-    public static void action(SerializableData.Instance data, Entity entity) {
+	public static void action(SerializableData.Instance data, Entity entity) {
 
-        if (!(entity instanceof PlayerEntity playerEntity)) return;
-        if (!data.isPresent("power")) return; // TODO: Implement opening the inventory of the player if the `power` field is not present
+		if (!(entity instanceof PlayerEntity playerEntity)) {
+			return;
+		}
 
-        PowerType<?> targetPowerType = data.get("power");
-        if (targetPowerType == null) return;
+		PowerHolderComponent component = PowerHolderComponent.KEY.maybeGet(entity).orElse(null);
+		if (component == null) {
+			return;
+		}
 
-        Power targetPower = PowerHolderComponent.KEY.get(playerEntity).getPower(targetPowerType);
-        if (targetPower instanceof InventoryPower inventoryPower) playerEntity
-            .openHandledScreen(
-                new SimpleNamedScreenHandlerFactory(inventoryPower.getContainerScreen(), inventoryPower.getContainerTitle())
-            );
+		PowerType<?> targetPowerType = data.get("power");
+		if (targetPowerType == null) {
+			return;     //  TODO: Implement opening the inventory of the player if a power is not specified
+		}
 
-    }
+		Power targetPower = component.getPower(targetPowerType);
+		if (targetPower instanceof InventoryPower inventoryPower) {
+			playerEntity.openHandledScreen(new SimpleNamedScreenHandlerFactory(inventoryPower.getContainerScreen(), inventoryPower.getContainerTitle()));
+		}
 
-    public static ActionFactory<Entity> getFactory() {
-        return new ActionFactory<>(
-            Eggolib.identifier("open_inventory"),
-            new SerializableData()
-                .add("power", ApoliDataTypes.POWER_TYPE, null),
-            OpenInventoryAction::action
-        );
-    }
+	}
+
+	public static ActionFactory<Entity> getFactory() {
+		return new ActionFactory<>(
+			Eggolib.identifier("open_inventory"),
+			new SerializableData()
+				.add("power", ApoliDataTypes.POWER_TYPE, null),
+			OpenInventoryAction::action
+		);
+	}
 
 }

@@ -16,17 +16,24 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 @Environment(EnvType.CLIENT)
 public abstract class MouseMixin {
 
-    @Shadow @Final private MinecraftClient client;
+	@Shadow
+	@Final
+	private MinecraftClient client;
 
-    @ModifyVariable(method = "updateMouse", at = @At("STORE"), ordinal = 2)
-    private double eggolib$modifyMouseSensitivity(double originalValue) {
+	@ModifyVariable(method = "updateMouse", at = @At("STORE"), ordinal = 2)
+	private double eggolib$modifyMouseSensitivity(double originalValue) {
 
-        if (this.client.player == null) return originalValue;
-        double newValue = PowerHolderComponent.modify(this.client.player, ModifyMouseSensitivityPower.class, originalValue);
+		if (this.client.player == null) {
+			return originalValue;
+		}
+		double newValue = PowerHolderComponent.modify(this.client.player, ModifyMouseSensitivityPower.class, originalValue);
 
-        if (newValue != originalValue) return newValue;
-        else return originalValue;
+		if (newValue != originalValue) {
+			return newValue;
+		} else {
+			return originalValue;
+		}
 
-    }
+	}
 
 }

@@ -12,26 +12,29 @@ import java.util.Set;
 
 public class InTeamCondition {
 
-    public static boolean condition(SerializableData.Instance data, Entity entity) {
+	public static boolean condition(SerializableData.Instance data, Entity entity) {
 
-        Set<EggolibTeam> specifiedTeams = new HashSet<>();
+		Set<EggolibTeam> specifiedTeams = new HashSet<>();
 
-        data.ifPresent("team", specifiedTeams::add);
-        data.ifPresent("teams", specifiedTeams::addAll);
+		data.ifPresent("team", specifiedTeams::add);
+		data.ifPresent("teams", specifiedTeams::addAll);
 
-        if (specifiedTeams.isEmpty()) return entity.getScoreboardTeam() != null;
-        else return specifiedTeams.stream().anyMatch(eggolibTeam -> eggolibTeam.isEqual(entity.getScoreboardTeam()));
+		if (specifiedTeams.isEmpty()) {
+			return entity.getScoreboardTeam() != null;
+		} else {
+			return specifiedTeams.stream().anyMatch(eggolibTeam -> eggolibTeam.isEqual(entity.getScoreboardTeam()));
+		}
 
-    }
+	}
 
-    public static ConditionFactory<Entity> getFactory() {
-        return new ConditionFactory<>(
-            Eggolib.identifier("in_team"),
-            new SerializableData()
-                .add("team", EggolibDataTypes.BACKWARDS_COMPATIBLE_TEAM, null)
-                .add("teams", EggolibDataTypes.BACKWARDS_COMPATIBLE_TEAMS, null),
-            InTeamCondition::condition
-        );
-    }
+	public static ConditionFactory<Entity> getFactory() {
+		return new ConditionFactory<>(
+			Eggolib.identifier("in_team"),
+			new SerializableData()
+				.add("team", EggolibDataTypes.BACKWARDS_COMPATIBLE_TEAM, null)
+				.add("teams", EggolibDataTypes.BACKWARDS_COMPATIBLE_TEAMS, null),
+			InTeamCondition::condition
+		);
+	}
 
 }

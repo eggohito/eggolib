@@ -12,23 +12,25 @@ import net.minecraft.util.Pair;
 
 public class NbtCondition {
 
-    public static boolean condition(SerializableData.Instance data, Pair<DamageSource, Float> damageSourceAndAmount) {
+	public static boolean condition(SerializableData.Instance data, Pair<DamageSource, Float> damageSourceAndAmount) {
 
-        Entity entity = damageSourceAndAmount.getLeft().getSource();
-        if (entity == null) return false;
+		Entity entity = damageSourceAndAmount.getLeft().getSource();
+		if (entity == null) {
+			return false;
+		}
 
-        NbtCompound entityNbt = entity.writeNbt(new NbtCompound());
-        return NbtHelper.matches(data.get("nbt"), entityNbt, true);
+		NbtCompound entityNbt = entity.writeNbt(new NbtCompound());
+		return NbtHelper.matches(data.get("nbt"), entityNbt, true);
 
-    }
+	}
 
-    public static ConditionFactory<Pair<DamageSource, Float>> getFactory() {
-        return new ConditionFactory<>(
-            Eggolib.identifier("nbt"),
-            new SerializableData()
-                .add("nbt", SerializableDataTypes.NBT),
-            NbtCondition::condition
-        );
-    }
+	public static ConditionFactory<Pair<DamageSource, Float>> getFactory() {
+		return new ConditionFactory<>(
+			Eggolib.identifier("nbt"),
+			new SerializableData()
+				.add("nbt", SerializableDataTypes.NBT),
+			NbtCondition::condition
+		);
+	}
 
 }

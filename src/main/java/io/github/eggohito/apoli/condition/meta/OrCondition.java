@@ -9,18 +9,18 @@ import java.util.List;
 
 public class OrCondition {
 
-    public static <T> boolean condition(SerializableData.Instance data, T t) {
-        List<ConditionFactory<T>.Instance> conditions = data.get("conditions");
-        return conditions.stream().anyMatch(condition -> condition.test(t));
-    }
+	public static <T> boolean condition(SerializableData.Instance data, T t) {
+		List<ConditionFactory<T>.Instance> conditions = data.get("conditions");
+		return conditions.stream().anyMatch(condition -> condition.test(t));
+	}
 
-    public static <T> ConditionFactory<T> getFactory(SerializableDataType<ConditionFactory<T>.Instance> dataType) {
-        return new ConditionFactory<>(
-            Apoli.identifier("or"),
-            new SerializableData()
-                .add("conditions", SerializableDataType.list(dataType)),
-            OrCondition::condition
-        );
-    }
+	public static <T> ConditionFactory<T> getFactory(SerializableDataType<ConditionFactory<T>.Instance> dataType) {
+		return new ConditionFactory<>(
+			Apoli.identifier("or"),
+			new SerializableData()
+				.add("conditions", SerializableDataType.list(dataType)),
+			OrCondition::condition
+		);
+	}
 
 }

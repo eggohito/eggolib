@@ -8,8 +8,8 @@ import me.shedaniel.autoconfig.serializer.PartitioningSerializer;
 @Config(name = Eggolib.MOD_ID)
 public class EggolibConfig extends PartitioningSerializer.GlobalData {
 
-    @ConfigEntry.Category("server")
-    @ConfigEntry.Gui.TransitiveObject
-    public EggolibConfigServer server = new EggolibConfigServer();
+	@ConfigEntry.Category("server")
+	@ConfigEntry.Gui.TransitiveObject
+	public EggolibConfigServer server = new EggolibConfigServer();
 
 }

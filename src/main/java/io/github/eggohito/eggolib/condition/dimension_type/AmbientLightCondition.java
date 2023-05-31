@@ -11,23 +11,23 @@ import net.minecraft.world.dimension.DimensionType;
 
 public class AmbientLightCondition {
 
-    public static boolean condition(SerializableData.Instance data, RegistryEntry<DimensionType> dimensionTypeRegistryEntry) {
+	public static boolean condition(SerializableData.Instance data, RegistryEntry<DimensionType> dimensionTypeRegistryEntry) {
 
-        Comparison comparison = data.get("comparison");
-        float specifiedValue = data.getFloat("compare_to");
+		Comparison comparison = data.get("comparison");
+		float specifiedValue = data.getFloat("compare_to");
 
-        return comparison.compare(dimensionTypeRegistryEntry.value().ambientLight(), specifiedValue);
+		return comparison.compare(dimensionTypeRegistryEntry.value().ambientLight(), specifiedValue);
 
-    }
+	}
 
-    public static ConditionFactory<RegistryEntry<DimensionType>> getFactory() {
-        return new ConditionFactory<>(
-            Eggolib.identifier("ambient_light"),
-            new SerializableData()
-                .add("comparison", ApoliDataTypes.COMPARISON)
-                .add("compare_to", SerializableDataTypes.FLOAT),
-            AmbientLightCondition::condition
-        );
-    }
+	public static ConditionFactory<RegistryEntry<DimensionType>> getFactory() {
+		return new ConditionFactory<>(
+			Eggolib.identifier("ambient_light"),
+			new SerializableData()
+				.add("comparison", ApoliDataTypes.COMPARISON)
+				.add("compare_to", SerializableDataTypes.FLOAT),
+			AmbientLightCondition::condition
+		);
+	}
 
 }

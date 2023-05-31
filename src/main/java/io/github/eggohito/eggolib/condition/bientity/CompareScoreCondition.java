@@ -14,39 +14,44 @@ import net.minecraft.util.Pair;
 
 public class CompareScoreCondition {
 
-    public static boolean condition(SerializableData.Instance data, Pair<Entity, Entity> actorAndTarget) {
+	public static boolean condition(SerializableData.Instance data, Pair<Entity, Entity> actorAndTarget) {
 
-        if (actorAndTarget.getLeft() == null || actorAndTarget.getRight() == null) return false;
+		if (actorAndTarget.getLeft() == null || actorAndTarget.getRight() == null) {
+			return false;
+		}
 
-        String actorName = getUuidOrNameString(actorAndTarget.getLeft());
-        String targetName = getUuidOrNameString(actorAndTarget.getRight());
-        String actorObjectiveName = data.getString("actor_objective");
-        String targetObjectiveName = data.getString("target_objective");
+		String actorName = getUuidOrNameString(actorAndTarget.getLeft());
+		String targetName = getUuidOrNameString(actorAndTarget.getRight());
+		String actorObjectiveName = data.getString("actor_objective");
+		String targetObjectiveName = data.getString("target_objective");
 
-        Comparison comparison = data.get("comparison");
-        Scoreboard scoreboard = actorAndTarget.getLeft().world.getScoreboard();
+		Comparison comparison = data.get("comparison");
+		Scoreboard scoreboard = actorAndTarget.getLeft().world.getScoreboard();
 
-        ScoreboardObjective actorObjective = scoreboard.getObjective(actorObjectiveName);
-        ScoreboardObjective targetObjective = scoreboard.getObjective(targetObjectiveName);
+		ScoreboardObjective actorObjective = scoreboard.getObjective(actorObjectiveName);
+		ScoreboardObjective targetObjective = scoreboard.getObjective(targetObjectiveName);
 
-        if (!(scoreboard.playerHasObjective(actorName, actorObjective) || scoreboard.playerHasObjective(targetName, targetObjective))) return false;
-        return comparison.compare(scoreboard.getPlayerScore(actorName, actorObjective).getScore(), scoreboard.getPlayerScore(targetName, targetObjective).getScore());
+		if (scoreboard.playerHasObjective(actorName, actorObjective) && scoreboard.playerHasObjective(targetName, targetObjective)) {
+			return comparison.compare(scoreboard.getPlayerScore(actorName, actorObjective).getScore(), scoreboard.getPlayerScore(targetName, targetObjective).getScore());
+		} else {
+			return false;
+		}
 
-    }
+	}
 
-    private static String getUuidOrNameString(Entity entity) {
-        return entity instanceof PlayerEntity playerEntity ? playerEntity.getEntityName() : entity.getUuidAsString();
-    }
+	private static String getUuidOrNameString(Entity entity) {
+		return entity instanceof PlayerEntity playerEntity ? playerEntity.getEntityName() : entity.getUuidAsString();
+	}
 
-    public static ConditionFactory<Pair<Entity, Entity>> getFactory() {
-        return new ConditionFactory<>(
-            Eggolib.identifier("compare_score"),
-            new SerializableData()
-                .add("actor_objective", SerializableDataTypes.STRING)
-                .add("target_objective", SerializableDataTypes.STRING)
-                .add("comparison", ApoliDataTypes.COMPARISON, Comparison.EQUAL),
-            CompareScoreCondition::condition
-        );
-    }
+	public static ConditionFactory<Pair<Entity, Entity>> getFactory() {
+		return new ConditionFactory<>(
+			Eggolib.identifier("compare_score"),
+			new SerializableData()
+				.add("actor_objective", SerializableDataTypes.STRING)
+				.add("target_objective", SerializableDataTypes.STRING)
+				.add("comparison", ApoliDataTypes.COMPARISON, Comparison.EQUAL),
+			CompareScoreCondition::condition
+		);
+	}
 
 }

@@ -7,10 +7,10 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(BreathingInfo.Builder.class)
 public interface BreathingInfoBuilderAccessor {
 
-    @Accessor(remap = false)
-    int getAirPerCycle();
+	@Accessor(remap = false)
+	int getAirPerCycle();
 
-    @Accessor(remap = false)
-    float getDamagePerCycle();
+	@Accessor(remap = false)
+	float getDamagePerCycle();
 
 }

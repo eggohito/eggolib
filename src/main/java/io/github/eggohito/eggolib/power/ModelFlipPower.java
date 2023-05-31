@@ -9,16 +9,16 @@ import net.minecraft.entity.LivingEntity;
 
 public class ModelFlipPower extends Power {
 
-    public ModelFlipPower(PowerType<?> powerType, LivingEntity livingEntity) {
-        super(powerType, livingEntity);
-    }
+	public ModelFlipPower(PowerType<?> powerType, LivingEntity livingEntity) {
+		super(powerType, livingEntity);
+	}
 
-    public static PowerFactory<?> getFactory() {
-        return new PowerFactory<>(
-            Eggolib.identifier("model_flip"),
-            new SerializableData(),
-            data -> ModelFlipPower::new
-        ).allowCondition();
-    }
+	public static PowerFactory<?> getFactory() {
+		return new PowerFactory<>(
+			Eggolib.identifier("model_flip"),
+			new SerializableData(),
+			data -> ModelFlipPower::new
+		).allowCondition();
+	}
 
 }

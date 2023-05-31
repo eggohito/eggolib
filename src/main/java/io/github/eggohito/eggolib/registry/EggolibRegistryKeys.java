@@ -9,6 +9,6 @@ import net.minecraft.world.dimension.DimensionType;
 
 public interface EggolibRegistryKeys {
 
-    RegistryKey<Registry<ConditionFactory<RegistryEntry<DimensionType>>>> DIMENSION_TYPE_CONDITION = RegistryKey.ofRegistry(Eggolib.identifier("dimension_type_condition"));
+	RegistryKey<Registry<ConditionFactory<RegistryEntry<DimensionType>>>> DIMENSION_TYPE_CONDITION = RegistryKey.ofRegistry(Eggolib.identifier("dimension_type_condition"));
 
 }

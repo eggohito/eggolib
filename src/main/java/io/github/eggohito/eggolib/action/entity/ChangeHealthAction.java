@@ -9,40 +9,38 @@ import io.github.eggohito.eggolib.Eggolib;
 import io.github.eggohito.eggolib.content.EggolibDamageTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.util.math.MathHelper;
 
 public class ChangeHealthAction {
 
-    public static void action(SerializableData.Instance data, Entity entity) {
+	public static void action(SerializableData.Instance data, Entity entity) {
 
-        if (!(entity instanceof LivingEntity livingEntity)) return;
+		if (!(entity instanceof LivingEntity livingEntity)) {
+			return;
+		}
 
-        ResourceOperation operation = data.get("operation");
-        DamageSource healthUnderflowDamageSource = entity.getDamageSources().create(EggolibDamageTypes.CHANGE_HEALTH_UNDERFLOW);
+		ResourceOperation operation = data.get("operation");
+		float newHealthValue = data.getFloat("change");
+		float oldHealthValue = livingEntity.getHealth();
+		float result = oldHealthValue + newHealthValue;
+		float value = operation == ResourceOperation.SET ? newHealthValue : result;
 
-        float newHealthValue = data.getFloat("change");
-        float oldHealthValue = livingEntity.getHealth();
-        float result = oldHealthValue + newHealthValue;
+		if (result <= 0F) {
+			livingEntity.damage(entity.getDamageSources().create(EggolibDamageTypes.CHANGE_HEALTH_UNDERFLOW), livingEntity.getMaxHealth());
+		} else {
+			livingEntity.setHealth(MathHelper.clamp(value, 1F, livingEntity.getMaxHealth()));
+		}
 
-        if (operation == ResourceOperation.ADD) {
-            if (result <= 0F) livingEntity.damage(healthUnderflowDamageSource, livingEntity.getMaxHealth());
-            else livingEntity.setHealth(MathHelper.clamp(result, 1.0F, livingEntity.getMaxHealth()));
-        }
+	}
 
-        else if (operation == ResourceOperation.SET) {
-            if (newHealthValue <= 0F) livingEntity.damage(healthUnderflowDamageSource, livingEntity.getMaxHealth());
-            else livingEntity.setHealth(MathHelper.clamp(newHealthValue, 1.0F, livingEntity.getMaxHealth()));
-        }
-    }
+	public static ActionFactory<Entity> getFactory() {
+		return new ActionFactory<>(
+			Eggolib.identifier("change_health"),
+			new SerializableData()
+				.add("change", SerializableDataTypes.FLOAT)
+				.add("operation", ApoliDataTypes.RESOURCE_OPERATION, ResourceOperation.ADD),
+			ChangeHealthAction::action
+		);
+	}
 
-    public static ActionFactory<Entity> getFactory() {
-        return new ActionFactory<>(
-            Eggolib.identifier("change_health"),
-            new SerializableData()
-                .add("change", SerializableDataTypes.FLOAT)
-                .add("operation", ApoliDataTypes.RESOURCE_OPERATION, ResourceOperation.ADD),
-            ChangeHealthAction::action
-        );
-    }
 }

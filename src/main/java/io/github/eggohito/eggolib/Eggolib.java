@@ -26,109 +26,112 @@ import java.util.HashMap;
 
 public class Eggolib implements ModInitializer {
 
-    public static String version = "";
-    public static int[] semanticVersion;
+	public static String version = "";
+	public static int[] semanticVersion;
 
-    public static EggolibConfig config;
-    public static MinecraftServer minecraftServer;
+	public static EggolibConfig config;
+	public static MinecraftServer minecraftServer;
 
-    public static final String MOD_ID = "eggolib";
-    public static final Logger LOGGER = LoggerFactory.getLogger(Eggolib.class);
+	public static final String MOD_ID = "eggolib";
+	public static final Logger LOGGER = LoggerFactory.getLogger(Eggolib.class);
 
-    public static final HashMap<PlayerEntity, ScreenState> PLAYERS_SCREEN = new HashMap<>();
-    public static final HashMap<PlayerEntity, String> PLAYERS_PERSPECTIVE = new HashMap<>();
+	public static final HashMap<PlayerEntity, ScreenState> PLAYERS_SCREEN = new HashMap<>();
+	public static final HashMap<PlayerEntity, String> PLAYERS_PERSPECTIVE = new HashMap<>();
 
-    @Override
-    public void onInitialize() {
+	@Override
+	public void onInitialize() {
 
-        //  Get the server
-        ServerLifecycleEvents.SERVER_STARTED.register(server -> minecraftServer = server);
+		//  Get the server
+		ServerLifecycleEvents.SERVER_STARTED.register(server -> minecraftServer = server);
 
-        //  Get the semantic version of the mod
-        FabricLoader.getInstance().getModContainer(MOD_ID).ifPresent(
-            modContainer -> {
+		//  Get the semantic version of the mod
+		FabricLoader.getInstance().getModContainer(MOD_ID).ifPresent(
+			modContainer -> {
 
-                version = modContainer.getMetadata().getVersion().getFriendlyString();
+				version = modContainer.getMetadata().getVersion().getFriendlyString();
 
-                if (version.contains("+")) {
-                    version = version.split("\\+")[0];
-                }
-                if (version.contains("-")) {
-                    version = version.split("-")[0];
-                }
+				if (version.contains("+")) {
+					version = version.split("\\+")[0];
+				}
+				if (version.contains("-")) {
+					version = version.split("-")[0];
+				}
 
-                String[] splitVersion = version.split("\\.");
-                semanticVersion = new int[splitVersion.length];
+				String[] splitVersion = version.split("\\.");
+				semanticVersion = new int[splitVersion.length];
 
-                for (int i = 0; i < semanticVersion.length; i++) {
-                    semanticVersion[i] = Integer.parseInt(splitVersion[i]);
-                }
+				for (int i = 0; i < semanticVersion.length; i++) {
+					semanticVersion[i] = Integer.parseInt(splitVersion[i]);
+				}
 
-            }
-        );
+			}
+		);
 
-        //  Register the partitioned config
-        AutoConfig.register(EggolibConfig.class, PartitioningSerializer.wrap(GsonConfigSerializer::new));
-        config = AutoConfig.getConfigHolder(EggolibConfig.class).getConfig();
+		//  Register the partitioned config
+		AutoConfig.register(EggolibConfig.class, PartitioningSerializer.wrap(GsonConfigSerializer::new));
+		config = AutoConfig.getConfigHolder(EggolibConfig.class).getConfig();
 
-        //  Add "apoli" as a namespace alias
-        NamespaceAlias.addAlias(MOD_ID, "apoli");
+		//  Add "apoli" as a namespace alias
+		NamespaceAlias.addAlias(MOD_ID, "apoli");
 
-        //  Register the client-to-server packet receivers and class data registries
-        EggolibPacketsC2S.register();
-        EggolibClassData.register();
+		//  Register the client-to-server packet receivers and class data registries
+		EggolibPacketsC2S.register();
+		EggolibClassData.register();
 
-        //  Register the action/condition/power types
-        EggolibBiEntityActions.register();
-        EggolibBiEntityConditions.register();
-        EggolibBlockActions.register();
-        EggolibBlockConditions.register();
-        EggolibDamageConditions.register();
-        EggolibDimensionTypeConditions.register();
-        EggolibEntityActions.register();
-        EggolibEntityConditions.register();
-        EggolibItemActions.register();
-        EggolibItemConditions.register();
-        EggolibLootConditions.register();
-        EggolibPowers.register();
+		//  Register the action/condition/power types
+		EggolibBiEntityActions.register();
+		EggolibBiEntityConditions.register();
+		EggolibBlockActions.register();
+		EggolibBlockConditions.register();
+		EggolibDamageConditions.register();
+		EggolibDimensionTypeConditions.register();
+		EggolibEntityActions.register();
+		EggolibEntityConditions.register();
+		EggolibItemActions.register();
+		EggolibItemConditions.register();
+		EggolibLootConditions.register();
+		EggolibPowers.register();
 
-        //  Register callbacks used by some power types
-        EggolibPowerIntegration.register();
+		//  Register callbacks used by some power types
+		EggolibPowerIntegration.register();
 
-        //  Notify client/server that eggolib has been initialized and if it should perform a version check
-        LOGGER.info("[{}] Version {} has been initialized. Egg!", MOD_ID, version);
-        LOGGER.warn(
-            String.format("[%1$s] Should %1$s perform a version check? %2$s", MOD_ID, config.server.performVersionCheck ? "Yes." : "No.")
-        );
+		//  Notify client/server that eggolib has been initialized and if it should perform a version check
+		LOGGER.info("[{}] Version {} has been initialized. Egg!", MOD_ID, version);
+		LOGGER.warn(
+			String.format("[%1$s] Should %1$s perform a version check? %2$s", MOD_ID, config.server.performVersionCheck ? "Yes." : "No.")
+		);
 
-        //  Initialize main compat. stuff
-        FabricLoader.getInstance()
-            .getEntrypointContainers("eggolib:compat", IEggolibModCompat.class)
-            .stream()
-            .map(EntrypointContainer::getEntrypoint)
-            .forEach(
-                iEggolibModCompat -> {
+		//  Initialize main compat. stuff
+		FabricLoader.getInstance()
+			.getEntrypointContainers("eggolib:compat", IEggolibModCompat.class)
+			.stream()
+			.map(EntrypointContainer::getEntrypoint)
+			.forEach(
+				iEggolibModCompat -> {
 
-                    String modCompatTarget = iEggolibModCompat.getCompatTarget();
+					String modCompatTarget = iEggolibModCompat.getCompatTarget();
 
-                    if (modCompatTarget == null) iEggolibModCompat.init();
-                    else FabricLoader.getInstance().getModContainer(modCompatTarget).ifPresent(iEggolibModCompat::initOn);
+					if (modCompatTarget == null) {
+						iEggolibModCompat.init();
+					} else {
+						FabricLoader.getInstance().getModContainer(modCompatTarget).ifPresent(iEggolibModCompat::initOn);
+					}
 
-                }
-            );
+				}
+			);
 
-        //  Remove the player from the HashMaps upon them disconnecting
-        ServerPlayConnectionEvents.DISCONNECT.register(
-            (serverPlayNetworkHandler, minecraftServer) -> {
-                PLAYERS_SCREEN.remove(serverPlayNetworkHandler.player);
-                PLAYERS_PERSPECTIVE.remove(serverPlayNetworkHandler.player);
-            }
-        );
+		//  Remove the player from the HashMaps upon them disconnecting
+		ServerPlayConnectionEvents.DISCONNECT.register(
+			(serverPlayNetworkHandler, minecraftServer) -> {
+				PLAYERS_SCREEN.remove(serverPlayNetworkHandler.player);
+				PLAYERS_PERSPECTIVE.remove(serverPlayNetworkHandler.player);
+			}
+		);
 
-    }
+	}
 
-    public static Identifier identifier(String path) {
-        return new Identifier(MOD_ID, path);
-    }
+	public static Identifier identifier(String path) {
+		return new Identifier(MOD_ID, path);
+	}
 
 }

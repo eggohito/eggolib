@@ -7,16 +7,16 @@ import net.minecraft.entity.Entity;
 
 public class CrawlingCondition {
 
-    public static boolean condition(SerializableData.Instance data, Entity entity) {
-        return entity.isCrawling();
-    }
+	public static boolean condition(SerializableData.Instance data, Entity entity) {
+		return entity.isCrawling();
+	}
 
-    public static ConditionFactory<Entity> getFactory() {
-        return new ConditionFactory<>(
-            Eggolib.identifier("crawling"),
-            new SerializableData(),
-            CrawlingCondition::condition
-        );
-    }
+	public static ConditionFactory<Entity> getFactory() {
+		return new ConditionFactory<>(
+			Eggolib.identifier("crawling"),
+			new SerializableData(),
+			CrawlingCondition::condition
+		);
+	}
 
 }

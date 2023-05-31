@@ -18,35 +18,34 @@ import java.util.function.Predicate;
 
 public class AreaOfEffectAction {
 
-    public static void action(SerializableData.Instance data, Triple<World, BlockPos, Direction> block) {
+	public static void action(SerializableData.Instance data, Triple<World, BlockPos, Direction> block) {
 
-        World world = block.getLeft();
-        BlockPos blockPos = block.getMiddle();
-        Direction direction = block.getRight();
+		World world = block.getLeft();
+		BlockPos blockPos = block.getMiddle();
+		Direction direction = block.getRight();
 
-        Shape shape = data.get("shape");
-        int radius = data.getInt("radius");
-        Consumer<Triple<World, BlockPos, Direction>> blockAction = data.get("block_action");
+		Consumer<Triple<World, BlockPos, Direction>> blockAction = data.get("block_action");
+		Predicate<CachedBlockPosition> blockCondition = data.get("block_condition");
+		Shape shape = data.get("shape");
+		int radius = data.get("radius");
 
-        Predicate<CachedBlockPosition> blockCondition = null;
-        if (data.isPresent("block_condition")) blockCondition = data.get("block_condition");
+		for (BlockPos collectedBlockPos : Shape.getPositions(blockPos, shape, radius)) {
+			if (blockCondition == null || blockCondition.test(new CachedBlockPosition(world, collectedBlockPos, true))) {
+				blockAction.accept(Triple.of(world, collectedBlockPos, direction));
+			}
+		}
 
-        for (BlockPos collectedBlockPos : Shape.getPositions(blockPos, shape, radius)) {
-            if (blockCondition == null || blockCondition.test(new CachedBlockPosition(world, collectedBlockPos, true))) {
-                blockAction.accept(Triple.of(world, collectedBlockPos, direction));
-            }
-        }
-    }
+	}
 
-    public static ActionFactory<Triple<World, BlockPos, Direction>> getFactory() {
-        return new ActionFactory<>(
-            Eggolib.identifier("area_of_effect"),
-            new SerializableData()
-                .add("radius", SerializableDataTypes.INT)
-                .add("shape", SerializableDataType.enumValue(Shape.class), Shape.CUBE)
-                .add("block_action", ApoliDataTypes.BLOCK_ACTION)
-                .add("block_condition", ApoliDataTypes.BLOCK_CONDITION, null),
-            AreaOfEffectAction::action
-        );
-    }
+	public static ActionFactory<Triple<World, BlockPos, Direction>> getFactory() {
+		return new ActionFactory<>(
+			Eggolib.identifier("area_of_effect"),
+			new SerializableData()
+				.add("radius", SerializableDataTypes.INT)
+				.add("shape", SerializableDataType.enumValue(Shape.class), Shape.CUBE)
+				.add("block_action", ApoliDataTypes.BLOCK_ACTION)
+				.add("block_condition", ApoliDataTypes.BLOCK_CONDITION, null),
+			AreaOfEffectAction::action
+		);
+	}
 }

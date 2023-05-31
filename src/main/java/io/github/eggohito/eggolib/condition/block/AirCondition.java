@@ -7,15 +7,15 @@ import net.minecraft.block.pattern.CachedBlockPosition;
 
 public class AirCondition {
 
-    public static boolean condition(SerializableData.Instance data, CachedBlockPosition block) {
-        return block.getBlockState().isAir();
-    }
+	public static boolean condition(SerializableData.Instance data, CachedBlockPosition block) {
+		return block.getBlockState().isAir();
+	}
 
-    public static ConditionFactory<CachedBlockPosition> getFactory() {
-        return new ConditionFactory<>(
-            Eggolib.identifier("air"),
-            new SerializableData(),
-            AirCondition::condition
-        );
-    }
+	public static ConditionFactory<CachedBlockPosition> getFactory() {
+		return new ConditionFactory<>(
+			Eggolib.identifier("air"),
+			new SerializableData(),
+			AirCondition::condition
+		);
+	}
 }

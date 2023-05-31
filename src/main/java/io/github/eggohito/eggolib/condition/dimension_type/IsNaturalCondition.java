@@ -8,16 +8,16 @@ import net.minecraft.world.dimension.DimensionType;
 
 public class IsNaturalCondition {
 
-    public static boolean condition(SerializableData.Instance data, RegistryEntry<DimensionType> dimensionTypeRegistryEntry) {
-        return dimensionTypeRegistryEntry.value().natural();
-    }
+	public static boolean condition(SerializableData.Instance data, RegistryEntry<DimensionType> dimensionTypeRegistryEntry) {
+		return dimensionTypeRegistryEntry.value().natural();
+	}
 
-    public static ConditionFactory<RegistryEntry<DimensionType>> getFactory() {
-        return new ConditionFactory<>(
-            Eggolib.identifier("is_natural"),
-            new SerializableData(),
-            IsNaturalCondition::condition
-        );
-    }
+	public static ConditionFactory<RegistryEntry<DimensionType>> getFactory() {
+		return new ConditionFactory<>(
+			Eggolib.identifier("is_natural"),
+			new SerializableData(),
+			IsNaturalCondition::condition
+		);
+	}
 
 }

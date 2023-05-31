@@ -12,25 +12,25 @@ import java.util.List;
 
 public class MoonPhaseCondition {
 
-    public static boolean condition(SerializableData.Instance data, Entity entity) {
+	public static boolean condition(SerializableData.Instance data, Entity entity) {
 
-        List<MoonPhase> moonPhases = new LinkedList<>();
+		List<MoonPhase> moonPhases = new LinkedList<>();
 
-        data.<MoonPhase>ifPresent("phase", moonPhases::add);
-        data.<List<MoonPhase>>ifPresent("phases", moonPhases::addAll);
+		data.<MoonPhase>ifPresent("phase", moonPhases::add);
+		data.<List<MoonPhase>>ifPresent("phases", moonPhases::addAll);
 
-        return moonPhases.stream().anyMatch(moonPhase -> moonPhase.matches(entity.world.getMoonPhase()));
+		return moonPhases.stream().anyMatch(moonPhase -> moonPhase.matches(entity.world.getMoonPhase()));
 
-    }
+	}
 
-    public static ConditionFactory<Entity> getFactory() {
-        return new ConditionFactory<>(
-            Eggolib.identifier("moon_phase"),
-            new SerializableData()
-                .add("phase", EggolibDataTypes.MOON_PHASE, null)
-                .add("phases", EggolibDataTypes.MOON_PHASES, null),
-            MoonPhaseCondition::condition
-        );
-    }
+	public static ConditionFactory<Entity> getFactory() {
+		return new ConditionFactory<>(
+			Eggolib.identifier("moon_phase"),
+			new SerializableData()
+				.add("phase", EggolibDataTypes.MOON_PHASE, null)
+				.add("phases", EggolibDataTypes.MOON_PHASES, null),
+			MoonPhaseCondition::condition
+		);
+	}
 
 }

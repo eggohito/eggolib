@@ -19,28 +19,32 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ProjectileEntity.class)
 public abstract class ProjectileEntityMixin extends Entity {
 
-    @Shadow @Nullable private Entity owner;
+	@Shadow
+	@Nullable
+	private Entity owner;
 
-    public ProjectileEntityMixin(EntityType<?> type, World world) {
-        super(type, world);
-    }
+	public ProjectileEntityMixin(EntityType<?> type, World world) {
+		super(type, world);
+	}
 
-    @Inject(method = "onBlockHit", at = @At("HEAD"))
-    private void eggolib$actionOnBlockHit(BlockHitResult blockHitResult, CallbackInfo ci) {
+	@Inject(method = "onBlockHit", at = @At("HEAD"))
+	private void eggolib$actionOnBlockHit(BlockHitResult blockHitResult, CallbackInfo ci) {
 
-        if (this.owner == null) return;
+		if (this.owner == null) {
+			return;
+		}
 
-        BlockPos blockPos = blockHitResult.getBlockPos();
-        Direction direction = blockHitResult.getSide();
-        ProjectileEntity thisAsProjectileEntity = (ProjectileEntity) (Object) this;
+		BlockPos blockPos = blockHitResult.getBlockPos();
+		Direction direction = blockHitResult.getSide();
+		ProjectileEntity thisAsProjectileEntity = (ProjectileEntity) (Object) this;
 
-        PowerHolderComponent.withPowers(
-            this.owner,
-            ActionOnBlockHitPower.class,
-            aobhp -> aobhp.doesApply(thisAsProjectileEntity.world, blockPos, direction, thisAsProjectileEntity),
-            aobhp -> aobhp.executeActions(thisAsProjectileEntity.world, blockPos, direction, thisAsProjectileEntity)
-        );
+		PowerHolderComponent.withPowers(
+			this.owner,
+			ActionOnBlockHitPower.class,
+			aobhp -> aobhp.doesApply(thisAsProjectileEntity.world, blockPos, direction, thisAsProjectileEntity),
+			aobhp -> aobhp.executeActions(thisAsProjectileEntity.world, blockPos, direction, thisAsProjectileEntity)
+		);
 
-    }
+	}
 
 }

@@ -1,58 +1,55 @@
 {
-    "schemaVersion": 1,
-    "id": "eggolib",
-    "version": "${version}",
-
-    "name": "eggolib",
-    "description": "A Fabric mod library that extends the functionality of Apoli for funsies; adds new power, condition and action types to be used for developing Origins/Apoli datapacks.",
-    "authors": [
-        "eggohito"
-    ],
-    "contact": {
-        "homepage": "https://curseforge.com/minecraft/mc-mods/eggolib",
-        "sources": "https://github.com/eggohito/eggolib",
-        "issues": "https://github.com/eggohito/eggolib/issues"
-    },
-
-    "license": "LGPL-3.0",
-    "icon": "assets/eggolib/icon.png",
-
-    "environment": "*",
-    "entrypoints": {
-        "main": [
-            "io.github.eggohito.eggolib.Eggolib"
-        ],
-        "client": [
-            "io.github.eggohito.eggolib.EggolibClient"
-        ],
-        "preLaunch": [
-            "com.llamalad7.mixinextras.MixinExtrasBootstrap::init"
-        ],
-        "cardinal-components-entity": [
-            "io.github.eggohito.eggolib.registry.factory.EggolibEntityComponents"
-        ],
-        "eggolib:compat/client":  [
-            "io.github.eggohito.eggolib.compat.apace100.origins.OriginsCompatClient"
-        ]
-    },
-    "mixins": [
-        "eggolib.mixins.json"
-    ],
-    "custom": {
-        "cardinal-components": [
-            "eggolib:misc"
-        ],
-        "modmenu": {
-            "badges": [
-                "library"
-            ]
-        }
-    },
-    "depends": {
-        "fabricloader": ">=0.14.8",
-        "fabric": "*",
-        "minecraft": ">=1.19.3",
-        "java": ">=17"
-    },
-    "accessWidener": "eggolib.accesswidener"
+	"schemaVersion": 1,
+	"id": "eggolib",
+	"version": "${version}",
+	"name": "eggolib",
+	"description": "A Fabric mod library that extends the functionality of Apoli for funsies; adds new power, condition and action types to be used for developing Origins/Apoli datapacks.",
+	"authors": [
+		"eggohito"
+	],
+	"contact": {
+		"homepage": "https://curseforge.com/minecraft/mc-mods/eggolib",
+		"sources": "https://github.com/eggohito/eggolib",
+		"issues": "https://github.com/eggohito/eggolib/issues"
+	},
+	"license": "LGPL-3.0",
+	"icon": "assets/eggolib/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"io.github.eggohito.eggolib.Eggolib"
+		],
+		"client": [
+			"io.github.eggohito.eggolib.EggolibClient"
+		],
+		"preLaunch": [
+			"com.llamalad7.mixinextras.MixinExtrasBootstrap::init"
+		],
+		"cardinal-components-entity": [
+			"io.github.eggohito.eggolib.registry.factory.EggolibEntityComponents"
+		],
+		"eggolib:compat/client": [
+			"io.github.eggohito.eggolib.compat.apace100.origins.OriginsCompatClient"
+		]
+	},
+	"mixins": [
+		"eggolib.mixins.json"
+	],
+	"custom": {
+		"cardinal-components": [
+			"eggolib:misc"
+		],
+		"modmenu": {
+			"badges": [
+				"library"
+			]
+		}
+	},
+	"depends": {
+		"fabricloader": ">=0.14.8",
+		"fabric": "*",
+		"minecraft": ">=1.19.3",
+		"java": ">=17"
+	},
+	"accessWidener": "eggolib.accesswidener"
 }

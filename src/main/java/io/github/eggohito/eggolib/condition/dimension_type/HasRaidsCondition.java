@@ -8,16 +8,16 @@ import net.minecraft.world.dimension.DimensionType;
 
 public class HasRaidsCondition {
 
-    public static boolean condition(SerializableData.Instance data, RegistryEntry<DimensionType> dimensionTypeRegistryEntry) {
-        return dimensionTypeRegistryEntry.value().hasRaids();
-    }
+	public static boolean condition(SerializableData.Instance data, RegistryEntry<DimensionType> dimensionTypeRegistryEntry) {
+		return dimensionTypeRegistryEntry.value().hasRaids();
+	}
 
-    public static ConditionFactory<RegistryEntry<DimensionType>> getFactory() {
-        return new ConditionFactory<>(
-            Eggolib.identifier("has_raids"),
-            new SerializableData(),
-            HasRaidsCondition::condition
-        );
-    }
+	public static ConditionFactory<RegistryEntry<DimensionType>> getFactory() {
+		return new ConditionFactory<>(
+			Eggolib.identifier("has_raids"),
+			new SerializableData(),
+			HasRaidsCondition::condition
+		);
+	}
 
 }

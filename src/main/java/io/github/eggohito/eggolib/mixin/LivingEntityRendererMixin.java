@@ -12,9 +12,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(LivingEntityRenderer.class)
 public abstract class LivingEntityRendererMixin {
 
-    @Inject(method = "shouldFlipUpsideDown", at = @At("HEAD"), cancellable = true)
-    private static void eggolib$flipUpsideDown(LivingEntity livingEntity, CallbackInfoReturnable<Boolean> cir) {
-        if (PowerHolderComponent.hasPower(livingEntity, ModelFlipPower.class)) cir.setReturnValue(true);
-    }
+	@Inject(method = "shouldFlipUpsideDown", at = @At("HEAD"), cancellable = true)
+	private static void eggolib$flipUpsideDown(LivingEntity livingEntity, CallbackInfoReturnable<Boolean> cir) {
+		if (PowerHolderComponent.hasPower(livingEntity, ModelFlipPower.class)) {
+			cir.setReturnValue(true);
+		}
+	}
 
 }

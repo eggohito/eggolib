@@ -8,10 +8,10 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(ClientPlayerInteractionManager.class)
 public interface ClientPlayerInteractionManagerAccessor {
 
-    @Accessor("currentBreakingPos")
-    BlockPos breakingBlockPos();
+	@Accessor("currentBreakingPos")
+	BlockPos breakingBlockPos();
 
-    @Accessor("breakingBlock")
-    boolean breakingBlock();
+	@Accessor("breakingBlock")
+	boolean breakingBlock();
 
 }

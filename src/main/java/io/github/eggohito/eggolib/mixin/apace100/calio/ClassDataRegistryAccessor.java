@@ -9,7 +9,7 @@ import java.util.HashMap;
 @Mixin(ClassDataRegistry.class)
 public interface ClassDataRegistryAccessor {
 
-    @Accessor(value = "directMappings", remap = false)
-    HashMap<String, Class<?>> getMappings();
+	@Accessor(value = "directMappings", remap = false)
+	HashMap<String, Class<?>> getMappings();
 
 }

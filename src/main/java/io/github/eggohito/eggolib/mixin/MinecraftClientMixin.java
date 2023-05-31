@@ -11,9 +11,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(MinecraftClient.class)
 public abstract class MinecraftClientMixin {
 
-    @Inject(method = "setScreen", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/BufferRenderer;reset()V"))
-    private void eggolib$syncScreen(Screen screen, CallbackInfo ci) {
-        MiscUtilClient.syncScreen((MinecraftClient) (Object) this, screen);
-    }
+	@Inject(method = "setScreen", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/BufferRenderer;reset()V"))
+	private void eggolib$syncScreen(Screen screen, CallbackInfo ci) {
+		MiscUtilClient.syncScreen((MinecraftClient) (Object) this, screen);
+	}
 
 }

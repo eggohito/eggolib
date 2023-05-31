@@ -17,37 +17,42 @@ import java.util.List;
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity {
 
-    public LivingEntityMixin(EntityType<?> type, World world) {
-        super(type, world);
-    }
+	public LivingEntityMixin(EntityType<?> type, World world) {
+		super(type, world);
+	}
 
-    @ModifyExpressionValue(method = "damage", at = @At(value = "CONSTANT", args = "floatValue=10.0f", ordinal = 0))
-    private float eggolib$modifyImmunityTicks(float original, DamageSource source, float amount) {
+	@ModifyExpressionValue(method = "damage", at = @At(value = "CONSTANT", args = "floatValue=10.0f", ordinal = 0))
+	private float eggolib$modifyImmunityTicks(float original, DamageSource source, float amount) {
 
-        LivingEntity thisAsLiving = (LivingEntity) (Object) this;
-        List<ModifyHurtTicksPower> mhtps = PowerHolderComponent.getPowers(thisAsLiving, ModifyHurtTicksPower.class)
-            .stream()
-            .filter(mhtp -> mhtp.doesApply(source, amount, source.getAttacker()))
-            .toList();
+		LivingEntity thisAsLiving = (LivingEntity) (Object) this;
+		List<ModifyHurtTicksPower> mhtps = PowerHolderComponent.getPowers(thisAsLiving, ModifyHurtTicksPower.class)
+			.stream()
+			.filter(mhtp -> mhtp.doesApply(source, amount, source.getAttacker()))
+			.toList();
 
-        if (mhtps.isEmpty()) return original;
-        return (float) ModifierUtil.applyModifiers(thisAsLiving, mhtps.stream().flatMap(mhtp -> mhtp.getImmunityModifiers().stream()).toList(), original);
+		if (mhtps.isEmpty()) {
+			return original;
+		}
+		return (float) ModifierUtil.applyModifiers(thisAsLiving, mhtps.stream().flatMap(mhtp -> mhtp.getImmunityModifiers().stream()).toList(), original);
 
-    }
+	}
 
-    @ModifyExpressionValue(method = "damage", at = @At(value = "CONSTANT", args = "intValue=20"))
-    private int eggolib$modifyHurtTicks(int original, DamageSource source, float amount) {
+	@ModifyExpressionValue(method = "damage", at = @At(value = "CONSTANT", args = "intValue=20"))
+	private int eggolib$modifyHurtTicks(int original, DamageSource source, float amount) {
 
-        LivingEntity thisAsLiving = (LivingEntity) (Object) this;
-        List<ModifyHurtTicksPower> mhtps = PowerHolderComponent.getPowers(thisAsLiving, ModifyHurtTicksPower.class)
-            .stream()
-            .filter(mhtp -> mhtp.doesApply(source, amount, source.getAttacker()))
-            .toList();
+		LivingEntity thisAsLiving = (LivingEntity) (Object) this;
+		List<ModifyHurtTicksPower> mhtps = PowerHolderComponent.getPowers(thisAsLiving, ModifyHurtTicksPower.class)
+			.stream()
+			.filter(mhtp -> mhtp.doesApply(source, amount, source.getAttacker()))
+			.toList();
 
-        if (mhtps.isEmpty()) return original;
-        mhtps.forEach(mhtp -> mhtp.executeActions(source.getAttacker()));
-        return (int) ModifierUtil.applyModifiers(thisAsLiving, mhtps.stream().flatMap(mhtp -> mhtp.getModifiers().stream()).toList(), original);
+		if (mhtps.isEmpty()) {
+			return original;
+		}
 
-    }
+		mhtps.forEach(mhtp -> mhtp.executeActions(source.getAttacker()));
+		return (int) ModifierUtil.applyModifiers(thisAsLiving, mhtps.stream().flatMap(mhtp -> mhtp.getModifiers().stream()).toList(), original);
+
+	}
 
 }

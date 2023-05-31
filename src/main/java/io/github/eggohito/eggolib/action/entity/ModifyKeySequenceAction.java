@@ -20,71 +20,87 @@ import java.util.List;
 
 public class ModifyKeySequenceAction {
 
-    private enum Operation {
-        APPEND,
-        INSERT,
-        PREPEND,
-        REMOVE,
-        SET
-    }
+	private enum Operation {
+		APPEND,
+		INSERT,
+		PREPEND,
+		REMOVE,
+		SET
+	}
 
-    public static void action(SerializableData.Instance data, Entity entity) {
+	public static void action(SerializableData.Instance data, Entity entity) {
 
-        PowerHolderComponent.KEY.maybeGet(entity).ifPresent(
-            powerHolderComponent -> {
+		PowerHolderComponent component = PowerHolderComponent.KEY.maybeGet(entity).orElse(null);
+		if (component == null) {
+			return;
+		}
 
-                PowerType<?> targetPowerType = data.get("power");
-                if (targetPowerType == null) return;
+		PowerType<?> targetPowerType = data.get("power");
+		if (targetPowerType == null) {
+			return;
+		}
 
-                Power targetPower = powerHolderComponent.getPower(targetPowerType);
-                if (!(targetPower instanceof ActionOnKeySequencePower aoksp)) return;
+		Power targetPower = component.getPower(targetPowerType);
+		if (!(targetPower instanceof ActionOnKeySequencePower aoksp)) {
+			return;
+		}
 
-                Operation operation = data.get("operation");
-                List<Key> specifiedKeys = data.get("keys");
-                List<Key> currentKeySequence = aoksp.getCurrentKeySequence();
+		Operation operation = data.get("operation");
+		List<Key> specifiedKeys = data.get("keys");
+		List<Key> currentKeySequence = aoksp.getCurrentKeySequence();
 
-                int index = getSpecifiedOrLastIndex(data.isPresent("index") ? data.getInt("index") : -1, currentKeySequence);
+		int index = getSpecifiedOrLastIndex(data.get("index"), currentKeySequence);
 
-                switch (operation) {
-                    case APPEND -> currentKeySequence.addAll(specifiedKeys);
-                    case INSERT -> currentKeySequence.addAll(index, specifiedKeys);
-                    case PREPEND -> currentKeySequence.addAll(0, specifiedKeys);
-                    case REMOVE -> {
-                        if (!specifiedKeys.isEmpty()) currentKeySequence.removeAll(specifiedKeys);
-                        else currentKeySequence.remove(index);
-                    }
-                    case SET -> {
-                        currentKeySequence.clear();
-                        currentKeySequence.addAll(specifiedKeys);
-                    }
-                }
+		switch (operation) {
+			case SET -> setKeys(currentKeySequence, specifiedKeys);
+			case INSERT -> currentKeySequence.addAll(index, specifiedKeys);
+			case APPEND -> currentKeySequence.addAll(specifiedKeys);
+			case REMOVE -> removeKeys(currentKeySequence, specifiedKeys, index);
+			case PREPEND -> currentKeySequence.addAll(0, specifiedKeys);
+		}
 
-                PowerHolderComponent.syncPower(entity, targetPowerType);
+		PowerHolderComponent.syncPower(entity, targetPowerType);
 
-            }
-        );
+	}
 
-    }
+	private static void setKeys(List<Key> currentKeySequence, List<Key> specifiedKeys) {
+		currentKeySequence.clear();
+		currentKeySequence.addAll(specifiedKeys);
+	}
 
-    private static int getSpecifiedOrLastIndex(int i, List<?> list) {
+	private static void removeKeys(List<Key> currentKeySequence, List<Key> specifiedKeys, int index) {
+		if (!specifiedKeys.isEmpty()) {
+			currentKeySequence.removeAll(specifiedKeys);
+		} else {
+			currentKeySequence.remove(index);
+		}
+	}
 
-        int j = list.size() - 1;
+	private static int getSpecifiedOrLastIndex(Integer i, List<?> list) {
 
-        if (i == -1) return j;
-        else return MathHelper.clamp(i, 0, j);
+		if (i == null) {
+			i = -1;
+		}
+		int j = list.size() - 1;
 
-    }
+		if (i == -1) {
+			return j;
+		} else {
+			return MathHelper.clamp(i, 0, j);
+		}
 
-    public static ActionFactory<Entity> getFactory() {
-        return new ActionFactory<>(
-            Eggolib.identifier("modify_key_sequence"),
-            new SerializableData()
-                .add("power", ApoliDataTypes.POWER_TYPE)
-                .add("operation", SerializableDataType.enumValue(Operation.class), Operation.APPEND)
-                .add("keys", EggolibDataTypes.BACKWARDS_COMPATIBLE_KEYS, new ArrayList<>())
-                .add("index", SerializableDataTypes.INT, null),
-            ModifyKeySequenceAction::action
-        );
-    }
+	}
+
+	public static ActionFactory<Entity> getFactory() {
+		return new ActionFactory<>(
+			Eggolib.identifier("modify_key_sequence"),
+			new SerializableData()
+				.add("power", ApoliDataTypes.POWER_TYPE)
+				.add("operation", SerializableDataType.enumValue(Operation.class), Operation.APPEND)
+				.add("keys", EggolibDataTypes.BACKWARDS_COMPATIBLE_KEYS, new ArrayList<>())
+				.add("index", SerializableDataTypes.INT, null),
+			ModifyKeySequenceAction::action
+		);
+	}
 
 }

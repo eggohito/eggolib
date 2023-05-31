@@ -10,25 +10,27 @@ import net.minecraft.entity.LivingEntity;
 
 public class CrawlingPower extends Power {
 
-    public CrawlingPower(PowerType<?> powerType, LivingEntity livingEntity) {
-        super(powerType, livingEntity);
-        this.setTicking();
-    }
+	public CrawlingPower(PowerType<?> powerType, LivingEntity livingEntity) {
+		super(powerType, livingEntity);
+		this.setTicking();
+	}
 
-    @Override
-    public void tick() {
-        if (!entity.isCrawling()) entity.setPose(EntityPose.SWIMMING);
-    }
+	@Override
+	public void tick() {
+		if (!entity.isCrawling()) {
+			entity.setPose(EntityPose.SWIMMING);
+		}
+	}
 
-    public static PowerFactory<?> getFactory() {
-        return new PowerFactory<>(
-            Eggolib.identifier("crawling"),
-            new SerializableData(),
-            data -> (powerType, livingEntity) -> new CrawlingPower(
-                powerType,
-                livingEntity
-            )
-        ).allowCondition();
-    }
+	public static PowerFactory<?> getFactory() {
+		return new PowerFactory<>(
+			Eggolib.identifier("crawling"),
+			new SerializableData(),
+			data -> (powerType, livingEntity) -> new CrawlingPower(
+				powerType,
+				livingEntity
+			)
+		).allowCondition();
+	}
 
 }

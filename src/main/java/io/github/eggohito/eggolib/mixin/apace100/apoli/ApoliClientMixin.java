@@ -11,9 +11,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ApoliClient.class)
 public abstract class ApoliClientMixin {
 
-    @Inject(method = "registerPowerKeybinding", at = @At("HEAD"))
-    private static void eggolib$addPowerKeybinding(String keyId, KeyBinding keyBinding, CallbackInfo ci) {
-        EggolibClient.addPowerKeyBinding(keyId, keyBinding);
-    }
+	@Inject(method = "registerPowerKeybinding", at = @At("HEAD"))
+	private static void eggolib$addPowerKeybinding(String keyId, KeyBinding keyBinding, CallbackInfo ci) {
+		EggolibClient.addPowerKeyBinding(keyId, keyBinding);
+	}
 
 }

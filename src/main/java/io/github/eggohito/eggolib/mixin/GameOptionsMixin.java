@@ -13,11 +13,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(GameOptions.class)
 public abstract class GameOptionsMixin {
 
-    @Shadow protected MinecraftClient client;
+	@Shadow
+	protected MinecraftClient client;
 
-    @Inject(method = "setPerspective", at = @At("HEAD"))
-    private void eggolib$getCurrentPerspective(Perspective perspective, CallbackInfo ci) {
-        MiscUtilClient.getPerspective(client, perspective);
-    }
+	@Inject(method = "setPerspective", at = @At("HEAD"))
+	private void eggolib$getCurrentPerspective(Perspective perspective, CallbackInfo ci) {
+		MiscUtilClient.getPerspective(client, perspective);
+	}
 
 }

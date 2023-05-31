@@ -11,24 +11,24 @@ import java.util.HashMap;
 @Environment(EnvType.CLIENT)
 public abstract class EggolibModCompatClient extends EggolibModCompat {
 
-    private final HashMap<String, Class<? extends Screen>> REGISTERED_SCREEN_MAPPINGS = new HashMap<>();
+	private final HashMap<String, Class<? extends Screen>> REGISTERED_SCREEN_MAPPINGS = new HashMap<>();
 
-    public final void addScreenMapping(String name, Class<? extends Screen> clazz) {
-        ClassDataRegistry
-            .getOrCreate(ClassUtil.castClass(Screen.class), "Screen")
-            .addMapping(name, clazz);
-        REGISTERED_SCREEN_MAPPINGS.put(name, clazz);
-    }
+	public final void addScreenMapping(String name, Class<? extends Screen> clazz) {
+		ClassDataRegistry
+			.getOrCreate(ClassUtil.castClass(Screen.class), "Screen")
+			.addMapping(name, clazz);
+		REGISTERED_SCREEN_MAPPINGS.put(name, clazz);
+	}
 
-    public final String formatScreenMappings() {
+	public final String formatScreenMappings() {
 
-        StringBuilder builder = new StringBuilder();
-        REGISTERED_SCREEN_MAPPINGS.forEach(
-            (s, aClass) -> builder.append("\t- ").append(aClass.getName()).append("\t(mapped as \"").append(s).append("\")\n")
-        );
+		StringBuilder builder = new StringBuilder();
+		REGISTERED_SCREEN_MAPPINGS.forEach(
+			(s, aClass) -> builder.append("\t- ").append(aClass.getName()).append("\t(mapped as \"").append(s).append("\")\n")
+		);
 
-        return builder.toString();
+		return builder.toString();
 
-    }
+	}
 
 }

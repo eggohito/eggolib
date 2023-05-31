@@ -8,16 +8,16 @@ import net.minecraft.util.Pair;
 
 public class EqualCondition {
 
-    public static boolean condition(SerializableData.Instance data, Pair<Entity, Entity> actorAndTarget) {
-        return actorAndTarget.getLeft().equals(actorAndTarget.getRight());
-    }
+	public static boolean condition(SerializableData.Instance data, Pair<Entity, Entity> actorAndTarget) {
+		return actorAndTarget.getLeft().equals(actorAndTarget.getRight());
+	}
 
-    public static ConditionFactory<Pair<Entity, Entity>> getFactory() {
-        return new ConditionFactory<>(
-            Eggolib.identifier("equal"),
-            new SerializableData(),
-            EqualCondition::condition
-        );
-    }
+	public static ConditionFactory<Pair<Entity, Entity>> getFactory() {
+		return new ConditionFactory<>(
+			Eggolib.identifier("equal"),
+			new SerializableData(),
+			EqualCondition::condition
+		);
+	}
 
 }

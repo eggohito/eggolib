@@ -24,239 +24,58 @@ import java.util.function.Predicate;
 
 public class InventoryUtil {
 
-    public static int checkInventory(SerializableData.Instance data, Entity entity, InventoryPower inventoryPower) {
+	public static int checkInventory(SerializableData.Instance data, Entity entity, InventoryPower inventoryPower) {
 
-        Set<Integer> slots = getSlots(data);
-        Predicate<ItemStack> itemCondition = data.get("item_condition");
-        AtomicInteger matches = new AtomicInteger();
+		Set<Integer> slots = getSlots(data);
+		Predicate<ItemStack> itemCondition = data.get("item_condition");
 
-        if (inventoryPower == null) slots
-            .forEach(
-                slot -> {
+		int matches = 0;
 
-                    StackReference stackReference = entity.getStackReference(slot);
-                    if (stackReference == StackReference.EMPTY) return;
+		if (inventoryPower == null) {
+			for (int slot : slots) {
 
-                    ItemStack itemStack = stackReference.get();
-                    if (itemCondition == null || itemStack.isEmpty()) return;
-                    else if (!itemCondition.test(itemStack)) return;
+				StackReference stackReference = entity.getStackReference(slot);
+				if (stackReference == StackReference.EMPTY) {
+					continue;
+				}
 
-                    matches.incrementAndGet();
+				ItemStack stack = stackReference.get();
+				if ((itemCondition == null && !stack.isEmpty()) || (itemCondition == null || itemCondition.test(stack))) {
+					matches++;
+				}
 
-                }
-            );
+			}
+		} else {
+			for (int slot : slots) {
 
-        else {
-            slots.removeIf(slot -> slot < 0 || slot >= inventoryPower.size());
-            slots
-                .forEach(
-                    slot -> {
+				if (slot < 0 || slot >= inventoryPower.size()) {
+					continue;
+				}
 
-                        ItemStack itemStack = inventoryPower.getStack(slot);
-                        if (itemCondition == null || itemStack.isEmpty()) return;
-                        else if (!itemCondition.test(itemStack)) return;
+				ItemStack stack = inventoryPower.getStack(slot);
+				if ((itemCondition == null && !stack.isEmpty()) || (itemCondition == null || itemCondition.test(stack))) {
+					matches++;
+				}
 
-                        matches.incrementAndGet();
+			}
+		}
 
-                    }
-                );
-        }
+		return matches;
 
-        return matches.get();
+	}
 
-    }
+	public static Set<Integer> getSlots(SerializableData.Instance data) {
 
-    public static void replaceInventory(SerializableData.Instance data, Entity entity, InventoryPower inventoryPower) {
+		Set<Integer> itemSlots = new HashSet<>();
 
-        Set<Integer> slots = getSlots(data);
-        Consumer<Pair<World, ItemStack>> itemAction = data.get("item_action");
-        Consumer<Entity> entityAction = data.get("entity_action");
-        Predicate<ItemStack> itemCondition = data.get("item_condition");
+		data.<ArgumentWrapper<Integer>>ifPresent("slot", iaw -> itemSlots.add(iaw.get()));
+		data.<List<ArgumentWrapper<Integer>>>ifPresent("slots", liaw -> itemSlots.addAll(liaw.stream().map(ArgumentWrapper::get).toList()));
 
-        ItemStack replacementStack = data.get("stack");
-        boolean mergeNbt = data.getBoolean("merge_nbt");
+		if (itemSlots.isEmpty()) {
+			itemSlots.addAll(ItemSlotArgumentTypeAccessor.getSlotMappings().values());
+		}
+		return itemSlots;
 
-        if (inventoryPower == null) slots
-            .forEach(
-                slot -> {
-
-                    StackReference stackReference = entity.getStackReference(slot);
-                    if (stackReference == StackReference.EMPTY) return;
-
-                    ItemStack itemStack = stackReference.get();
-                    if (!(itemCondition == null || itemCondition.test(itemStack))) return;
-
-                    if (entityAction != null) entityAction.accept(entity);
-
-                    ItemStack stackAfterReplacement = replacementStack.copy();
-                    if (mergeNbt && itemStack.hasNbt()) {
-                        itemStack.getOrCreateNbt().copyFrom(stackAfterReplacement.getOrCreateNbt());
-                        stackAfterReplacement.setNbt(itemStack.getOrCreateNbt());
-                    }
-                    stackReference.set(stackAfterReplacement);
-
-                    if (itemAction != null) itemAction.accept(new Pair<>(entity.world, stackAfterReplacement));
-
-
-                }
-            );
-
-        else {
-            slots.removeIf(slot -> slot < 0 || slot >= inventoryPower.size());
-            slots
-                .forEach(
-                    slot -> {
-
-                        ItemStack itemStack = inventoryPower.getStack(slot);
-                        if (!(itemCondition == null || itemCondition.test(itemStack))) return;
-
-                        if (entityAction != null) entityAction.accept(entity);
-
-                        ItemStack stackAfterReplacement = replacementStack.copy();
-                        if (mergeNbt && itemStack.hasNbt()) {
-                            itemStack.getOrCreateNbt().copyFrom(stackAfterReplacement.getOrCreateNbt());
-                            stackAfterReplacement.setNbt(itemStack.getOrCreateNbt());
-                        }
-                        inventoryPower.setStack(slot, stackAfterReplacement);
-
-                        if (itemAction != null) itemAction.accept(new Pair<>(entity.world, stackAfterReplacement));
-
-                    }
-                );
-        }
-
-    }
-
-    public static void dropInventory(SerializableData.Instance data, Entity entity, InventoryPower inventoryPower) {
-
-        Set<Integer> slots = getSlots(data);
-        Consumer<Pair<World, ItemStack>> itemAction = data.get("item_action");
-        Consumer<Entity> entityAction = data.get("entity_action");
-        Predicate<ItemStack> itemCondition = data.get("item_condition");
-
-        int amount = data.get("amount");
-        boolean throwRandomly = data.getBoolean("throw_randomly");
-        boolean retainOwnership = data.getBoolean("retain_ownership");
-
-        if (inventoryPower == null) slots
-            .forEach(
-                slot -> {
-
-                    StackReference stackReference = entity.getStackReference(slot);
-                    if (stackReference == StackReference.EMPTY) return;
-
-                    ItemStack itemStack = stackReference.get();
-                    if (itemStack.isEmpty()) return;
-
-                    if (!(itemCondition == null || itemCondition.test(itemStack))) return;
-
-                    if (entityAction != null) entityAction.accept(entity);
-                    if (itemAction != null) itemAction.accept(new Pair<>(entity.world, itemStack));
-
-                    if (amount != 0) {
-                        int newAmount = amount < 0 ? amount * -1 : amount;
-                        ItemStack droppedStack = itemStack.split(newAmount);
-                        throwItem(entity, droppedStack, throwRandomly, retainOwnership);
-                        stackReference.set(itemStack);
-                    }
-
-                    else {
-                        throwItem(entity, itemStack, throwRandomly, retainOwnership);
-                        stackReference.set(ItemStack.EMPTY);
-                    }
-
-                }
-            );
-
-        else {
-            slots.removeIf(slot -> slot < 0 || slot >= inventoryPower.size());
-            slots
-                .forEach(
-                    slot -> {
-
-                        ItemStack itemStack = inventoryPower.getStack(slot);
-                        if (itemStack.isEmpty()) return;
-
-                        if (!(itemCondition == null || itemCondition.test(itemStack))) return;
-
-                        if (entityAction != null) entityAction.accept(entity);
-                        if (itemAction != null) itemAction.accept(new Pair<>(entity.world, itemStack));
-
-                        if (amount != 0) {
-                            int newAmount = amount < 0 ? amount * -1 : amount;
-                            ItemStack droppedStack = itemStack.split(newAmount);
-                            throwItem(entity, droppedStack, throwRandomly, retainOwnership);
-                            inventoryPower.setStack(slot, itemStack);
-                        }
-
-                        else {
-                            throwItem(entity, itemStack, throwRandomly, retainOwnership);
-                            inventoryPower.setStack(slot, ItemStack.EMPTY);
-                        }
-
-                    }
-                );
-        }
-
-    }
-
-    public static void throwItem(Entity thrower, ItemStack itemStack, boolean throwRandomly, boolean retainOwnership) {
-
-        if (itemStack.isEmpty()) return;
-        if (thrower instanceof PlayerEntity playerEntity && playerEntity.world.isClient) playerEntity.swingHand(Hand.MAIN_HAND);
-
-        double yOffset = thrower.getEyeY() - 0.30000001192092896;
-        ItemEntity itemEntity = new ItemEntity(thrower.world, thrower.getX(), yOffset, thrower.getZ(), itemStack);
-        itemEntity.setPickupDelay(40);
-
-        Random random = new Random();
-
-        float f;
-        float g;
-
-        if (retainOwnership) itemEntity.setThrower(thrower.getUuid());
-
-        if (throwRandomly) {
-
-            f = random.nextFloat() * 0.5F;
-            g = random.nextFloat() * 6.2831855F;
-            itemEntity.setVelocity(- MathHelper.sin(g) * f, 0.20000000298023224, MathHelper.cos(g) * f);
-
-        }
-
-        else {
-
-            f = 0.3F;
-            g = MathHelper.sin(thrower.getPitch() * 0.017453292F);
-
-            float h = MathHelper.cos(thrower.getPitch() * 0.017453292F);
-            float i = MathHelper.sin(thrower.getYaw() * 0.017453292F);
-            float j = MathHelper.cos(thrower.getYaw() * 0.017453292F);
-            float k = random.nextFloat() * 6.2831855F;
-            float l = 0.02F * random.nextFloat();
-
-            itemEntity.setVelocity(
-                (double) (-i * h * f) + Math.cos(k) * (double) l,
-                (-g * 0.3F + 0.1F + (random.nextFloat() - random.nextFloat()) * 0.1F),
-                (double) (j * h * 0.3F) + Math.sin(k) * (double) l
-            );
-
-        }
-
-        thrower.world.spawnEntity(itemEntity);
-
-    }
-
-    public static Set<Integer> getSlots(SerializableData.Instance data) {
-
-        Set<Integer> itemSlots = new HashSet<>();
-
-        data.<ArgumentWrapper<Integer>>ifPresent("slot", iaw -> itemSlots.add(iaw.get()));
-        data.<List<ArgumentWrapper<Integer>>>ifPresent("slots", liaw -> itemSlots.addAll(liaw.stream().map(ArgumentWrapper::get).toList()));
-
-        if (itemSlots.isEmpty()) itemSlots.addAll(ItemSlotArgumentTypeAccessor.getSlotMappings().values());
-        return itemSlots;
-
-    }
+	}
 
 }

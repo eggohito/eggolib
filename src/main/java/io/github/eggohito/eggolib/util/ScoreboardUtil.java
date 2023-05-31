@@ -18,37 +18,41 @@ import java.util.Optional;
 
 public class ScoreboardUtil {
 
-    public static Optional<Integer> getScore(Pair<ScoreHolderArgumentType.ScoreHolder, String> scoreHolderAndObjectiveName) {
-        return getScore(null, scoreHolderAndObjectiveName.getLeft(), scoreHolderAndObjectiveName.getRight());
-    }
+	public static Optional<Integer> getScore(Pair<ScoreHolderArgumentType.ScoreHolder, String> scoreHolderAndObjectiveName) {
+		return getScore(null, scoreHolderAndObjectiveName.getLeft(), scoreHolderAndObjectiveName.getRight());
+	}
 
-    public static Optional<Integer> getScore(@Nullable Entity invoker, ScoreHolderArgumentType.ScoreHolder scoreHolder, String objectiveName) {
+	public static Optional<Integer> getScore(@Nullable Entity invoker, ScoreHolderArgumentType.ScoreHolder scoreHolder, String objectiveName) {
 
-        if (Eggolib.minecraftServer == null) return Optional.empty();
+		if (Eggolib.minecraftServer == null) {
+			return Optional.empty();
+		}
 
-        ServerCommandSource source = new ServerCommandSource(
-            CommandOutput.DUMMY,
-            new Vec3d(0, 0, 0),
-            new Vec2f(0, 0),
-            Eggolib.minecraftServer.getOverworld(),
-            2,
-            "@",
-            Text.of("@"),
-            Eggolib.minecraftServer,
-            invoker
-        );
+		ServerCommandSource source = new ServerCommandSource(
+			CommandOutput.DUMMY,
+			new Vec3d(0, 0, 0),
+			new Vec2f(0, 0),
+			Eggolib.minecraftServer.getOverworld(),
+			2,
+			"@",
+			Text.of("@"),
+			Eggolib.minecraftServer,
+			invoker
+		);
 
-        Scoreboard scoreboard = Eggolib.minecraftServer.getScoreboard();
-        ScoreboardObjective scoreboardObjective = scoreboard.getObjective(objectiveName);
+		Scoreboard scoreboard = Eggolib.minecraftServer.getScoreboard();
+		ScoreboardObjective scoreboardObjective = scoreboard.getObjective(objectiveName);
 
-        try {
-            String name = scoreHolder.getNames(source, scoreboard::getKnownPlayers).iterator().next();
-            if (scoreboard.playerHasObjective(name, scoreboardObjective)) return Optional.of(scoreboard.getPlayerScore(name, scoreboardObjective).getScore());
-        }
-        catch (CommandSyntaxException ignored) {}
+		try {
+			String name = scoreHolder.getNames(source, scoreboard::getKnownPlayers).iterator().next();
+			if (scoreboard.playerHasObjective(name, scoreboardObjective)) {
+				return Optional.of(scoreboard.getPlayerScore(name, scoreboardObjective).getScore());
+			}
+		} catch (CommandSyntaxException ignored) {
+		}
 
-        return Optional.empty();
+		return Optional.empty();
 
-    }
+	}
 
 }

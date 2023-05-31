@@ -11,23 +11,23 @@ import net.minecraft.world.dimension.DimensionType;
 
 public class MinYCondition {
 
-    public static boolean condition(SerializableData.Instance data, RegistryEntry<DimensionType> dimensionTypeRegistryEntry) {
+	public static boolean condition(SerializableData.Instance data, RegistryEntry<DimensionType> dimensionTypeRegistryEntry) {
 
-        Comparison comparison = data.get("comparison");
-        int specifiedValue = data.getInt("compare_to");
+		Comparison comparison = data.get("comparison");
+		int specifiedValue = data.getInt("compare_to");
 
-        return comparison.compare(dimensionTypeRegistryEntry.value().minY(), specifiedValue);
+		return comparison.compare(dimensionTypeRegistryEntry.value().minY(), specifiedValue);
 
-    }
+	}
 
-    public static ConditionFactory<RegistryEntry<DimensionType>> getFactory() {
-        return new ConditionFactory<>(
-            Eggolib.identifier("min_y"),
-            new SerializableData()
-                .add("comparison", ApoliDataTypes.COMPARISON)
-                .add("compare_to", SerializableDataTypes.INT),
-            MinYCondition::condition
-        );
-    }
+	public static ConditionFactory<RegistryEntry<DimensionType>> getFactory() {
+		return new ConditionFactory<>(
+			Eggolib.identifier("min_y"),
+			new SerializableData()
+				.add("comparison", ApoliDataTypes.COMPARISON)
+				.add("compare_to", SerializableDataTypes.INT),
+			MinYCondition::condition
+		);
+	}
 
 }

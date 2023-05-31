@@ -13,26 +13,28 @@ import java.util.OptionalLong;
 
 public class FixedTimeCondition {
 
-    public static boolean condition(SerializableData.Instance data, RegistryEntry<DimensionType> dimensionTypeRegistryEntry) {
+	public static boolean condition(SerializableData.Instance data, RegistryEntry<DimensionType> dimensionTypeRegistryEntry) {
 
-        OptionalLong fixedTime = dimensionTypeRegistryEntry.value().fixedTime();
-        if (!(data.isPresent("comparison") || data.isPresent("compare_to"))) return fixedTime.isPresent();
+		OptionalLong fixedTime = dimensionTypeRegistryEntry.value().fixedTime();
+		if (!(data.isPresent("comparison") || data.isPresent("compare_to"))) {
+			return fixedTime.isPresent();
+		}
 
-        Comparison comparison = data.get("comparison");
-        int specifiedValue = data.get("compare_to");
+		Comparison comparison = data.get("comparison");
+		int specifiedValue = data.get("compare_to");
 
-        return fixedTime.isPresent() && comparison.compare(fixedTime.getAsLong(), specifiedValue);
+		return fixedTime.isPresent() && comparison.compare(fixedTime.getAsLong(), specifiedValue);
 
-    }
+	}
 
-    public static ConditionFactory<RegistryEntry<DimensionType>> getFactory() {
-        return new ConditionFactory<>(
-            Eggolib.identifier("fixed_time"),
-            new SerializableData()
-                .add("comparison", ApoliDataTypes.COMPARISON, null)
-                .add("compare_to", SerializableDataTypes.INT, null),
-            FixedTimeCondition::condition
-        );
-    }
+	public static ConditionFactory<RegistryEntry<DimensionType>> getFactory() {
+		return new ConditionFactory<>(
+			Eggolib.identifier("fixed_time"),
+			new SerializableData()
+				.add("comparison", ApoliDataTypes.COMPARISON, null)
+				.add("compare_to", SerializableDataTypes.INT, null),
+			FixedTimeCondition::condition
+		);
+	}
 
 }

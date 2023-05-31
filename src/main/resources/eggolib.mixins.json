@@ -1,39 +1,39 @@
 {
-    "required": true,
-    "minVersion": "0.8",
-    "package": "io.github.eggohito.eggolib.mixin",
-    "compatibilityLevel": "JAVA_17",
-    "mixins": [
-        "BlockItemMixin",
-        "BlockMixin",
-        "EntityAccessor",
-        "EntityMixin",
-        "FarmlandBlockMixin",
-        "ItemEntityAccessor",
-        "ItemEntityMixin",
-        "ItemSlotArgumentTypeAccessor",
-        "ItemUsageContextAccessor",
-        "LivingEntityMixin",
-        "PlayerEntityMixin",
-        "ProjectileEntityMixin",
-        "ServerPlayerInteractionManagerAccessor",
-        "VibrationListenerMixin",
-        "apace100.calio.ClassDataRegistryAccessor",
-        "micalobia.breathinglib.BreathingInfoBuilderAccessor"
-    ],
-    "client": [
-        "AbstractClientPlayerEntityMixin",
-        "ClientPlayerEntityAccessor",
-        "ClientPlayerInteractionManagerAccessor",
-        "EntityRendererMixin",
-        "GameOptionsMixin",
-        "LivingEntityRendererMixin",
-        "MinecraftClientMixin",
-        "MouseMixin",
-        "apace100.apoli.ApoliClientMixin"
-    ],
-    "server": [],
-    "injectors": {
-        "defaultRequire": 1
-    }
+	"required": true,
+	"minVersion": "0.8",
+	"package": "io.github.eggohito.eggolib.mixin",
+	"compatibilityLevel": "JAVA_17",
+	"mixins": [
+		"BlockItemMixin",
+		"BlockMixin",
+		"EntityAccessor",
+		"EntityMixin",
+		"FarmlandBlockMixin",
+		"ItemEntityAccessor",
+		"ItemEntityMixin",
+		"ItemSlotArgumentTypeAccessor",
+		"ItemUsageContextAccessor",
+		"LivingEntityMixin",
+		"PlayerEntityMixin",
+		"ProjectileEntityMixin",
+		"ServerPlayerInteractionManagerAccessor",
+		"VibrationListenerMixin",
+		"apace100.calio.ClassDataRegistryAccessor",
+		"micalobia.breathinglib.BreathingInfoBuilderAccessor"
+	],
+	"client": [
+		"AbstractClientPlayerEntityMixin",
+		"ClientPlayerEntityAccessor",
+		"ClientPlayerInteractionManagerAccessor",
+		"EntityRendererMixin",
+		"GameOptionsMixin",
+		"LivingEntityRendererMixin",
+		"MinecraftClientMixin",
+		"MouseMixin",
+		"apace100.apoli.ApoliClientMixin"
+	],
+	"server": [],
+	"injectors": {
+		"defaultRequire": 1
+	}
 }

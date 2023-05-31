@@ -7,6 +7,6 @@ import net.minecraft.registry.RegistryKeys;
 
 public interface EggolibDamageTypes {
 
-    RegistryKey<DamageType> CHANGE_HEALTH_UNDERFLOW = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, Eggolib.identifier("change_health_underflow"));
+	RegistryKey<DamageType> CHANGE_HEALTH_UNDERFLOW = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, Eggolib.identifier("change_health_underflow"));
 
 }

@@ -18,99 +18,119 @@ import java.util.Set;
 
 public class HasTagLootCondition implements LootCondition {
 
-    private final String scoreboardTag;
-    private final Set<String> scoreboardTags;
+	private final String scoreboardTag;
+	private final Set<String> scoreboardTags;
 
-    public HasTagLootCondition() {
-        this.scoreboardTag = null;
-        this.scoreboardTags = null;
-    }
+	public HasTagLootCondition() {
+		this.scoreboardTag = null;
+		this.scoreboardTags = null;
+	}
 
-    public HasTagLootCondition(String scoreboardTag) {
-        this.scoreboardTag = scoreboardTag;
-        this.scoreboardTags = null;
-    }
+	public HasTagLootCondition(String scoreboardTag) {
+		this.scoreboardTag = scoreboardTag;
+		this.scoreboardTags = null;
+	}
 
-    public HasTagLootCondition(Set<String> scoreboardTags) {
-        this.scoreboardTag = null;
-        this.scoreboardTags = scoreboardTags;
-    }
+	public HasTagLootCondition(Set<String> scoreboardTags) {
+		this.scoreboardTag = null;
+		this.scoreboardTags = scoreboardTags;
+	}
 
-    public HasTagLootCondition(String scoreboardTag, Set<String> scoreboardTags) {
-        this.scoreboardTag = scoreboardTag;
-        this.scoreboardTags = scoreboardTags;
-    }
+	public HasTagLootCondition(String scoreboardTag, Set<String> scoreboardTags) {
+		this.scoreboardTag = scoreboardTag;
+		this.scoreboardTags = scoreboardTags;
+	}
 
-    @Override
-    public LootConditionType getType() {
-        return new LootConditionType(new HasTagLootCondition.Serializer());
-    }
+	@Override
+	public LootConditionType getType() {
+		return new LootConditionType(new HasTagLootCondition.Serializer());
+	}
 
-    @Override
-    public boolean test(LootContext lootContext) {
+	@Override
+	public boolean test(LootContext lootContext) {
 
-        Entity entity = lootContext.get(LootContextParameters.THIS_ENTITY);
-        if (entity == null) return false;
+		Entity entity = lootContext.get(LootContextParameters.THIS_ENTITY);
+		if (entity == null) {
+			return false;
+		}
 
-        Set<String> scoreboardTags = entity.getCommandTags();
-        Set<String> specifiedScoreboardTags = new HashSet<>();
+		Set<String> scoreboardTags = entity.getCommandTags();
+		Set<String> specifiedScoreboardTags = new HashSet<>();
 
-        if (this.scoreboardTag != null) specifiedScoreboardTags.add(this.scoreboardTag);
-        if (this.scoreboardTags != null) specifiedScoreboardTags.addAll(this.scoreboardTags);
+		if (this.scoreboardTag != null) {
+			specifiedScoreboardTags.add(this.scoreboardTag);
+		}
+		if (this.scoreboardTags != null) {
+			specifiedScoreboardTags.addAll(this.scoreboardTags);
+		}
 
-        if (specifiedScoreboardTags.isEmpty()) return !scoreboardTags.isEmpty();
-        else return !Collections.disjoint(scoreboardTags, specifiedScoreboardTags);
+		if (specifiedScoreboardTags.isEmpty()) {
+			return !scoreboardTags.isEmpty();
+		} else {
+			return !Collections.disjoint(scoreboardTags, specifiedScoreboardTags);
+		}
 
-    }
+	}
 
-    public static class Serializer implements JsonSerializer<HasTagLootCondition> {
+	public static class Serializer implements JsonSerializer<HasTagLootCondition> {
 
-        @Override
-        public void toJson(JsonObject jsonObject, HasTagLootCondition hasTagLootCondition, JsonSerializationContext jsonSerializationContext) {
+		@Override
+		public void toJson(JsonObject jsonObject, HasTagLootCondition hasTagLootCondition, JsonSerializationContext jsonSerializationContext) {
 
-            if (hasTagLootCondition.scoreboardTag != null) jsonObject.addProperty("tag", hasTagLootCondition.scoreboardTag);
-            if (hasTagLootCondition.scoreboardTags != null) {
+			if (hasTagLootCondition.scoreboardTag != null) {
+				jsonObject.addProperty("tag", hasTagLootCondition.scoreboardTag);
+			}
+			if (hasTagLootCondition.scoreboardTags != null) {
 
-                JsonArray jsonArray = new JsonArray();
-                for (String tag : hasTagLootCondition.scoreboardTags) {
-                    jsonArray.add(tag);
-                }
+				JsonArray jsonArray = new JsonArray();
+				for (String tag : hasTagLootCondition.scoreboardTags) {
+					jsonArray.add(tag);
+				}
 
-                jsonObject.add("tags", jsonArray);
+				jsonObject.add("tags", jsonArray);
 
-            }
+			}
 
-        }
+		}
 
-        @Override
-        public HasTagLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+		@Override
+		public HasTagLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 
-            String tag = null;
-            Set<String> tags = new HashSet<>();
+			String tag = null;
+			Set<String> tags = new HashSet<>();
 
-            if (jsonObject.has("tag")) tag = JsonHelper.getString(jsonObject, "tag");
-            if (jsonObject.has("tags")) {
-                JsonArray groupsArray = jsonObject.getAsJsonArray("tags");
-                for (int i = 0; i < groupsArray.size(); i++) {
-                    JsonElement jsonElement = groupsArray.get(i);
-                    if (jsonElement.isJsonPrimitive() && jsonElement.getAsJsonPrimitive().isString()) tags.add(jsonElement.getAsString());
-                }
-            }
+			if (jsonObject.has("tag")) {
+				tag = JsonHelper.getString(jsonObject, "tag");
+			}
+			if (jsonObject.has("tags")) {
+				JsonArray groupsArray = jsonObject.getAsJsonArray("tags");
+				for (int i = 0; i < groupsArray.size(); i++) {
+					JsonElement jsonElement = groupsArray.get(i);
+					if (jsonElement.isJsonPrimitive() && jsonElement.getAsJsonPrimitive().isString()) {
+						tags.add(jsonElement.getAsString());
+					}
+				}
+			}
 
-            if (tag != null && !tags.isEmpty()) return new HasTagLootCondition(tag, tags);
-            else if (tag == null && !tags.isEmpty()) return new HasTagLootCondition(tags);
-            else if (tag != null) return new HasTagLootCondition(tag);
-            else return new HasTagLootCondition();
+			if (tag != null && !tags.isEmpty()) {
+				return new HasTagLootCondition(tag, tags);
+			} else if (tag == null && !tags.isEmpty()) {
+				return new HasTagLootCondition(tags);
+			} else if (tag != null) {
+				return new HasTagLootCondition(tag);
+			} else {
+				return new HasTagLootCondition();
+			}
 
-        }
+		}
 
-    }
+	}
 
-    public static Pair<Identifier, LootConditionType> getIdAndType() {
-        return new Pair<>(
-            Eggolib.identifier("has_tag"),
-            new LootConditionType(new HasTagLootCondition.Serializer())
-        );
-    }
+	public static Pair<Identifier, LootConditionType> getIdAndType() {
+		return new Pair<>(
+			Eggolib.identifier("has_tag"),
+			new LootConditionType(new HasTagLootCondition.Serializer())
+		);
+	}
 
 }

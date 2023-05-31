@@ -12,38 +12,45 @@ import java.util.function.Consumer;
 
 public class LoopAction {
 
-    public static <T> void action(SerializableData.Instance data, T t) {
+	public static <T> void action(SerializableData.Instance data, T t) {
 
-        int maxIterations = 0;
+		Consumer<T> beforeAction = data.get("before_action");
+		Consumer<T> afterAction = data.get("after_action");
+		Consumer<T> action = data.get("action");
 
-        Consumer<T> beforeAction = data.get("before_action");
-        Consumer<T> afterAction = data.get("after_action");
-        Consumer<T> action = data.get("action");
+		int maxIterations = 0;
 
-        if (beforeAction != null) beforeAction.accept(t);
+		if (beforeAction != null) {
+			beforeAction.accept(t);
+		}
 
-        if (data.isPresent("score")) maxIterations = ScoreboardUtil.getScore(data.get("score")).orElse(0);
-        else if (data.isPresent("value")) maxIterations = data.getInt("value");
+		if (data.isPresent("score")) {
+			maxIterations = ScoreboardUtil.getScore(data.get("score")).orElse(0);
+		} else if (data.isPresent("value")) {
+			maxIterations = data.get("value");
+		}
 
-        for (int i = 0; i < maxIterations; i++) {
-            action.accept(t);
-        }
+		for (int i = 0; i < maxIterations; i++) {
+			action.accept(t);
+		}
 
-        if (afterAction != null) afterAction.accept(t);
+		if (afterAction != null) {
+			afterAction.accept(t);
+		}
 
-    }
+	}
 
-    public static <T> ActionFactory<T> getFactory(SerializableDataType<ActionFactory<T>.Instance> actionDataType) {
-        return new ActionFactory<>(
-            Eggolib.identifier("loop"),
-            new SerializableData()
-                .add("before_action", actionDataType, null)
-                .add("action", actionDataType, null)
-                .add("after_action", actionDataType, null)
-                .add("score", EggolibDataTypes.SCOREBOARD, null)
-                .add("value", SerializableDataTypes.INT, null),
-            LoopAction::action
-        );
-    }
+	public static <T> ActionFactory<T> getFactory(SerializableDataType<ActionFactory<T>.Instance> actionDataType) {
+		return new ActionFactory<>(
+			Eggolib.identifier("loop"),
+			new SerializableData()
+				.add("before_action", actionDataType, null)
+				.add("action", actionDataType, null)
+				.add("after_action", actionDataType, null)
+				.add("score", EggolibDataTypes.SCOREBOARD, null)
+				.add("value", SerializableDataTypes.INT, null),
+			LoopAction::action
+		);
+	}
 
 }

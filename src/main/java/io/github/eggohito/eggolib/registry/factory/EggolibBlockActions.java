@@ -13,13 +13,13 @@ import org.apache.commons.lang3.tuple.Triple;
 
 public class EggolibBlockActions {
 
-    public static void register() {
-        register(AreaOfEffectAction.getFactory());
-        register(LoopAction.getFactory(ApoliDataTypes.BLOCK_ACTION));
-    }
+	public static void register() {
+		register(AreaOfEffectAction.getFactory());
+		register(LoopAction.getFactory(ApoliDataTypes.BLOCK_ACTION));
+	}
 
-    public static ActionFactory<Triple<World, BlockPos, Direction>> register(ActionFactory<Triple<World, BlockPos, Direction>> actionFactory) {
-        return Registry.register(ApoliRegistries.BLOCK_ACTION, actionFactory.getSerializerId(), actionFactory);
-    }
+	public static ActionFactory<Triple<World, BlockPos, Direction>> register(ActionFactory<Triple<World, BlockPos, Direction>> actionFactory) {
+		return Registry.register(ApoliRegistries.BLOCK_ACTION, actionFactory.getSerializerId(), actionFactory);
+	}
 
 }

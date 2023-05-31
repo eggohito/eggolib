@@ -11,12 +11,12 @@ import net.minecraft.world.World;
 
 public class EggolibItemActions {
 
-    public static void register() {
-        register(LoopAction.getFactory(ApoliDataTypes.ITEM_ACTION));
-    }
+	public static void register() {
+		register(LoopAction.getFactory(ApoliDataTypes.ITEM_ACTION));
+	}
 
-    public static ActionFactory<Pair<World, ItemStack>> register(ActionFactory<Pair<World, ItemStack>> actionFactory) {
-        return Registry.register(ApoliRegistries.ITEM_ACTION, actionFactory.getSerializerId(), actionFactory);
-    }
+	public static ActionFactory<Pair<World, ItemStack>> register(ActionFactory<Pair<World, ItemStack>> actionFactory) {
+		return Registry.register(ApoliRegistries.ITEM_ACTION, actionFactory.getSerializerId(), actionFactory);
+	}
 
 }

@@ -8,16 +8,16 @@ import net.minecraft.world.dimension.DimensionType;
 
 public class RespawnAnchorWorksCondition {
 
-    public static boolean condition(SerializableData.Instance data, RegistryEntry<DimensionType> dimensionTypeRegistryEntry) {
-        return dimensionTypeRegistryEntry.value().respawnAnchorWorks();
-    }
+	public static boolean condition(SerializableData.Instance data, RegistryEntry<DimensionType> dimensionTypeRegistryEntry) {
+		return dimensionTypeRegistryEntry.value().respawnAnchorWorks();
+	}
 
-    public static ConditionFactory<RegistryEntry<DimensionType>> getFactory() {
-        return new ConditionFactory<>(
-            Eggolib.identifier("respawn_anchor_works"),
-            new SerializableData(),
-            RespawnAnchorWorksCondition::condition
-        );
-    }
+	public static ConditionFactory<RegistryEntry<DimensionType>> getFactory() {
+		return new ConditionFactory<>(
+			Eggolib.identifier("respawn_anchor_works"),
+			new SerializableData(),
+			RespawnAnchorWorksCondition::condition
+		);
+	}
 
 }

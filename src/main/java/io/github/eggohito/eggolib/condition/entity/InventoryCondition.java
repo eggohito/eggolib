@@ -15,55 +15,56 @@ import io.github.eggohito.eggolib.util.InventoryType;
 import io.github.eggohito.eggolib.util.InventoryUtil;
 import net.minecraft.entity.Entity;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 public class InventoryCondition {
 
-    public static boolean condition(SerializableData.Instance data, Entity entity) {
+	public static boolean condition(SerializableData.Instance data, Entity entity) {
 
-        InventoryType inventoryType = data.get("inventory_type");
-        AtomicInteger matches = new AtomicInteger();
-        Comparison comparison = data.get("comparison");
-        int compareTo = data.get("compare_to");
+		InventoryType inventoryType = data.get("inventory_type");
+		Comparison comparison = data.get("comparison");
 
-        switch (inventoryType) {
-            case INVENTORY -> matches.set(InventoryUtil.checkInventory(data, entity, null));
-            case POWER -> {
+		int compareTo = data.get("compare_to");
+		int matches = 0;
 
-                if (!data.isPresent("power")) return false;
+		if (inventoryType == InventoryType.INVENTORY) {
+			matches += InventoryUtil.checkInventory(data, entity, null);
+		}
 
-                PowerType<?> targetPowerType = data.get("power");
-                PowerHolderComponent.KEY.maybeGet(entity).ifPresent(
-                    powerHolderComponent -> {
+		if (inventoryType == InventoryType.POWER) {
 
-                        Power targetPower = powerHolderComponent.getPower(targetPowerType);
-                        if (!(targetPower instanceof InventoryPower inventoryPower)) return;
+			PowerHolderComponent component = PowerHolderComponent.KEY.maybeGet(entity).orElse(null);
+			if (component == null) {
+				return false;
+			}
 
-                        matches.set(InventoryUtil.checkInventory(data, entity, inventoryPower));
+			PowerType<?> targetPowerType = data.get("power");
+			if (targetPowerType == null) {
+				return false;
+			}
 
-                    }
-                );
+			Power targetPower = component.getPower(targetPowerType);
+			if (targetPower instanceof InventoryPower inventoryPower) {
+				matches += InventoryUtil.checkInventory(data, entity, inventoryPower);
+			}
 
-            }
-        }
+		}
 
-        return comparison.compare(matches.get(), compareTo);
+		return comparison.compare(matches, compareTo);
 
-    }
+	}
 
-    public static ConditionFactory<Entity> getFactory() {
-        return new ConditionFactory<>(
-            Eggolib.identifier("inventory"),
-            new SerializableData()
-                .add("inventory_type", SerializableDataType.enumValue(InventoryType.class), InventoryType.INVENTORY)
-                .add("item_condition", ApoliDataTypes.ITEM_CONDITION, null)
-                .add("slots", ApoliDataTypes.ITEM_SLOTS, null)
-                .add("slot", ApoliDataTypes.ITEM_SLOT, null)
-                .add("power", ApoliDataTypes.POWER_TYPE, null)
-                .add("comparison", ApoliDataTypes.COMPARISON, Comparison.GREATER_THAN)
-                .add("compare_to", SerializableDataTypes.INT, 0),
-            InventoryCondition::condition
-        );
-    }
+	public static ConditionFactory<Entity> getFactory() {
+		return new ConditionFactory<>(
+			Eggolib.identifier("inventory"),
+			new SerializableData()
+				.add("inventory_type", SerializableDataType.enumValue(InventoryType.class), InventoryType.INVENTORY)
+				.add("item_condition", ApoliDataTypes.ITEM_CONDITION, null)
+				.add("slots", ApoliDataTypes.ITEM_SLOTS, null)
+				.add("slot", ApoliDataTypes.ITEM_SLOT, null)
+				.add("power", ApoliDataTypes.POWER_TYPE, null)
+				.add("comparison", ApoliDataTypes.COMPARISON, Comparison.GREATER_THAN)
+				.add("compare_to", SerializableDataTypes.INT, 0),
+			InventoryCondition::condition
+		);
+	}
 
 }

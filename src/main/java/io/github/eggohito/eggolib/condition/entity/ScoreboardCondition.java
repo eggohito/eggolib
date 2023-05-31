@@ -18,31 +18,34 @@ import java.util.Optional;
 
 public class ScoreboardCondition {
 
-    public static boolean condition(SerializableData.Instance data, Entity entity) {
+	public static boolean condition(SerializableData.Instance data, Entity entity) {
 
-        ScoreHolderArgumentType.ScoreHolder name;
-        String objective = data.get("objective");
-        Comparison comparison = data.get("comparison");
-        int compareTo = data.get("compare_to");
+		ScoreHolderArgumentType.ScoreHolder name;
+		String objective = data.get("objective");
+		Comparison comparison = data.get("comparison");
+		int compareTo = data.get("compare_to");
 
-        if (data.isPresent("name")) name = data.<ArgumentWrapper<ScoreHolderArgumentType.ScoreHolder>>get("name").get();
-        else name = (source, players) -> Collections.singleton(entity instanceof PlayerEntity playerEntity ? playerEntity.getEntityName() : entity.getUuidAsString());
+		if (data.isPresent("name")) {
+			name = data.<ArgumentWrapper<ScoreHolderArgumentType.ScoreHolder>>get("name").get();
+		} else {
+			name = (source, players) -> Collections.singleton(entity instanceof PlayerEntity playerEntity ? playerEntity.getEntityName() : entity.getUuidAsString());
+		}
 
-        Optional<Integer> score = ScoreboardUtil.getScore(entity, name, objective);
-        return score.isPresent() && comparison.compare(score.get(), compareTo);
+		Optional<Integer> score = ScoreboardUtil.getScore(entity, name, objective);
+		return score.isPresent() && comparison.compare(score.get(), compareTo);
 
-    }
+	}
 
-    public static ConditionFactory<Entity> getFactory() {
-        return new ConditionFactory<>(
-            Eggolib.identifier("scoreboard"),
-            new SerializableData()
-                .add("name", EggolibDataTypes.SCORE_HOLDER, null)
-                .add("objective", SerializableDataTypes.STRING)
-                .add("comparison", ApoliDataTypes.COMPARISON)
-                .add("compare_to", SerializableDataTypes.INT),
-            ScoreboardCondition::condition
-        );
-    }
+	public static ConditionFactory<Entity> getFactory() {
+		return new ConditionFactory<>(
+			Eggolib.identifier("scoreboard"),
+			new SerializableData()
+				.add("name", EggolibDataTypes.SCORE_HOLDER, null)
+				.add("objective", SerializableDataTypes.STRING)
+				.add("comparison", ApoliDataTypes.COMPARISON)
+				.add("compare_to", SerializableDataTypes.INT),
+			ScoreboardCondition::condition
+		);
+	}
 
 }

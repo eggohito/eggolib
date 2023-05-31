@@ -14,31 +14,31 @@ import net.minecraft.server.network.ServerPlayerEntity;
 
 public class CloseScreenAction {
 
-    public static void action(SerializableData.Instance data, Entity entity) {
+	public static void action(SerializableData.Instance data, Entity entity) {
 
-        if (!(entity instanceof PlayerEntity playerEntity)) return;
+		if (!(entity instanceof PlayerEntity playerEntity)) {
+			return;
+		}
 
-        if (playerEntity.world.isClient) {
-            MinecraftClient minecraftClient = ((ClientPlayerEntityAccessor) playerEntity).getClient();
-            minecraftClient.execute(
-                () -> minecraftClient.setScreen(null)
-            );
-        }
+		if (playerEntity.world.isClient) {
+			MinecraftClient client = ((ClientPlayerEntityAccessor) playerEntity).getClient();
+			client.execute(() -> client.setScreen(null));
+		} else {
+			ServerPlayNetworking.send(
+				(ServerPlayerEntity) playerEntity,
+				EggolibPackets.CLOSE_SCREEN,
+				PacketByteBufs.empty()
+			);
+		}
 
-        else ServerPlayNetworking.send(
-            (ServerPlayerEntity) playerEntity,
-            EggolibPackets.CLOSE_SCREEN,
-            PacketByteBufs.empty()
-        );
+	}
 
-    }
-
-    public static ActionFactory<Entity> getFactory() {
-        return new ActionFactory<>(
-            Eggolib.identifier("close_screen"),
-            new SerializableData(),
-            CloseScreenAction::action
-        );
-    }
+	public static ActionFactory<Entity> getFactory() {
+		return new ActionFactory<>(
+			Eggolib.identifier("close_screen"),
+			new SerializableData(),
+			CloseScreenAction::action
+		);
+	}
 
 }
