@@ -28,8 +28,8 @@ import java.util.List;
 @Environment(EnvType.CLIENT)
 public class EggolibClient implements ClientModInitializer {
 
+	public static final HashMap<String, Boolean> PREVIOUS_KEY_BINDING_STATES = new HashMap<>();
 	private static final HashMap<String, KeyBinding> ID_TO_KEYBINDING_MAP = new HashMap<>();
-	private static HashMap<String, Boolean> previousKeyBindingStates = new HashMap<>();
 	private static boolean initializedKeyBindingMap = false;
 
 	@Override
@@ -85,7 +85,7 @@ public class EggolibClient implements ClientModInitializer {
 						}
 
 						currentKeyBindingStates.put(key.key, keyBinding.isPressed());
-						if (currentKeyBindingStates.get(key.key) && (key.continuous || !previousKeyBindingStates.getOrDefault(key.key, false))) {
+						if (currentKeyBindingStates.get(key.key) && (key.continuous || !PREVIOUS_KEY_BINDING_STATES.getOrDefault(key.key, false))) {
 							triggeredPowers.put(power, key);
 						}
 
@@ -93,7 +93,7 @@ public class EggolibClient implements ClientModInitializer {
 
 				}
 
-				previousKeyBindingStates = currentKeyBindingStates;
+				PREVIOUS_KEY_BINDING_STATES.putAll(currentKeyBindingStates);
 				if (!triggeredPowers.isEmpty()) {
 					syncKeyPresses(triggeredPowers);
 					compareKeySequences(triggeredPowers);

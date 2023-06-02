@@ -3,13 +3,10 @@ package io.github.eggohito.eggolib.mixin;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.eggohito.eggolib.EggolibClient;
 import io.github.eggohito.eggolib.networking.packet.c2s.SyncPreventedKeyPacket;
-import io.github.eggohito.eggolib.power.ModifyMouseSensitivityPower;
 import io.github.eggohito.eggolib.power.PreventKeyUsePower;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.minecraft.client.Keyboard;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.Mouse;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.util.Identifier;
@@ -19,46 +16,28 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
 
-@Mixin(Mouse.class)
-@Environment(EnvType.CLIENT)
-public abstract class MouseMixin {
+@Mixin(Keyboard.class)
+public abstract class KeyboardMixin {
 
 	@Shadow
 	@Final
 	private MinecraftClient client;
 
-	@ModifyVariable(method = "updateMouse", at = @At("STORE"), ordinal = 2)
-	private double eggolib$modifyMouseSensitivity(double originalValue) {
-
-		if (this.client.player == null) {
-			return originalValue;
-		}
-		double newValue = PowerHolderComponent.modify(this.client.player, ModifyMouseSensitivityPower.class, originalValue);
-
-		if (newValue != originalValue) {
-			return newValue;
-		} else {
-			return originalValue;
-		}
-
-	}
-
-	@Inject(method = "onMouseButton", at = @At("HEAD"), cancellable = true)
-	private void eggolib$preventMouseUse(long window, int button, int action, int mods, CallbackInfo ci) {
+	@Inject(method = "onKey", at = @At("HEAD"), cancellable = true)
+	private void eggolib$preventKeyUse(long window, int keycode, int scancode, int action, int modifiers, CallbackInfo ci) {
 
 		if (client.player == null || client.currentScreen != null) {
 			return;
 		}
 
-		InputUtil.Key key = InputUtil.Type.MOUSE.createFromCode(button);
+		InputUtil.Key key = InputUtil.fromKeyCode(keycode, scancode);
 		KeyBinding keyBinding = KeyBindingAccessor.getKeyAndBindingMap().get(key);
 
-		if (keyBinding == null || !eggolib$preventsMouse(keyBinding, button)) {
+		if (keyBinding == null || !eggolib$preventsKey(keyBinding, keycode, scancode)) {
 			return;
 		}
 
@@ -69,14 +48,14 @@ public abstract class MouseMixin {
 
 	}
 
-	@Inject(method = "onMouseButton", at = @At("TAIL"))
-	private void eggolib$syncMousePress(long window, int button, int action, int mods, CallbackInfo ci) {
+	@Inject(method = "onKey", at = @At("TAIL"))
+	private void eggolib$syncKeyPress(long window, int keycode, int scancode, int action, int modifiers, CallbackInfo ci) {
 
 		if (client.player == null || client.currentScreen != null) {
 			return;
 		}
 
-		InputUtil.Key key = InputUtil.Type.MOUSE.createFromCode(button);
+		InputUtil.Key key = InputUtil.fromKeyCode(keycode, scancode);
 		KeyBinding keyBinding = KeyBindingAccessor.getKeyAndBindingMap().get(key);
 
 		if (keyBinding != null) {
@@ -86,11 +65,11 @@ public abstract class MouseMixin {
 	}
 
 	@Unique
-	private boolean eggolib$preventsMouse(KeyBinding keyBinding, int mousecode) {
+	private boolean eggolib$preventsKey(KeyBinding keyBinding, int keycode, int scancode) {
 
 		List<Identifier> powerIds = PowerHolderComponent.getPowers(client.player, PreventKeyUsePower.class)
 			.stream()
-			.filter(pkup -> pkup.doesApply(mousecode))
+			.filter(pkup -> pkup.doesApply(keycode, scancode))
 			.map(pkup -> pkup.getType().getIdentifier())
 			.toList();
 		if (powerIds.isEmpty()) {

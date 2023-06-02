@@ -200,12 +200,7 @@ public class EggolibDataTypes {
 			if (!(jsonElement instanceof JsonPrimitive jsonPrimitive && jsonPrimitive.isString())) {
 				return FUNCTIONAL_KEY.read(jsonElement);
 			} else {
-
-				FunctionalKey functionalKey = new FunctionalKey();
-				functionalKey.key = jsonPrimitive.getAsString();
-
-				return functionalKey;
-
+				return new FunctionalKey(jsonElement.getAsString());
 			}
 		}
 	);

@@ -27,6 +27,8 @@
 		"ClientPlayerInteractionManagerAccessor",
 		"EntityRendererMixin",
 		"GameOptionsMixin",
+		"KeyBindingAccessor",
+		"KeyboardMixin",
 		"LivingEntityRendererMixin",
 		"MinecraftClientMixin",
 		"MouseMixin",

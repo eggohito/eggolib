@@ -22,6 +22,7 @@ import io.github.apace100.apoli.power.Power;
 import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.apoli.power.PowerTypeRegistry;
 import io.github.eggohito.eggolib.Eggolib;
+import io.github.eggohito.eggolib.networking.packet.c2s.SyncPreventedKeyPacket;
 import io.github.eggohito.eggolib.power.ActionOnKeySequencePower;
 import io.github.eggohito.eggolib.util.Key;
 import io.github.eggohito.eggolib.util.ScreenState;
@@ -49,6 +50,7 @@ public class EggolibPacketsC2S {
 		ServerPlayNetworking.registerGlobalReceiver(EggolibPackets.GET_PERSPECTIVE, EggolibPacketsC2S::getPerspective);
 		ServerPlayNetworking.registerGlobalReceiver(EggolibPackets.SYNC_KEY_PRESS, EggolibPacketsC2S::syncKeyPress);
 		ServerPlayNetworking.registerGlobalReceiver(EggolibPackets.END_KEY_SEQUENCE, EggolibPacketsC2S::endKeySequence);
+		ServerPlayNetworking.registerGlobalReceiver(SyncPreventedKeyPacket.TYPE, SyncPreventedKeyPacket::handle);
 	}
 
 	private static void handshake(ServerLoginNetworkHandler serverLoginNetworkHandler, MinecraftServer minecraftServer, PacketSender packetSender, ServerLoginNetworking.LoginSynchronizer loginSynchronizer) {

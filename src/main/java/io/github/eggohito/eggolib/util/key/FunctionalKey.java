@@ -7,20 +7,14 @@ import java.util.function.Consumer;
 
 public class FunctionalKey extends Key {
 
-	public boolean continuous = false;
 	public Consumer<Entity> action = null;
 
-	public FunctionalKey() {
-	}
-
-	public FunctionalKey(String key, boolean continuous) {
-		this.key = key;
-		this.continuous = continuous;
+	public FunctionalKey(String key) {
+		super(key);
 	}
 
 	public FunctionalKey(String key, boolean continuous, Consumer<Entity> action) {
-		this.key = key;
-		this.continuous = continuous;
+		super(key, continuous);
 		this.action = action;
 	}
 
