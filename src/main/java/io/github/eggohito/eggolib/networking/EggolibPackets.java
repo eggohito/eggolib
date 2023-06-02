@@ -7,16 +7,4 @@ public class EggolibPackets {
 
 	public static final Identifier HANDSHAKE = Eggolib.identifier("handshake");
 
-	public static final Identifier CLOSE_SCREEN = Eggolib.identifier("close_screen");
-
-	public static final Identifier SYNC_SCREEN = Eggolib.identifier("sync_screen");
-
-	public static final Identifier SET_PERSPECTIVE = Eggolib.identifier("set_perspective");
-
-	public static final Identifier GET_PERSPECTIVE = Eggolib.identifier("get_perspective");
-
-	public static final Identifier SYNC_KEY_PRESS = Eggolib.identifier("sync_key_press");
-
-	public static final Identifier END_KEY_SEQUENCE = Eggolib.identifier("end_key_sequence");
-
 }

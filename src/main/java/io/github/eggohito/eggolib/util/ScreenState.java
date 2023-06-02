@@ -12,17 +12,22 @@ public class ScreenState {
 	private final String screenClassName;
 	private final boolean inScreen;
 
-	private ScreenState(boolean inScreen, @Nullable String screenClassName) {
+	public ScreenState(boolean inScreen) {
+		this(inScreen, null);
+	}
+
+	public ScreenState(boolean inScreen, @Nullable String screenClassName) {
 		this.inScreen = inScreen;
 		this.screenClassName = screenClassName;
 	}
 
-	public static ScreenState of(boolean inScreen) {
-		return new ScreenState(inScreen, null);
+	@Nullable
+	public String getScreenClassName() {
+		return screenClassName;
 	}
 
-	public static ScreenState of(boolean inScreen, String screenClassName) {
-		return new ScreenState(inScreen, screenClassName);
+	public boolean isInScreen() {
+		return inScreen;
 	}
 
 	public boolean inAnyOr(String... screenClassNames) {

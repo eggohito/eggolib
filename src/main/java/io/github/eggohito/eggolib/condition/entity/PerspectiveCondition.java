@@ -5,10 +5,9 @@ import io.github.apace100.calio.data.SerializableData;
 import io.github.eggohito.eggolib.Eggolib;
 import io.github.eggohito.eggolib.data.EggolibDataTypes;
 import io.github.eggohito.eggolib.mixin.ClientPlayerEntityAccessor;
-import io.github.eggohito.eggolib.networking.EggolibPackets;
+import io.github.eggohito.eggolib.networking.packet.s2c.GetPerspectivePacket;
 import io.github.eggohito.eggolib.util.EggolibPerspective;
 import io.github.eggohito.eggolib.util.MiscUtilClient;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
@@ -51,8 +50,7 @@ public class PerspectiveCondition {
 		} else {
 			ServerPlayNetworking.send(
 				(ServerPlayerEntity) playerEntity,
-				EggolibPackets.GET_PERSPECTIVE,
-				PacketByteBufs.empty()
+				new GetPerspectivePacket()
 			);
 		}
 
