@@ -43,7 +43,7 @@ public class EggolibPacketsC2S {
 		ServerPlayNetworking.registerGlobalReceiver(SyncPerspectivePacket.TYPE, SyncPerspectivePacket::handle);
 		ServerPlayNetworking.registerGlobalReceiver(SyncKeyPressPacket.TYPE, SyncKeyPressPacket::handle);
 		ServerPlayNetworking.registerGlobalReceiver(EndKeySequencePacket.TYPE, EndKeySequencePacket::handle);
-		ServerPlayNetworking.registerGlobalReceiver(SyncPreventedKeyPacket.TYPE, SyncPreventKeyPacket::handle);
+		ServerPlayNetworking.registerGlobalReceiver(SyncPreventedKeyPacket.TYPE, SyncPreventedKeyPacket::handle);
 	}
 
 	private static void handshake(ServerLoginNetworkHandler serverLoginNetworkHandler, MinecraftServer minecraftServer, PacketSender packetSender, ServerLoginNetworking.LoginSynchronizer loginSynchronizer) {

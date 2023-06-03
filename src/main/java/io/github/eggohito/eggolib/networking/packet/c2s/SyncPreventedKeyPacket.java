@@ -22,7 +22,7 @@ public record SyncPreventedKeyPacket(String key, List<Identifier> powerIds) impl
 		Eggolib.identifier("sync_prevented_key"), SyncPreventedKeyPacket::create
 	);
 
-	private SyncPreventedKeyPacket create(PacketByteBuf buf) {
+	private static SyncPreventedKeyPacket create(PacketByteBuf buf) {
 
 		String key = buf.readString();
 		List<Identifier> powerIds = new LinkedList<>();
