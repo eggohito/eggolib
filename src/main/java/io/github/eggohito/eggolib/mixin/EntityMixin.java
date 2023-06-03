@@ -2,8 +2,8 @@ package io.github.eggohito.eggolib.mixin;
 
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.eggohito.eggolib.component.EggolibComponents;
-import io.github.eggohito.eggolib.power.InvisibilityPower;
 import io.github.eggohito.eggolib.power.GameEventListenerPower;
+import io.github.eggohito.eggolib.power.InvisibilityPower;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;

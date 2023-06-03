@@ -18,14 +18,7 @@
 package io.github.eggohito.eggolib.networking;
 
 import io.github.eggohito.eggolib.Eggolib;
-import io.github.eggohito.eggolib.networking.packet.c2s.SyncPreventedKeyPacket;
-import io.github.eggohito.eggolib.power.ActionOnKeySequencePower;
-import io.github.eggohito.eggolib.util.Key;
-import io.github.eggohito.eggolib.util.ScreenState;
-import io.github.eggohito.eggolib.networking.packet.c2s.EndKeySequencePacket;
-import io.github.eggohito.eggolib.networking.packet.c2s.SyncKeyPressPacket;
-import io.github.eggohito.eggolib.networking.packet.c2s.SyncPerspectivePacket;
-import io.github.eggohito.eggolib.networking.packet.c2s.SyncScreenStatePacket;
+import io.github.eggohito.eggolib.networking.packet.c2s.*;
 import net.fabricmc.fabric.api.networking.v1.*;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.MinecraftServer;
