@@ -4,12 +4,12 @@ import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.power.Power;
 import io.github.eggohito.eggolib.compat.IEggolibModCompat;
 import io.github.eggohito.eggolib.data.EggolibClassDataClient;
-import io.github.eggohito.eggolib.networking.EggolibPackets;
 import io.github.eggohito.eggolib.networking.EggolibPacketsS2C;
+import io.github.eggohito.eggolib.networking.packet.c2s.EndKeySequencePacket;
+import io.github.eggohito.eggolib.networking.packet.c2s.SyncKeyPressPacket;
 import io.github.eggohito.eggolib.power.ActionOnKeySequencePower;
 import io.github.eggohito.eggolib.util.Key;
 import io.github.eggohito.eggolib.util.key.FunctionalKey;
-import io.netty.buffer.Unpooled;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -19,11 +19,11 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.entrypoint.EntrypointContainer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Environment(EnvType.CLIENT)
 public class EggolibClient implements ClientModInitializer {
@@ -108,35 +108,28 @@ public class EggolibClient implements ClientModInitializer {
 		ID_TO_KEYBINDING_MAP.put(keyName, keyBinding);
 	}
 
-	private void syncKeyPresses(HashMap<ActionOnKeySequencePower, FunctionalKey> powerAndKeyMap) {
+	private void syncKeyPresses(Map<ActionOnKeySequencePower, FunctionalKey> powerAndKeyMap) {
 
-		PacketByteBuf buffer = new PacketByteBuf(Unpooled.buffer());
-		HashMap<Identifier, String> powerIdAndKeyStringMap = new HashMap<>();
+		Map<Identifier, String> powerIdAndKeyStringMap = new HashMap<>();
+		for (Map.Entry<ActionOnKeySequencePower, FunctionalKey> powerAndKey : powerAndKeyMap.entrySet()) {
 
-		for (ActionOnKeySequencePower power : powerAndKeyMap.keySet()) {
-
-			FunctionalKey functionalKey = powerAndKeyMap.get(power);
-			Key key = new Key(functionalKey.key);
+			ActionOnKeySequencePower power = powerAndKey.getKey();
+			Key key = new Key(powerAndKey.getValue().key);
 
 			power.addKeyToSequence(key);
 			powerIdAndKeyStringMap.put(power.getType().getIdentifier(), key.key);
 
 		}
 
-		if (powerIdAndKeyStringMap.isEmpty()) {
-			return;
+		if (!powerIdAndKeyStringMap.isEmpty()) {
+			ClientPlayNetworking.send(new SyncKeyPressPacket(powerIdAndKeyStringMap));
 		}
-
-		buffer.writeMap(powerIdAndKeyStringMap, PacketByteBuf::writeIdentifier, PacketByteBuf::writeString);
-		ClientPlayNetworking.send(EggolibPackets.SYNC_KEY_PRESS, buffer);
 
 	}
 
 	private void compareKeySequences(HashMap<ActionOnKeySequencePower, FunctionalKey> powerAndKeyMap) {
 
-		PacketByteBuf buffer = new PacketByteBuf(Unpooled.buffer());
 		HashMap<Identifier, Boolean> powerIdAndMatchingSequenceMap = new HashMap<>();
-
 		for (ActionOnKeySequencePower power : powerAndKeyMap.keySet()) {
 
 			List<String> specifiedKeySequence = power.getSpecifiedKeySequence().stream().map(key -> key.key).toList();
@@ -152,12 +145,9 @@ public class EggolibClient implements ClientModInitializer {
 
 		}
 
-		if (powerIdAndMatchingSequenceMap.isEmpty()) {
-			return;
+		if (!powerIdAndMatchingSequenceMap.isEmpty()) {
+			ClientPlayNetworking.send(new EndKeySequencePacket(powerIdAndMatchingSequenceMap));
 		}
-
-		buffer.writeMap(powerIdAndMatchingSequenceMap, PacketByteBuf::writeIdentifier, PacketByteBuf::writeBoolean);
-		ClientPlayNetworking.send(EggolibPackets.END_KEY_SEQUENCE, buffer);
 
 	}
 

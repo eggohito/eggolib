@@ -13,7 +13,7 @@ public abstract class MinecraftClientMixin {
 
 	@Inject(method = "setScreen", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/BufferRenderer;reset()V"))
 	private void eggolib$syncScreen(Screen screen, CallbackInfo ci) {
-		MiscUtilClient.syncScreen((MinecraftClient) (Object) this, screen);
+		MiscUtilClient.getScreenState((MinecraftClient) (Object) this, screen);
 	}
 
 }

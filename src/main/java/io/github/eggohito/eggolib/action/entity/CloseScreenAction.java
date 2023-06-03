@@ -5,6 +5,7 @@ import io.github.apace100.calio.data.SerializableData;
 import io.github.eggohito.eggolib.Eggolib;
 import io.github.eggohito.eggolib.mixin.ClientPlayerEntityAccessor;
 import io.github.eggohito.eggolib.networking.EggolibPackets;
+import io.github.eggohito.eggolib.networking.packet.s2c.CloseScreenPacket;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.client.MinecraftClient;
@@ -26,8 +27,7 @@ public class CloseScreenAction {
 		} else {
 			ServerPlayNetworking.send(
 				(ServerPlayerEntity) playerEntity,
-				EggolibPackets.CLOSE_SCREEN,
-				PacketByteBufs.empty()
+				new CloseScreenPacket()
 			);
 		}
 

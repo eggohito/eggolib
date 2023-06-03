@@ -17,27 +17,20 @@
 
 package io.github.eggohito.eggolib.networking;
 
-import io.github.apace100.apoli.component.PowerHolderComponent;
-import io.github.apace100.apoli.power.Power;
-import io.github.apace100.apoli.power.PowerType;
-import io.github.apace100.apoli.power.PowerTypeRegistry;
 import io.github.eggohito.eggolib.Eggolib;
 import io.github.eggohito.eggolib.networking.packet.c2s.SyncPreventedKeyPacket;
 import io.github.eggohito.eggolib.power.ActionOnKeySequencePower;
 import io.github.eggohito.eggolib.util.Key;
 import io.github.eggohito.eggolib.util.ScreenState;
+import io.github.eggohito.eggolib.networking.packet.c2s.EndKeySequencePacket;
+import io.github.eggohito.eggolib.networking.packet.c2s.SyncKeyPressPacket;
+import io.github.eggohito.eggolib.networking.packet.c2s.SyncPerspectivePacket;
+import io.github.eggohito.eggolib.networking.packet.c2s.SyncScreenStatePacket;
 import net.fabricmc.fabric.api.networking.v1.*;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerLoginNetworkHandler;
-import net.minecraft.server.network.ServerPlayNetworkHandler;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-
-import java.util.HashMap;
 
 public class EggolibPacketsC2S {
 
@@ -46,11 +39,11 @@ public class EggolibPacketsC2S {
 			ServerLoginConnectionEvents.QUERY_START.register(EggolibPacketsC2S::handshake);
 			ServerLoginNetworking.registerGlobalReceiver(EggolibPackets.HANDSHAKE, EggolibPacketsC2S::handleHandshakeReply);
 		}
-		ServerPlayNetworking.registerGlobalReceiver(EggolibPackets.SYNC_SCREEN, EggolibPacketsC2S::syncScreen);
-		ServerPlayNetworking.registerGlobalReceiver(EggolibPackets.GET_PERSPECTIVE, EggolibPacketsC2S::getPerspective);
-		ServerPlayNetworking.registerGlobalReceiver(EggolibPackets.SYNC_KEY_PRESS, EggolibPacketsC2S::syncKeyPress);
-		ServerPlayNetworking.registerGlobalReceiver(EggolibPackets.END_KEY_SEQUENCE, EggolibPacketsC2S::endKeySequence);
-		ServerPlayNetworking.registerGlobalReceiver(SyncPreventedKeyPacket.TYPE, SyncPreventedKeyPacket::handle);
+		ServerPlayNetworking.registerGlobalReceiver(SyncScreenStatePacket.TYPE, SyncScreenStatePacket::handle);
+		ServerPlayNetworking.registerGlobalReceiver(SyncPerspectivePacket.TYPE, SyncPerspectivePacket::handle);
+		ServerPlayNetworking.registerGlobalReceiver(SyncKeyPressPacket.TYPE, SyncKeyPressPacket::handle);
+		ServerPlayNetworking.registerGlobalReceiver(EndKeySequencePacket.TYPE, EndKeySequencePacket::handle);
+		ServerPlayNetworking.registerGlobalReceiver(SyncPreventedKeyPacket.TYPE, SyncPreventKeyPacket::handle);
 	}
 
 	private static void handshake(ServerLoginNetworkHandler serverLoginNetworkHandler, MinecraftServer minecraftServer, PacketSender packetSender, ServerLoginNetworking.LoginSynchronizer loginSynchronizer) {
@@ -91,110 +84,6 @@ public class EggolibPacketsC2S {
 		} else {
 			serverLoginNetworkHandler.disconnect(Text.translatable("This server requires you to install Eggolib (v%s) to join.", Eggolib.version));
 		}
-
-	}
-
-	private static void syncScreen(MinecraftServer minecraftServer, ServerPlayerEntity serverPlayerEntity, ServerPlayNetworkHandler serverPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
-
-		int entityId = packetByteBuf.readInt();
-		boolean inScreen = packetByteBuf.readBoolean();
-		boolean unknownScreen = packetByteBuf.readBoolean();
-
-		ScreenState screenState = ScreenState.of(inScreen, inScreen && !unknownScreen ? packetByteBuf.readString() : null);
-
-		minecraftServer.execute(
-			() -> {
-
-				Entity entity = serverPlayerEntity.getWorld().getEntityById(entityId);
-				if (!(entity instanceof PlayerEntity playerEntity)) {
-					return;
-				}
-
-				Eggolib.PLAYERS_SCREEN.put(playerEntity, screenState);
-
-			}
-		);
-
-	}
-
-	private static void getPerspective(MinecraftServer minecraftServer, ServerPlayerEntity serverPlayerEntity, ServerPlayNetworkHandler serverPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
-
-		int entityId = packetByteBuf.readInt();
-		String eggolibPerspectiveString = packetByteBuf.readString();
-
-		minecraftServer.execute(
-			() -> {
-
-				Entity entity = serverPlayerEntity.getWorld().getEntityById(entityId);
-				if (!(entity instanceof PlayerEntity playerEntity)) {
-					return;
-				}
-
-				Eggolib.PLAYERS_PERSPECTIVE.put(playerEntity, eggolibPerspectiveString);
-
-			}
-		);
-
-	}
-
-	private static void syncKeyPress(MinecraftServer minecraftServer, ServerPlayerEntity serverPlayerEntity, ServerPlayNetworkHandler serverPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
-
-		HashMap<Identifier, String> powerIdAndKeyStringMap = new HashMap<>(
-			packetByteBuf.readMap(PacketByteBuf::readIdentifier, PacketByteBuf::readString)
-		);
-
-		minecraftServer.execute(
-			() -> {
-
-				PowerHolderComponent powerHolderComponent = PowerHolderComponent.KEY.get(serverPlayerEntity);
-				for (Identifier powerId : powerIdAndKeyStringMap.keySet()) {
-
-					PowerType<?> powerType = PowerTypeRegistry.get(powerId);
-					Power power = powerHolderComponent.getPower(powerType);
-
-					if (!(power instanceof ActionOnKeySequencePower actionOnKeySequencePower)) {
-						continue;
-					}
-
-					Key key = new Key(powerIdAndKeyStringMap.get(powerId));
-					actionOnKeySequencePower.addKeyToSequence(key);
-
-				}
-
-			}
-		);
-
-	}
-
-	private static void endKeySequence(MinecraftServer minecraftServer, ServerPlayerEntity serverPlayerEntity, ServerPlayNetworkHandler serverPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
-
-		HashMap<Identifier, Boolean> powerIdAndMatchingSequenceMap = new HashMap<>(
-			packetByteBuf.readMap(PacketByteBuf::readIdentifier, PacketByteBuf::readBoolean)
-		);
-
-		minecraftServer.execute(
-			() -> {
-
-				PowerHolderComponent powerHolderComponent = PowerHolderComponent.KEY.get(serverPlayerEntity);
-				for (Identifier powerId : powerIdAndMatchingSequenceMap.keySet()) {
-
-					PowerType<?> powerType = PowerTypeRegistry.get(powerId);
-					Power power = powerHolderComponent.getPower(powerType);
-
-					if (!(power instanceof ActionOnKeySequencePower actionOnKeySequencePower)) {
-						continue;
-					}
-
-					if (powerIdAndMatchingSequenceMap.get(powerId)) {
-						actionOnKeySequencePower.onSuccess();
-					} else {
-						actionOnKeySequencePower.onFail();
-					}
-
-				}
-
-			}
-		);
 
 	}
 

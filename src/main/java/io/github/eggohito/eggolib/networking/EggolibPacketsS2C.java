@@ -18,8 +18,10 @@
 package io.github.eggohito.eggolib.networking;
 
 import io.github.eggohito.eggolib.Eggolib;
-import io.github.eggohito.eggolib.util.EggolibPerspective;
-import io.github.eggohito.eggolib.util.MiscUtilClient;
+import io.github.eggohito.eggolib.networking.packet.s2c.CloseScreenPacket;
+import io.github.eggohito.eggolib.networking.packet.s2c.GetPerspectivePacket;
+import io.github.eggohito.eggolib.networking.packet.s2c.GetScreenStatePacket;
+import io.github.eggohito.eggolib.networking.packet.s2c.SetPerspectivePacket;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import net.fabricmc.api.EnvType;
@@ -28,10 +30,8 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientLoginNetworking;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientLoginNetworkHandler;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.network.PacketByteBuf;
 
 import java.util.concurrent.CompletableFuture;
@@ -44,10 +44,10 @@ public class EggolibPacketsS2C {
 		ClientLoginNetworking.registerGlobalReceiver(EggolibPackets.HANDSHAKE, EggolibPacketsS2C::handleHandshake);
 		ClientPlayConnectionEvents.INIT.register(
 			(clientPlayNetworkHandler, minecraftClient) -> {
-				ClientPlayNetworking.registerReceiver(EggolibPackets.CLOSE_SCREEN, EggolibPacketsS2C::closeScreen);
-				ClientPlayNetworking.registerReceiver(EggolibPackets.SYNC_SCREEN, EggolibPacketsS2C::syncScreen);
-				ClientPlayNetworking.registerReceiver(EggolibPackets.SET_PERSPECTIVE, EggolibPacketsS2C::setPerspective);
-				ClientPlayNetworking.registerReceiver(EggolibPackets.GET_PERSPECTIVE, EggolibPacketsS2C::getPerspective);
+				ClientPlayNetworking.registerReceiver(CloseScreenPacket.TYPE, CloseScreenPacket::handle);
+				ClientPlayNetworking.registerReceiver(GetScreenStatePacket.TYPE, GetScreenStatePacket::handle);
+				ClientPlayNetworking.registerReceiver(SetPerspectivePacket.TYPE, SetPerspectivePacket::handle);
+				ClientPlayNetworking.registerReceiver(GetPerspectivePacket.TYPE, GetPerspectivePacket::handle);
 			}
 		);
 	}
@@ -62,37 +62,6 @@ public class EggolibPacketsS2C {
 		}
 
 		return CompletableFuture.completedFuture(buffer);
-
-	}
-
-	private static void closeScreen(MinecraftClient minecraftClient, ClientPlayNetworkHandler clientPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
-		minecraftClient.execute(
-			() -> minecraftClient.setScreen(null)
-		);
-	}
-
-	private static void syncScreen(MinecraftClient minecraftClient, ClientPlayNetworkHandler clientPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
-		minecraftClient.execute(
-			() -> MiscUtilClient.syncScreen(minecraftClient)
-		);
-	}
-
-	private static void setPerspective(MinecraftClient minecraftClient, ClientPlayNetworkHandler clientPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
-
-		String eggolibPerspectiveString = packetByteBuf.readString();
-		EggolibPerspective eggolibPerspective = Enum.valueOf(EggolibPerspective.class, eggolibPerspectiveString);
-
-		minecraftClient.execute(
-			() -> MiscUtilClient.setPerspective(minecraftClient, eggolibPerspective)
-		);
-
-	}
-
-	private static void getPerspective(MinecraftClient minecraftClient, ClientPlayNetworkHandler clientPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
-
-		minecraftClient.execute(
-			() -> MiscUtilClient.getPerspective(minecraftClient)
-		);
 
 	}
 
