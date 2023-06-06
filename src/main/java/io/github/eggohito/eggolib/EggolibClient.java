@@ -28,8 +28,9 @@ import java.util.Map;
 @Environment(EnvType.CLIENT)
 public class EggolibClient implements ClientModInitializer {
 
-	public static final HashMap<String, Boolean> PREVIOUS_KEY_BINDING_STATES = new HashMap<>();
-	private static final HashMap<String, KeyBinding> ID_TO_KEYBINDING_MAP = new HashMap<>();
+	public static final Map<KeyBinding, Boolean> PREVENTED_KEY_BINDINGS = new HashMap<>();
+	private static final Map<String, Boolean> PREVIOUS_KEY_BINDING_STATES = new HashMap<>();
+	private static final Map<String, KeyBinding> ID_TO_KEYBINDING_MAP = new HashMap<>();
 	private static boolean initializedKeyBindingMap = false;
 
 	@Override
@@ -127,9 +128,9 @@ public class EggolibClient implements ClientModInitializer {
 
 	}
 
-	private void compareKeySequences(HashMap<ActionOnKeySequencePower, FunctionalKey> powerAndKeyMap) {
+	private void compareKeySequences(Map<ActionOnKeySequencePower, FunctionalKey> powerAndKeyMap) {
 
-		HashMap<Identifier, Boolean> powerIdAndMatchingSequenceMap = new HashMap<>();
+		Map<Identifier, Boolean> powerIdAndMatchingSequenceMap = new HashMap<>();
 		for (ActionOnKeySequencePower power : powerAndKeyMap.keySet()) {
 
 			List<String> specifiedKeySequence = power.getSpecifiedKeySequence().stream().map(key -> key.key).toList();

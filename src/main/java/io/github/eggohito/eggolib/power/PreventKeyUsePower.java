@@ -5,7 +5,6 @@ import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.apoli.power.factory.PowerFactory;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.eggohito.eggolib.Eggolib;
-import io.github.eggohito.eggolib.EggolibClient;
 import io.github.eggohito.eggolib.data.EggolibDataTypes;
 import io.github.eggohito.eggolib.mixin.KeyBindingAccessor;
 import io.github.eggohito.eggolib.util.Key;
@@ -20,6 +19,7 @@ import net.minecraft.nbt.NbtList;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 public class PreventKeyUsePower extends Power {
 
@@ -42,32 +42,13 @@ public class PreventKeyUsePower extends Power {
 
 	}
 
+	@SuppressWarnings("ConstantValue")
 	@Environment(EnvType.CLIENT)
-	public boolean doesApply(int mousecode) {
-
-		for (Key specifiedKey : specifiedKeys) {
-			KeyBinding keyBinding = KeyBindingAccessor.getIdAndKeyMap().get(specifiedKey.key);
-			if ((keyBinding != null && keyBinding.matchesMouse(mousecode)) && (specifiedKey.continuous || !EggolibClient.PREVIOUS_KEY_BINDING_STATES.getOrDefault(specifiedKey.key, false))) {
-				return true;
-			}
-		}
-
-		return false;
-
-	}
-
-	@Environment(EnvType.CLIENT)
-	public boolean doesApply(int keycode, int scancode) {
-
-		for (Key specifiedKey : specifiedKeys) {
-			KeyBinding keyBinding = KeyBindingAccessor.getIdAndKeyMap().get(specifiedKey.key);
-			if ((keyBinding != null && keyBinding.matchesKey(keycode, scancode)) && (specifiedKey.continuous || !EggolibClient.PREVIOUS_KEY_BINDING_STATES.getOrDefault(specifiedKey.key, false))) {
-				return true;
-			}
-		}
-
-		return false;
-
+	public boolean doesApply(KeyBinding keyBinding) {
+		return specifiedKeys
+			.stream()
+			.map(k -> KeyBindingAccessor.getIdAndKeyMap().get(k.key))
+			.anyMatch(kb -> Objects.equals(kb, keyBinding));
 	}
 
 	public void executeActions(String key) {
@@ -75,6 +56,10 @@ public class PreventKeyUsePower extends Power {
 			.stream()
 			.filter(k -> k.key.equals(key))
 			.forEach(k -> k.function(entity));
+	}
+
+	public List<Key> getSpecifiedKeys() {
+		return specifiedKeys;
 	}
 
 	@Override
