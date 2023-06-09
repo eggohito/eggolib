@@ -10,6 +10,7 @@ import net.minecraft.registry.Registry;
 public class EggolibEntityConditions {
 
 	public static void register() {
+		register(BlockCollisionCondition.getFactory());
 		register(BreakingBlockCondition.getFactory());
 		register(ChanceCondition.getFactory());
 		register(CrawlingCondition.getFactory());
@@ -18,7 +19,9 @@ public class EggolibEntityConditions {
 		register(InBlockCondition.getFactory());
 		register(ExposedToWeatherCondition.getFactory());
 		register(HasTagCondition.getFactory());
+		register(InBlockCondition.getFactory());
 		register(InScreenCondition.getFactory());
+		register(InSnowCondition.getFactory());
 		register(InTeamCondition.getFactory());
 		register(InventoryCondition.getFactory());
 		register(MoonPhaseCondition.getFactory());

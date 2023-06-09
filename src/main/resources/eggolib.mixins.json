@@ -18,6 +18,7 @@
 		"ProjectileEntityMixin",
 		"ServerPlayerInteractionManagerAccessor",
 		"VibrationListenerMixin",
+		"WorldMixin",
 		"apace100.calio.ClassDataRegistryAccessor",
 		"micalobia.breathinglib.BreathingInfoBuilderAccessor"
 	],
