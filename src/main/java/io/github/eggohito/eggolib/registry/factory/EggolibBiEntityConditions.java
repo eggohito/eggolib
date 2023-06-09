@@ -17,6 +17,7 @@ public class EggolibBiEntityConditions {
 		register(CompareScoreCondition.getFactory());
 		register(EqualCondition.getFactory());
 		register(HasMatchingTagCondition.getFactory());
+		register(OwnerCondition.getFactory());
 	}
 
 	public static ConditionFactory<Pair<Entity, Entity>> register(ConditionFactory<Pair<Entity, Entity>> conditionFactory) {
