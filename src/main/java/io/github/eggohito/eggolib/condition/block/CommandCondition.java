@@ -13,9 +13,7 @@ import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec2f;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class CommandCondition {
@@ -27,13 +25,12 @@ public class CommandCondition {
 			return false;
 		}
 
-		BlockPos blockPos = cachedBlockPosition.getBlockPos();
 		Comparison comparison = data.get("comparison");
 		String command = data.get("command");
 
 		ServerCommandSource source = new ServerCommandSource(
 			CommandOutput.DUMMY,
-			new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ()),
+			cachedBlockPosition.getBlockPos().toCenterPos(),
 			Vec2f.ZERO,
 			(ServerWorld) cachedBlockPosition.getWorld(),
 			Apoli.config.executeCommand.permissionLevel,
