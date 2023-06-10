@@ -3,6 +3,7 @@ package io.github.eggohito.eggolib.registry.factory;
 import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import io.github.apace100.apoli.registry.ApoliRegistries;
+import io.github.eggohito.eggolib.action.item.ModifyAction;
 import io.github.eggohito.eggolib.action.meta.LoopAction;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registry;
@@ -13,6 +14,7 @@ public class EggolibItemActions {
 
 	public static void register() {
 		register(LoopAction.getFactory(ApoliDataTypes.ITEM_ACTION));
+		register(ModifyAction.getFactory());
 	}
 
 	public static ActionFactory<Pair<World, ItemStack>> register(ActionFactory<Pair<World, ItemStack>> actionFactory) {
