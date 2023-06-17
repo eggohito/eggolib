@@ -3,6 +3,7 @@ package io.github.eggohito.eggolib.mixin;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.util.modifier.ModifierUtil;
+import io.github.eggohito.eggolib.power.InvisibilityPower;
 import io.github.eggohito.eggolib.power.ModifyHurtTicksPower;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -10,7 +11,10 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
 
@@ -53,6 +57,23 @@ public abstract class LivingEntityMixin extends Entity {
 		mhtps.forEach(mhtp -> mhtp.executeActions(source.getAttacker()));
 		return (int) ModifierUtil.applyModifiers(thisAsLiving, mhtps.stream().flatMap(mhtp -> mhtp.getModifiers().stream()).toList(), original);
 
+	}
+
+	@Unique
+	private Entity eggolib$viewer;
+
+	@Inject(method = "getAttackDistanceScalingFactor", at = @At("HEAD"))
+	private void eggolib$getInvisibilityViewer(Entity entity, CallbackInfoReturnable<Double> cir) {
+		eggolib$viewer = entity;
+	}
+
+	@ModifyExpressionValue(method = "getAttackDistanceScalingFactor", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;isInvisible()Z"))
+	private boolean eggolib$invisibilityException(boolean original) {
+		if (eggolib$viewer == null || !PowerHolderComponent.hasPower(this, InvisibilityPower.class)) {
+			return original;
+		} else {
+			return PowerHolderComponent.hasPower(this, InvisibilityPower.class, ip -> ip.doesApply(eggolib$viewer));
+		}
 	}
 
 }

@@ -8,7 +8,6 @@ import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.eggohito.eggolib.Eggolib;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Pair;
 
 import java.util.function.Predicate;
@@ -22,7 +21,7 @@ public class InvisibilityPower extends io.github.apace100.apoli.power.Invisibili
 		this.biEntityCondition = biEntityCondition;
 	}
 
-	public boolean doesApply(PlayerEntity viewer) {
+	public boolean doesApply(Entity viewer) {
 		return biEntityCondition == null || biEntityCondition.test(new Pair<>(viewer, entity));
 	}
 
