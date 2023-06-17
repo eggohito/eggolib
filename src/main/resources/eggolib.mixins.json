@@ -18,6 +18,7 @@
 		"LootContextTypesAccessor",
 		"PlayerEntityMixin",
 		"ProjectileEntityMixin",
+		"ServerPlayerEntityMixin",
 		"ServerPlayerInteractionManagerAccessor",
 		"VibrationListenerMixin",
 		"WorldMixin",
