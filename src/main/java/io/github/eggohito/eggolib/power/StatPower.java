@@ -56,8 +56,8 @@ public class StatPower extends ResourcePower {
 				.add("min_action", ApoliDataTypes.ENTITY_ACTION, null)
 				.add("max_action", ApoliDataTypes.ENTITY_ACTION, null)
 				.add("hud_render", ApoliDataTypes.HUD_RENDER, HudRender.DONT_RENDER)
-				.add("min", SerializableDataTypes.INT)
-				.add("max", SerializableDataTypes.INT)
+				.add("min", SerializableDataTypes.INT, 0)
+				.add("max", SerializableDataTypes.INT, Integer.MAX_VALUE)
 				.addFunctionedDefault("start_value", SerializableDataTypes.INT, data -> data.get("min")),
 			data -> (powerType, livingEntity) -> new StatPower(
 				powerType,
