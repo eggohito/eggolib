@@ -47,3 +47,22 @@ jobs:
 
       - name: Upload artifacts
         run: ./gradlew modrinth --stacktrace
+
+  curseforge-release:
+    name: Curseforge Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      
+      - name: Setup Java JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 17
+      
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+        
+      - name: Upload artifacts
+        run: ./gradlew curseforge --stacktrace
