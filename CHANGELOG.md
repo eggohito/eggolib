@@ -1,12 +1,22 @@
 ##  Changelog
 
-* Added the `modify_fov` power type
-* Updated the `modify_label_render` power type
-    * Now parses the specified JSON text component in the `text` field
-    * Now has a `before_parse_action` and `after_parse_action` entity action fields
-    * Now has a `tick_rate` positive integer field
-* Added the `exposed_to_weather` entity condition type
-* Updated the `scoreboard` entity condition type
-    * Now accepts a score holder in its `name` field
-* Updated the `inventory` entity condition type
-    * Now has a `comparison` and `compare_to` fields
+* Updated to 1.19.4
+* Updated testdata
+* Added these new power types:
+    * `prevent_key_use`
+    * `stat`
+* Updated the `invisibility` power type:
+    * It now affects the attack distance scaling factor of mobs
+* Added these new entity condition types:
+    * `in_snow`
+    * `in_thunderstorm`
+    * `has_spawnpoint`
+* Added these new bi-entity condition types:
+    * `colliding`
+    * `owner`
+        * Similar to Apoli's `owner` bi-entity condition type, except it works for other ownable entities
+* Added `command` block condition type
+* Added `modify` item action type
+    * Similar to Apoli's `modify` item action type, except with more loot context
+* Added `fuel` item condition type
+
