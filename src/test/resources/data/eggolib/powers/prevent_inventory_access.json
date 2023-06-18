@@ -1,0 +1,10 @@
+{
+
+    "type": "eggolib:prevent_key_use",
+
+    "name": "Prevent Inventory Key",
+    "description": "Prevents you from accessing your inventory",
+
+    "key": "key.inventory"
+    
+}

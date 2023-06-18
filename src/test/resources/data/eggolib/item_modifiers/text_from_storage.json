@@ -1,0 +1,14 @@
+{
+	"function": "minecraft:copy_nbt",
+	"source": {
+		"type": "storage",
+		"source": "eggolib:test"
+	},
+	"ops": [
+		{
+			"source": "root.text",
+			"target": "display.Lore",
+			"op": "append"
+		}
+	]
+}

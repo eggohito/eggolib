@@ -1,0 +1,12 @@
+{
+
+	"type": "apoli:entity_glow",
+
+	"name": "Glowing Owned Entities",
+	"description": "Makes all entities owned by you glow only for you",
+
+	"bientity_condition": {
+		"type": "eggolib:owner"
+	}
+
+}

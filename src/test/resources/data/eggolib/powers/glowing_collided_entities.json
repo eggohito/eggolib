@@ -1,0 +1,12 @@
+{
+
+	"type": "apoli:entity_glow",
+
+	"name": "Glowing Collided Entities",
+	"description": "Makes all entities you're colliding with glow",
+
+	"bientity_condition": {
+		"type": "eggolib:colliding"
+	}
+
+}

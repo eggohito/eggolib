@@ -1,0 +1,22 @@
+{
+
+	"type": "eggolib:stat",
+
+	"name": "Track Mined Sand",
+	"description": "Tracks the statistic for the amount of Sand blocks mined by the player",
+
+	"stat": {
+		"type": "mined",
+		"id": "minecraft:sand"
+	},
+	"min": 0,
+	"max": 50,
+	"hud_render": {
+		"should_render": true
+	},
+	"on_change_action": {
+		"type": "apoli:execute_command",
+		"command": "say mined Sand block's stat changed!"
+	}
+
+}

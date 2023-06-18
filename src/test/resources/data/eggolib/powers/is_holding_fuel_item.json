@@ -1,0 +1,25 @@
+{
+
+	"type": "apoli:action_over_time",
+
+	"name": "Is Holding Fuel Item?",
+	"description": "Checks if the entity is holding an item considered as fuel",
+
+	"rising_action": {
+		"type": "apoli:execute_command",
+		"command": "me is holding a fuel item!"
+	},
+	"falling_action": {
+		"type": "apoli:execute_command",
+		"command": "me is no longer holding a fuel item!"
+	},
+	"interval": 1,
+	"condition": {
+		"type": "apoli:equipped_item",
+		"equipment_slot": "mainhand",
+		"item_condition": {
+			"type": "eggolib:fuel"
+		}
+	}
+
+}

@@ -1,0 +1,21 @@
+{
+
+	"type": "apoli:action_over_time",
+
+	"name": "Has Spawn Point",
+	"description": "Checks if you have a valid spawn point",
+
+	"rising_action": {
+		"type": "apoli:execute_command",
+		"command": "me has a spawn point!"
+	},
+	"falling_action": {
+		"type": "apoli:execute_command",
+		"command": "me no longer has a spawnpoint!"
+	},
+	"interval": 1,
+	"condition": {
+		"type": "eggolib:has_spawn_point"
+	}
+
+}

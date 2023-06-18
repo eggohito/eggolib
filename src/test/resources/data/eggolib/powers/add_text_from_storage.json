@@ -1,0 +1,13 @@
+{
+
+	"type": "apoli:item_on_item",
+
+	"name": "Add Text From Storage",
+	"description": "Adds text from a command NBT storage to the item's lore",
+
+	"on_item_action": {
+		"type": "eggolib:modify",
+		"modifier": "eggolib:text_from_storage"
+	}
+
+}

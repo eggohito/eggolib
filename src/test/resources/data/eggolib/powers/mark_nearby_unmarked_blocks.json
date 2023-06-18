@@ -1,0 +1,36 @@
+{
+
+	"type": "apoli:active_self",
+
+	"name": "Mark Nearby Unmarked Blocks",
+	"description": "Marks all blocks that aren't marked with a certain Armor Stand within a 16 blocks radius",
+
+	"entity_action": {
+		"type": "apoli:block_action_at",
+		"block_action": {
+			"type": "eggolib:area_of_effect",
+			"radius": 16,
+			"block_action": {
+				"type": "apoli:execute_command",
+				"command": "summon minecraft:armor_stand ~ ~ ~ {Tags: [\"eggolib.block_marker\"], Marker: 1b}"
+			},
+			"block_condition": {
+				"type": "apoli:and",
+				"conditions": [
+					{
+						"type": "apoli:in_tag",
+						"tag": "minecraft:impermeable"
+					},
+					{
+						"type": "eggolib:command",
+						"command": "execute unless entity @e[tag = eggolib.block_marker, distance = ..0.8]"
+					}
+				]
+			}
+		}
+	},
+	"key": {
+		"key": "key.sneak"
+	}
+
+}
