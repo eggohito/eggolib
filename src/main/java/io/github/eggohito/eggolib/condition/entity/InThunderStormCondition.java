@@ -7,22 +7,22 @@ import io.github.eggohito.eggolib.access.WeatherView;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 
-public class InSnowCondition {
+public class InThunderStormCondition {
 
 	public static boolean condition(SerializableData.Instance data, Entity entity) {
 
 		BlockPos downBlockPos = entity.getBlockPos();
 		BlockPos upBlockPos = BlockPos.ofFloored(downBlockPos.getX(), entity.getBoundingBox().maxY, downBlockPos.getZ());
 
-		return ((WeatherView) entity.world).inSnow(downBlockPos, upBlockPos);
+		return ((WeatherView) entity.world).inThunderstorm(downBlockPos, upBlockPos);
 
 	}
 
 	public static ConditionFactory<Entity> getFactory() {
 		return new ConditionFactory<>(
-			Eggolib.identifier("in_snow"),
+			Eggolib.identifier("in_thunderstorm"),
 			new SerializableData(),
-			InSnowCondition::condition
+			InThunderStormCondition::condition
 		);
 	}
 

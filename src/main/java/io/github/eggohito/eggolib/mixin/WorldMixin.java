@@ -18,19 +18,38 @@ public abstract class WorldMixin implements WorldAccess, AutoCloseable, WeatherV
 	@Shadow
 	public abstract boolean isRaining();
 
+	@Shadow
+	public abstract boolean isThundering();
+
 	@Override
-	public boolean hasSnow(BlockPos... blockPosList) {
+	public boolean inSnow(BlockPos... blockPosList) {
 		return Arrays.stream(blockPosList)
-			.anyMatch(this::eggolib$hasSnow);
+			.anyMatch(this::eggolib$inSnow);
+	}
+
+	@Override
+	public boolean inThunderstorm(BlockPos... pos) {
+		return Arrays.stream(pos)
+			.anyMatch(this::eggolib$inThunderstorm);
 	}
 
 	@Unique
-	private boolean eggolib$hasSnow(BlockPos pos) {
-		Biome biome = this.getBiome(pos).value();
+	private boolean eggolib$inWeather(BlockPos pos) {
 		return this.isRaining()
 			&& this.isSkyVisible(pos)
-			&& this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, pos).getY() < pos.getY()
-			&& biome.getPrecipitation(pos) == Biome.Precipitation.SNOW;
+			&& this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, pos).getY() < pos.getY();
+	}
+
+	@Unique
+	private boolean eggolib$inSnow(BlockPos pos) {
+		return eggolib$inWeather(pos)
+			&& this.getBiome(pos).value().getPrecipitation(pos) == Biome.Precipitation.SNOW;
+	}
+
+	@Unique
+	private boolean eggolib$inThunderstorm(BlockPos pos) {
+		return eggolib$inWeather(pos)
+			&& this.isThundering();
 	}
 
 }
