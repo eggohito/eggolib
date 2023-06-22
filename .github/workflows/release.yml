@@ -4,7 +4,6 @@ run-name: Release artifacts
 on: workflow_dispatch
 
 env:
-  ENVIRONMENT: "production"
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
   CURSEFORGE_TOKEN: ${{ secrets.CURSEFORGE_TOKEN }}

@@ -49,7 +49,29 @@ repositories {
 }
 
 loom {
+
 	accessWidenerPath = file("src/main/resources/eggolib.accesswidener")
+
+	mods {
+		register("eggolib") {
+			sourceSet(sourceSets.main)
+			sourceSet(sourceSets.test)
+		}
+	}
+
+	runs {
+		client {
+			client()
+			source(sourceSets.test)
+			setConfigName("Minecraft Client")
+		}
+		server {
+			server()
+			source(sourceSets.test)
+			setConfigName("Minecraft Server")
+		}
+	}
+
 }
 
 dependencies {
@@ -93,13 +115,6 @@ processResources {
 
 	filesMatching("fabric.mod.json") {
 		expand "version": project.version
-	}
-
-	def environment = System.getenv("ENVIRONMENT")
-	println("Environment: ${environment}")
-
-	if (environment != "production") {
-		from(rootProject.rootDir.absolutePath + "/src/test/resources/data") { into("data") }
 	}
 
 }
@@ -153,7 +168,7 @@ curseforge {
 			releaseType = 'release'
 
 			compatible_minecraft_versions.split(", ").each { String minecraftVersion -> addGameVersion minecraftVersion }
-			compatible_java_versions.split(", ").each { String javaVersion -> addGameVersion javaVersion }
+			compatible_java_versions.split(", ").each { String javaVersion -> addGameVersion "Java " + javaVersion }
 			compatible_mod_loaders.split(", ").each { String modLoader -> addGameVersion modLoader }
 
 			mainArtifact(remapJar) {
