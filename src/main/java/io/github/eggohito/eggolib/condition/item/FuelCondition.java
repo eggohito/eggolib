@@ -17,13 +17,7 @@ public class FuelCondition {
 		Comparison comparison = data.get("comparison");
 		Integer compareTo = data.get("compare_to");
 
-		boolean hasFuelTime = fuelTime != null;
-
-		if (comparison == null || compareTo == null) {
-			return hasFuelTime;
-		}
-
-		return hasFuelTime
+		return fuelTime != null
 			&& comparison.compare(fuelTime, compareTo);
 
 	}
@@ -32,8 +26,8 @@ public class FuelCondition {
 		return new ConditionFactory<>(
 			Eggolib.identifier("fuel"),
 			new SerializableData()
-				.add("comparison", ApoliDataTypes.COMPARISON, null)
-				.add("compare_to", SerializableDataTypes.INT, null),
+				.add("comparison", ApoliDataTypes.COMPARISON, Comparison.GREATER_THAN)
+				.add("compare_to", SerializableDataTypes.INT, 0),
 			FuelCondition::condition
 		);
 	}
