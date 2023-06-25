@@ -4,3 +4,8 @@ accessible field net/minecraft/world/event/listener/VibrationListener positionSo
 mutable field net/minecraft/world/event/listener/VibrationListener positionSource Lnet/minecraft/world/event/PositionSource;
 extendable class net/minecraft/item/ItemStack
 mutable field net/minecraft/item/ItemStack item Lnet/minecraft/item/Item;
+accessible class net/minecraft/loot/function/CopyNbtLootFunction$Operation
+accessible field net/minecraft/loot/function/CopyNbtLootFunction$Operation sourcePath Ljava/lang/String;
+accessible field net/minecraft/loot/function/CopyNbtLootFunction$Operation targetPath Ljava/lang/String;
+accessible field net/minecraft/loot/function/CopyNbtLootFunction$Operation operator Lnet/minecraft/loot/function/CopyNbtLootFunction$Operator;
+accessible method net/minecraft/loot/function/CopyNbtLootFunction$Operation <init> (Ljava/lang/String;Ljava/lang/String;Lnet/minecraft/loot/function/CopyNbtLootFunction$Operator;)V

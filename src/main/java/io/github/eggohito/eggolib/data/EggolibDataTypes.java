@@ -19,6 +19,7 @@ import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.ScoreHolderArgumentType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.loot.function.CopyNbtLootFunction;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.scoreboard.AbstractTeam;
@@ -74,6 +75,8 @@ public class EggolibDataTypes {
 	public static final SerializableDataType<MoonPhase> MOON_PHASE = SerializableDataType.enumValue(MoonPhase.class);
 
 	public static final SerializableDataType<List<MoonPhase>> MOON_PHASES = SerializableDataType.list(MOON_PHASE);
+
+	public static final SerializableDataType<CopyNbtLootFunction.Operator> NBT_OPERATOR = SerializableDataType.enumValue(CopyNbtLootFunction.Operator.class);
 
 	public static final SerializableDataType<Pair<ArgumentWrapper<ScoreHolderArgumentType.ScoreHolder>, String>> SCOREBOARD = SerializableDataType.compound(
 		ClassUtil.castClass(Pair.class),
@@ -325,5 +328,31 @@ public class EggolibDataTypes {
 	);
 
 	public static final SerializableDataType<List<Integer>> POSITIVE_INTS = SerializableDataType.list(POSITIVE_INT);
+
+	public static final SerializableDataType<CopyNbtLootFunction.Operation> NBT_OPERATION = SerializableDataType.compound(
+		CopyNbtLootFunction.Operation.class,
+		new SerializableData()
+			.add("source", SerializableDataTypes.STRING)
+			.add("target", SerializableDataTypes.STRING)
+			.add("op", EggolibDataTypes.NBT_OPERATOR),
+		data -> new CopyNbtLootFunction.Operation(
+			data.get("source"),
+			data.get("target"),
+			data.get("op")
+		),
+		(serializableData, operation) -> {
+
+			SerializableData.Instance data = serializableData.new Instance();
+
+			data.set("source", operation.sourcePath);
+			data.set("target", operation.targetPath);
+			data.set("op", operation.operator);
+
+			return data;
+
+		}
+	);
+
+	public static final SerializableDataType<List<CopyNbtLootFunction.Operation>> NBT_OPERATIONS = SerializableDataType.list(NBT_OPERATION);
 
 }
