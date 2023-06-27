@@ -3,6 +3,7 @@ package io.github.eggohito.eggolib.power;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.power.Power;
 import io.github.apace100.apoli.power.PowerType;
+import io.github.apace100.apoli.power.Prioritized;
 import net.minecraft.entity.LivingEntity;
 
 import java.util.ArrayList;
@@ -15,7 +16,7 @@ import java.util.stream.Stream;
 /**
  * A power class used for specifying priorities to other power classes.
  */
-public class PrioritizedPower extends Power {
+public class PrioritizedPower extends Power implements Prioritized<PrioritizedPower> {
 
 	private final int priority;
 
@@ -33,6 +34,7 @@ public class PrioritizedPower extends Power {
 	 *
 	 * @param <P> the type of power classes in this map. <b>Only accepts classes that extend the {@link PrioritizedPower} class.</b>
 	 */
+	@Deprecated
 	public static class CallInstance<P extends PrioritizedPower> {
 
 		private final HashMap<Integer, List<P>> prioritiesAndPowersMap = new HashMap<>();

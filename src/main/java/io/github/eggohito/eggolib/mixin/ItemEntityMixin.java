@@ -1,5 +1,6 @@
 package io.github.eggohito.eggolib.mixin;
 
+import io.github.apace100.apoli.power.Prioritized;
 import io.github.eggohito.eggolib.power.ActionOnItemPickupPower;
 import io.github.eggohito.eggolib.power.PreventItemPickupPower;
 import io.github.eggohito.eggolib.power.PrioritizedPower;
@@ -62,7 +63,7 @@ public abstract class ItemEntityMixin extends Entity implements Ownable {
 		Entity finalThrowerEntity = throwerEntity;
 
 		//  Prevent the item entity from being picked up
-		PrioritizedPower.CallInstance<PreventItemPickupPower> pippci = new PrioritizedPower.CallInstance<>();
+		Prioritized.CallInstance<PrioritizedPower> pippci = new Prioritized.CallInstance<>();
 		pippci.add(playerEntity, PreventItemPickupPower.class, pipp -> pipp.doesPrevent(itemStack, finalThrowerEntity));
 		int preventItemPickupPowers = 0;
 
@@ -71,7 +72,12 @@ public abstract class ItemEntityMixin extends Entity implements Ownable {
 			if (!pippci.hasPowers(i)) {
 				continue;
 			}
-			List<PreventItemPickupPower> pipps = pippci.getPowers(i);
+
+			List<PreventItemPickupPower> pipps = pippci.getPowers(i)
+				.stream()
+				.filter(p -> p instanceof PreventItemPickupPower)
+				.map(p -> (PreventItemPickupPower) p)
+				.toList();
 
 			preventItemPickupPowers += pipps.size();
 			pipps.forEach(pipp -> pipp.executeActions(itemStack, finalThrowerEntity));
@@ -84,7 +90,7 @@ public abstract class ItemEntityMixin extends Entity implements Ownable {
 		}
 
 		//  Execute action(s) upon the item entity being picked up
-		PrioritizedPower.CallInstance<ActionOnItemPickupPower> aoippci = new PrioritizedPower.CallInstance<>();
+		Prioritized.CallInstance<PrioritizedPower> aoippci = new Prioritized.CallInstance<>();
 		aoippci.add(playerEntity, ActionOnItemPickupPower.class, aoipp -> aoipp.doesApply(itemStack, finalThrowerEntity));
 
 		for (int i = aoippci.getMaxPriority(); i >= aoippci.getMinPriority(); i--) {
@@ -93,8 +99,11 @@ public abstract class ItemEntityMixin extends Entity implements Ownable {
 				continue;
 			}
 
-			List<ActionOnItemPickupPower> aoipps = aoippci.getPowers(i);
-			aoipps.forEach(aoipp -> aoipp.executeActions(itemStack, finalThrowerEntity));
+			aoippci.getPowers(i)
+				.stream()
+				.filter(p -> p instanceof ActionOnItemPickupPower)
+				.map(p -> (ActionOnItemPickupPower) p)
+				.forEach(p -> p.executeActions(itemStack, finalThrowerEntity));
 
 		}
 

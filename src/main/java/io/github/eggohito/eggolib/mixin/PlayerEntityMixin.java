@@ -2,6 +2,7 @@ package io.github.eggohito.eggolib.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import io.github.apace100.apoli.component.PowerHolderComponent;
+import io.github.apace100.apoli.power.Prioritized;
 import io.github.eggohito.eggolib.power.ActionOnCriticalHitPower;
 import io.github.eggohito.eggolib.power.CrawlingPower;
 import io.github.eggohito.eggolib.power.PreventCriticalHitPower;
@@ -47,12 +48,8 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Nameable
 	@ModifyExpressionValue(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;isSprinting()Z", ordinal = 1))
 	private boolean eggolib$preventCriticalHit(boolean originalValue) {
 
-		PrioritizedPower.CallInstance<PreventCriticalHitPower> pchpci = new PrioritizedPower.CallInstance<>();
-		pchpci.add(
-			this,
-			PreventCriticalHitPower.class,
-			pchp -> pchp.doesApply(eggolib$cachedTarget, eggolib$cachedDamageSource, eggolib$cachedDamageAmount)
-		);
+		Prioritized.CallInstance<PrioritizedPower> pchpci = new Prioritized.CallInstance<>();
+		pchpci.add(this, PreventCriticalHitPower.class, pchp -> pchp.doesApply(eggolib$cachedTarget, eggolib$cachedDamageSource, eggolib$cachedDamageAmount));
 
 		int preventCriticalHitPowers = 0;
 		for (int i = pchpci.getMaxPriority(); i >= pchpci.getMinPriority(); i--) {
@@ -60,7 +57,12 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Nameable
 			if (!pchpci.hasPowers(i)) {
 				continue;
 			}
-			List<PreventCriticalHitPower> pchps = pchpci.getPowers(i);
+
+			List<PreventCriticalHitPower> pchps = pchpci.getPowers(i)
+				.stream()
+				.filter(p -> p instanceof PreventCriticalHitPower)
+				.map(p -> (PreventCriticalHitPower) p)
+				.toList();
 
 			preventCriticalHitPowers += pchps.size();
 			pchps.forEach(pchp -> pchp.executeActions(eggolib$cachedTarget));
@@ -78,12 +80,8 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Nameable
 	@Inject(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;addCritParticles(Lnet/minecraft/entity/Entity;)V"))
 	private void eggolib$actionOnCriticalHit(Entity target, CallbackInfo ci) {
 
-		PrioritizedPower.CallInstance<ActionOnCriticalHitPower> aochpci = new PrioritizedPower.CallInstance<>();
-		aochpci.add(
-			this,
-			ActionOnCriticalHitPower.class,
-			aochp -> aochp.doesApply(eggolib$cachedDamageSource, eggolib$cachedDamageAmount, eggolib$cachedTarget)
-		);
+		Prioritized.CallInstance<PrioritizedPower> aochpci = new Prioritized.CallInstance<>();
+		aochpci.add(this, ActionOnCriticalHitPower.class, aochp -> aochp.doesApply(eggolib$cachedDamageSource, eggolib$cachedDamageAmount, eggolib$cachedTarget));
 
 		for (int i = aochpci.getMaxPriority(); i >= aochpci.getMinPriority(); i--) {
 
@@ -92,6 +90,9 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Nameable
 			}
 
 			aochpci.getPowers(i)
+				.stream()
+				.filter(p -> p instanceof ActionOnCriticalHitPower)
+				.map(p -> (ActionOnCriticalHitPower) p)
 				.forEach(aochp -> aochp.executeActions(target));
 
 		}
