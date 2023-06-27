@@ -35,7 +35,7 @@ public class GrantAdvancementAction {
 		AdvancementCommand.Selection selection = data.get("selection");
 		List<Advancement> selectedAdvancements = AdvancementCommandAccessor.callSelect(advancement, selection);
 
-		if (!data.isPresent("criteria") || selection == AdvancementCommand.Selection.EVERYTHING) {
+		if (!(data.isPresent("criteria") || data.isPresent("criterion")) || selection == AdvancementCommand.Selection.EVERYTHING) {
 			grantAdvancements(serverPlayerEntity, selectedAdvancements);
 		} else {
 
