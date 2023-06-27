@@ -5,6 +5,7 @@ import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.util.modifier.ModifierUtil;
 import io.github.eggohito.eggolib.power.InvisibilityPower;
 import io.github.eggohito.eggolib.power.ModifyHurtTicksPower;
+import io.github.eggohito.eggolib.util.InventoryUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -14,6 +15,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
@@ -74,6 +76,11 @@ public abstract class LivingEntityMixin extends Entity {
 		} else {
 			return PowerHolderComponent.hasPower(this, InvisibilityPower.class, ip -> ip.doesApply(eggolib$viewer));
 		}
+	}
+
+	@Inject(method = "baseTick", at = @At("TAIL"))
+	private void eggolib$setHolderOfStacks(CallbackInfo ci) {
+		InventoryUtil.forEachStack(this, stack -> stack.setHolder(this));
 	}
 
 }

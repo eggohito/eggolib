@@ -20,6 +20,7 @@ public class EggolibEntityActions {
 		register(GrantAdvancementAction.getFactory());
 		register(LoopAction.getFactory(ApoliDataTypes.ENTITY_ACTION));
 		register(ModifyHealthAction.getFactory());
+		register(ModifyInventoryAction.getFactory());
 		register(ModifyKeySequenceAction.getFactory());
 		register(OpenInventoryAction.getFactory());
 		register(PlaySoundAction.getFactory());

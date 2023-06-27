@@ -360,4 +360,10 @@ public class EggolibDataTypes {
 
 	public static final SerializableDataType<AdvancementCommand.Selection> ADVANCEMENT_SELECTION = SerializableDataType.enumValue(AdvancementCommand.Selection.class);
 
+	public static final SerializableDataType<InventoryType> INVENTORY_TYPE = SerializableDataType.enumValue(InventoryType.class);
+
+	public static final SerializableDataType<EnumSet<InventoryType>> INVENTORY_TYPE_SET = SerializableDataType.enumSet(InventoryType.class, INVENTORY_TYPE);
+
+	public static final SerializableDataType<ProcessMode> PROCESS_MODE = SerializableDataType.enumValue(ProcessMode.class);
+
 }
