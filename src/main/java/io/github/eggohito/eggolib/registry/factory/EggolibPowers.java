@@ -17,6 +17,7 @@ public class EggolibPowers {
 		register(InvisibilityPower.getFactory());
 		register(StartingEquipmentPower.getFactory());
 		register(StatPower.getFactory());
+		register(TooltipPower.getFactory());
 		register(GameEventListenerPower.getFactory());
 		register(ModelFlipPower.getFactory());
 		register(ModifyBouncinessPower.getFactory());

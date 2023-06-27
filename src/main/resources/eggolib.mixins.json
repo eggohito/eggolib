@@ -24,6 +24,7 @@
 		"WorldMixin",
 		"apace100.apoli.InventoryPowerMixin",
 		"apace100.apoli.InventoryUtilMixin",
+		"apace100.apoli.TooltipPowerAccessor",
 		"apace100.calio.ClassDataRegistryAccessor",
 		"micalobia.breathinglib.BreathingInfoBuilderAccessor"
 	],
