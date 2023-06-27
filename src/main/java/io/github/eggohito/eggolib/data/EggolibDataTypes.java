@@ -23,6 +23,7 @@ import net.minecraft.loot.function.CopyNbtLootFunction;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.scoreboard.AbstractTeam;
+import net.minecraft.server.command.AdvancementCommand;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Pair;
 import net.minecraft.world.dimension.DimensionType;
@@ -354,5 +355,9 @@ public class EggolibDataTypes {
 	);
 
 	public static final SerializableDataType<List<CopyNbtLootFunction.Operation>> NBT_OPERATIONS = SerializableDataType.list(NBT_OPERATION);
+
+	public static final SerializableDataType<AdvancementCommand.Operation> ADVANCEMENT_OPERATION = SerializableDataType.enumValue(AdvancementCommand.Operation.class);
+
+	public static final SerializableDataType<AdvancementCommand.Selection> ADVANCEMENT_SELECTION = SerializableDataType.enumValue(AdvancementCommand.Selection.class);
 
 }

@@ -17,14 +17,16 @@ public class EggolibEntityActions {
 		register(CloseScreenAction.getFactory());
 		register(DamageAction.getFactory());
 		register(FireProjectileAction.getFactory());
+		register(GrantAdvancementAction.getFactory());
 		register(LoopAction.getFactory(ApoliDataTypes.ENTITY_ACTION));
 		register(ModifyHealthAction.getFactory());
 		register(ModifyKeySequenceAction.getFactory());
 		register(OpenInventoryAction.getFactory());
 		register(PlaySoundAction.getFactory());
 		register(RemovePowerAction.getFactory());
-		register(SetPerspectiveAction.getFactory());
+		register(RevokeAdvancementAction.getFactory());
 		register(SelectorAction.getFactory());
+		register(SetPerspectiveAction.getFactory());
 		register(SpawnEntityAction.getFactory());
 	}
 

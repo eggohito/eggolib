@@ -9,3 +9,7 @@ accessible field net/minecraft/loot/function/CopyNbtLootFunction$Operation sourc
 accessible field net/minecraft/loot/function/CopyNbtLootFunction$Operation targetPath Ljava/lang/String;
 accessible field net/minecraft/loot/function/CopyNbtLootFunction$Operation operator Lnet/minecraft/loot/function/CopyNbtLootFunction$Operator;
 accessible method net/minecraft/loot/function/CopyNbtLootFunction$Operation <init> (Ljava/lang/String;Ljava/lang/String;Lnet/minecraft/loot/function/CopyNbtLootFunction$Operator;)V
+accessible class net/minecraft/server/command/AdvancementCommand$Operation
+accessible class net/minecraft/server/command/AdvancementCommand$Selection
+accessible method net/minecraft/server/command/AdvancementCommand$Operation processEach (Lnet/minecraft/server/network/ServerPlayerEntity;Lnet/minecraft/advancement/Advancement;)Z
+accessible method net/minecraft/server/command/AdvancementCommand$Operation processEachCriterion (Lnet/minecraft/server/network/ServerPlayerEntity;Lnet/minecraft/advancement/Advancement;Ljava/lang/String;)Z
