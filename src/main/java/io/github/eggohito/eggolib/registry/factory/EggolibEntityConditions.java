@@ -22,7 +22,7 @@ public class EggolibEntityConditions {
 		register(InScreenCondition.getFactory());
 		register(InSnowCondition.getFactory());
 		register(InTeamCondition.getFactory());
-		register(InThunderStormCondition.getFactory());
+		register(InThunderstormCondition.getFactory());
 		register(InventoryCondition.getFactory());
 		register(MoonPhaseCondition.getFactory());
 		register(PermissionLevelCondition.getFactory());

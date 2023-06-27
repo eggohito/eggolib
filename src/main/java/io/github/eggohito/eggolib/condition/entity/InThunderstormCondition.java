@@ -7,7 +7,7 @@ import io.github.eggohito.eggolib.access.WeatherView;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 
-public class InThunderStormCondition {
+public class InThunderstormCondition {
 
 	public static boolean condition(SerializableData.Instance data, Entity entity) {
 
@@ -22,7 +22,7 @@ public class InThunderStormCondition {
 		return new ConditionFactory<>(
 			Eggolib.identifier("in_thunderstorm"),
 			new SerializableData(),
-			InThunderStormCondition::condition
+			InThunderstormCondition::condition
 		);
 	}
 
