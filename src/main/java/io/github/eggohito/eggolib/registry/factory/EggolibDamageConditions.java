@@ -4,6 +4,7 @@ import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
 import io.github.apace100.apoli.registry.ApoliRegistries;
 import io.github.eggohito.eggolib.condition.damage.NbtCondition;
 import io.github.eggohito.eggolib.condition.damage.ProjectileCondition;
+import io.github.eggohito.eggolib.condition.damage.TypeCondition;
 import io.github.eggohito.eggolib.condition.meta.ChanceCondition;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.registry.Registry;
@@ -13,8 +14,9 @@ public class EggolibDamageConditions {
 
 	public static void register() {
 		register(ChanceCondition.getFactory());
-		register(ProjectileCondition.getFactory());
 		register(NbtCondition.getFactory());
+		register(ProjectileCondition.getFactory());
+		register(TypeCondition.getFactory());
 	}
 
 	public static ConditionFactory<Pair<DamageSource, Float>> register(ConditionFactory<Pair<DamageSource, Float>> conditionFactory) {
