@@ -1,5 +1,6 @@
 package io.github.eggohito.eggolib.action.entity;
 
+import com.google.common.collect.Sets;
 import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
@@ -9,11 +10,12 @@ import io.github.eggohito.eggolib.mixin.AdvancementCommandAccessor;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.ServerAdvancementLoader;
 import net.minecraft.server.command.AdvancementCommand;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
-import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -26,25 +28,30 @@ public class GrantAdvancementAction {
 			return;
 		}
 
-		Identifier advancementId = data.get("advancement");
-		Advancement advancement = server.getAdvancementLoader().get(advancementId);
-		if (advancement == null) {
-			return;
-		}
-
+		ServerAdvancementLoader advancementLoader = server.getAdvancementLoader();
 		AdvancementCommand.Selection selection = data.get("selection");
-		List<Advancement> selectedAdvancements = AdvancementCommandAccessor.callSelect(advancement, selection);
 
-		if (!(data.isPresent("criteria") || data.isPresent("criterion")) || selection == AdvancementCommand.Selection.EVERYTHING) {
-			grantAdvancements(serverPlayerEntity, selectedAdvancements);
-		} else {
+		if (selection == AdvancementCommand.Selection.EVERYTHING) {
+			grantAdvancements(serverPlayerEntity, new LinkedList<>(advancementLoader.getAdvancements()));
+		} else if (data.isPresent("advancement")) {
 
-			Set<String> criteria = new HashSet<>();
+			Identifier advancementId = data.get("advancement");
+			Advancement advancement = advancementLoader.get(advancementId);
+			if (advancement == null) {
+				Eggolib.LOGGER.warn("Unknown advancement (\"" + advancementId + "\") referenced in `grant_advancement` entity action type!");
+				return;
+			}
+
+			Set<String> criteria = Sets.newHashSet();
 
 			data.ifPresent("criterion", criteria::add);
 			data.ifPresent("criteria", criteria::addAll);
 
-			grantCriteria(serverPlayerEntity, advancement, criteria);
+			if (criteria.isEmpty()) {
+				grantAdvancements(serverPlayerEntity, AdvancementCommandAccessor.callSelect(advancement, selection));
+			} else {
+				grantCriteria(serverPlayerEntity, advancement, criteria);
+			}
 
 		}
 
