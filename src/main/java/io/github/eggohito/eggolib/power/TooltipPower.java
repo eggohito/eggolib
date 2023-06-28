@@ -147,7 +147,7 @@ public class TooltipPower extends io.github.apace100.apoli.power.TooltipPower {
 				parsedTexts.add(parsedText);
 
 			} catch (CommandSyntaxException e) {
-				Eggolib.LOGGER.warn("Power {} could not parse replacement text at index {}: {}", this.getType().getIdentifier(), i, e.getMessage());
+				Eggolib.LOGGER.warn("Power {} could not parse tooltip text at index {}: {}", this.getType().getIdentifier(), i, e.getMessage());
 			}
 		}
 
