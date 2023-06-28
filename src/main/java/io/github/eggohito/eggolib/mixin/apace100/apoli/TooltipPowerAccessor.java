@@ -10,7 +10,7 @@ import java.util.List;
 @Mixin(TooltipPower.class)
 public interface TooltipPowerAccessor {
 
-	@Accessor
+	@Accessor(remap = false)
 	List<Text> getTexts();
 
 }
