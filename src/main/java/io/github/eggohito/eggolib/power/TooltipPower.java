@@ -32,7 +32,7 @@ public class TooltipPower extends io.github.apace100.apoli.power.TooltipPower {
 
 	private final int tickRate;
 
-	private List<Text> replacementTexts;
+	private List<Text> tooltipTexts;
 	private Integer initialTicks;
 
 	public TooltipPower(PowerType<?> type, LivingEntity entity, Predicate<ItemStack> itemCondition, Text text, List<Text> texts, int tickRate, int order) {
@@ -47,11 +47,16 @@ public class TooltipPower extends io.github.apace100.apoli.power.TooltipPower {
 			thisTexts.addAll(texts);
 		}
 
-		this.replacementTexts = new LinkedList<>();
+		this.tooltipTexts = new LinkedList<>();
 		this.initialTicks = null;
 		this.tickRate = tickRate <= 0 ? 1 : tickRate;
 		this.setTicking(true);
 
+	}
+
+	@Override
+	public void addToTooltip(List<Text> tooltip) {
+		tooltip.addAll(tooltipTexts);
 	}
 
 	@Override
@@ -69,11 +74,11 @@ public class TooltipPower extends io.github.apace100.apoli.power.TooltipPower {
 			}
 
 			List<Text> parsedTexts = parseTexts();
-			if (parsedTexts.isEmpty() || !Collections.disjoint(replacementTexts, parsedTexts)) {
+			if (parsedTexts.isEmpty() || !Collections.disjoint(tooltipTexts, parsedTexts)) {
 				return;
 			}
 
-			replacementTexts = parsedTexts;
+			tooltipTexts = parsedTexts;
 			PowerHolderComponent.syncPower(entity, this.getType());
 
 		} else if (initialTicks != null) {
@@ -86,14 +91,14 @@ public class TooltipPower extends io.github.apace100.apoli.power.TooltipPower {
 	public NbtElement toTag() {
 
 		NbtCompound rootNbt = new NbtCompound();
-		NbtList replacementTextsNbt = new NbtList();
+		NbtList tooltipTextsNbt = new NbtList();
 
-		for (Text replacementText : replacementTexts) {
-			NbtString replacementTextNbt = NbtString.of(Text.Serializer.toJson(replacementText));
-			replacementTextsNbt.add(replacementTextNbt);
+		for (Text tooltipText : tooltipTexts) {
+			NbtString tooltipTextNbt = NbtString.of(Text.Serializer.toJson(tooltipText));
+			tooltipTextsNbt.add(tooltipTextNbt);
 		}
 
-		rootNbt.put("ReplacementTexts", replacementTextsNbt);
+		rootNbt.put("Tooltips", tooltipTextsNbt);
 		return rootNbt;
 
 	}
@@ -101,13 +106,13 @@ public class TooltipPower extends io.github.apace100.apoli.power.TooltipPower {
 	@Override
 	public void fromTag(NbtElement tag) {
 
-		replacementTexts.clear();
+		tooltipTexts.clear();
 		NbtCompound rootNbt = (NbtCompound) tag;
-		NbtList replacementTextsNbt = rootNbt.getList("ReplacementTexts", NbtElement.STRING_TYPE);
+		NbtList tooltipTextsNbt = rootNbt.getList("Tooltips", NbtElement.STRING_TYPE);
 
-		for (int i = 0; i < replacementTextsNbt.size(); i++) {
-			Text replacementText = Text.Serializer.fromJson(replacementTextsNbt.getString(i));
-			replacementTexts.add(replacementText);
+		for (int i = 0; i < tooltipTextsNbt.size(); i++) {
+			Text tooltipText = Text.Serializer.fromJson(tooltipTextsNbt.getString(i));
+			tooltipTexts.add(tooltipText);
 		}
 
 	}
