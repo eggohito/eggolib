@@ -2,7 +2,7 @@ package io.github.eggohito.eggolib;
 
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.power.Power;
-import io.github.eggohito.eggolib.compat.IEggolibModCompat;
+import io.github.eggohito.eggolib.compat.EggolibModCompatClient;
 import io.github.eggohito.eggolib.data.EggolibClassDataClient;
 import io.github.eggohito.eggolib.networking.EggolibPacketsS2C;
 import io.github.eggohito.eggolib.networking.packet.c2s.EndKeySequencePacket;
@@ -42,22 +42,10 @@ public class EggolibClient implements ClientModInitializer {
 
 		//  Initialize client compat. stuff
 		FabricLoader.getInstance()
-			.getEntrypointContainers("eggolib:compat/client", IEggolibModCompat.class)
+			.getEntrypointContainers("eggolib:compat/client", EggolibModCompatClient.class)
 			.stream()
 			.map(EntrypointContainer::getEntrypoint)
-			.forEach(
-				iEggolibModCompat -> {
-
-					String modCompatTarget = iEggolibModCompat.getCompatTarget();
-
-					if (modCompatTarget == null) {
-						iEggolibModCompat.init();
-					} else {
-						FabricLoader.getInstance().getModContainer(modCompatTarget).ifPresent(iEggolibModCompat::initOn);
-					}
-
-				}
-			);
+			.forEach(EggolibModCompatClient::init);
 
 		//  Track which keybinds the player is pressing
 		ClientTickEvents.START_CLIENT_TICK.register(

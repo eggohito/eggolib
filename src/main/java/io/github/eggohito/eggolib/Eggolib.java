@@ -1,7 +1,7 @@
 package io.github.eggohito.eggolib;
 
 import io.github.apace100.apoli.util.NamespaceAlias;
-import io.github.eggohito.eggolib.compat.IEggolibModCompat;
+import io.github.eggohito.eggolib.compat.EggolibModCompat;
 import io.github.eggohito.eggolib.data.EggolibClassData;
 import io.github.eggohito.eggolib.integration.EggolibPowerIntegration;
 import io.github.eggohito.eggolib.networking.EggolibPacketsC2S;
@@ -103,22 +103,10 @@ public class Eggolib implements ModInitializer {
 
 		//  Initialize main compat. stuff
 		FabricLoader.getInstance()
-			.getEntrypointContainers("eggolib:compat", IEggolibModCompat.class)
+			.getEntrypointContainers("eggolib:compat", EggolibModCompat.class)
 			.stream()
 			.map(EntrypointContainer::getEntrypoint)
-			.forEach(
-				iEggolibModCompat -> {
-
-					String modCompatTarget = iEggolibModCompat.getCompatTarget();
-
-					if (modCompatTarget == null) {
-						iEggolibModCompat.init();
-					} else {
-						FabricLoader.getInstance().getModContainer(modCompatTarget).ifPresent(iEggolibModCompat::initOn);
-					}
-
-				}
-			);
+			.forEach(EggolibModCompat::init);
 
 		//  Remove the player from the HashMaps upon them disconnecting
 		ServerPlayConnectionEvents.DISCONNECT.register(

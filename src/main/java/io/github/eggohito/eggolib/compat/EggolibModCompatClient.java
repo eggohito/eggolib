@@ -7,11 +7,12 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
 
 import java.util.HashMap;
+import java.util.Map;
 
 @Environment(EnvType.CLIENT)
 public abstract class EggolibModCompatClient extends EggolibModCompat {
 
-	private final HashMap<String, Class<? extends Screen>> REGISTERED_SCREEN_MAPPINGS = new HashMap<>();
+	private final Map<String, Class<? extends Screen>> REGISTERED_SCREEN_MAPPINGS = new HashMap<>();
 
 	public final void addScreenMapping(String name, Class<? extends Screen> clazz) {
 		ClassDataRegistry
