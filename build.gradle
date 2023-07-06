@@ -221,8 +221,9 @@ githubRelease {
 		setOwner(System.getenv("GITHUB_REPO_OWNER"))
 		setRepo(System.getenv("GITHUB_REPO"))
 
-		setTargetCommitish(System.getenv("GITHUB_COMMITISH"))
-		setTagName("v${version}-${getTargetCommitish()}")
+		var commitish = System.getenv("GITHUB_COMMITISH")
+		setTagName("v${mod_version}-${commitish}")
+		setTargetCommitish(commitish)
 
 		setReleaseName("${mod_name} v${mod_version}")
         releaseAssets(remapJar, remapSourcesJar)
