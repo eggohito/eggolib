@@ -1,22 +1,13 @@
 ##  Changelog
 
-* Updated to 1.19.4
-* Updated testdata
-* Added these new power types:
-    * `prevent_key_use`
-    * `stat`
-* Updated the `invisibility` power type:
-    * It now affects the attack distance scaling factor of mobs
-* Added these new entity condition types:
-    * `in_snow`
-    * `in_thunderstorm`
-    * `has_spawnpoint`
-* Added these new bi-entity condition types:
-    * `colliding`
-    * `owner`
-        * Similar to Apoli's `owner` bi-entity condition type, except it works for other ownable entities
-* Added `command` block condition type
-* Added `modify` item action type
-    * Similar to Apoli's `modify` item action type, except with more loot context
-* Added `fuel` item condition type
+* Added `tooltip` power type
+	* Similar to Apoli's `tooltip` power type, except it can resolve JSON text component on the server-side
+* Added these new entity action types:
+  * `grant_advancement`
+  * `revoke_advancement`
+    * Both are similar to Apoli's `*_advancement` entity action types, except it's more functionally similar to the `/advancement` command
+* Added these new item action types:
+  * `execute_command`
+  * `copy_to_storage`
+* Added `type` damage condition type
 
