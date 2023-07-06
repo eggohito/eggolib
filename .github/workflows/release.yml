@@ -7,6 +7,9 @@ env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
   CURSEFORGE_TOKEN: ${{ secrets.CURSEFORGE_TOKEN }}
+  GITHUB_REPO_OWNER: ${{ github.repository_owner }}
+  GITHUB_COMMITISH: ${{ github.ref_name }}
+  GITHUB_REPO: ${{ github.event.repository.name }}
 
 jobs:
   github-release:

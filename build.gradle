@@ -160,26 +160,27 @@ curseforge {
 		apiKey = System.getenv("CURSEFORGE_TOKEN")
 		project {
 
-			id = curseforge_id
+			setId(curseforge_id)
+			setReleaseType('release')
 
-			changelog = new File("${rootDir}/CHANGELOG.md").getText('UTF-8')
-			changelogType = 'markdown'
+			setChangelog(new File("${rootDir}/CHANGELOG.md").getText('UTF-8'))
+			setChangelogType('markdown')
 
-			releaseType = 'release'
-
-			compatible_minecraft_versions.split(", ").each { String minecraftVersion -> addGameVersion minecraftVersion }
-			compatible_java_versions.split(", ").each { String javaVersion -> addGameVersion "Java " + javaVersion }
-			compatible_mod_loaders.split(", ").each { String modLoader -> addGameVersion modLoader }
+			compatible_minecraft_versions.split(", ").each { String minecraftVersion -> addGameVersion(minecraftVersion) }
+			compatible_java_versions.split(", ").each {String javaVersion -> addGameVersion("Java " + javaVersion) }
+			compatible_mod_loaders.split(", ").each { String modLoader -> addGameVersion(modLoader) }
 
 			mainArtifact(remapJar) {
-				displayName = "v${version} (${compatible_minecraft_versions})"
+				setDisplayName("${mod_name} v${mod_version}")
 				relations {
-					required_dependencies.split(", ").each { String project -> requiredDependency project }
-					optional_dependencies.split(", ").each { String project -> optionalDependency project }
+					required_dependencies.split(", ").each { String project -> requiredDependency(project) }
+					optional_dependencies.split(", ").each { String project -> optionalDependency(project) }
 				}
 			}
 
-			addArtifact(remapSourcesJar)
+			addArtifact(remapSourcesJar) {
+				setDisplayName("${mod_name} v${mod_version} (Sources)")
+			}
 
 		}
 
@@ -189,23 +190,24 @@ curseforge {
 modrinth {
 	if (System.getenv("MODRINTH_TOKEN") != null) {
 
-		token = System.getenv("MODRINTH_TOKEN")
-		projectId = modrinth_id
+		setToken(System.getenv("MODRINTH_TOKEN"))
+		setProjectId(modrinth_id)
 
-		versionName = "eggolib v${version}"
-		versionNumber = "v${version}-${github_commitish}"
-		versionType = "release"
+		setVersionName("${mod_name} v${mod_version}")
+		setVersionNumber("v${mod_version}-${System.getenv("GITHUB_COMMITISH")}")
+		setVersionType("release")
 
-		uploadFile = remapJar
-        additionalFiles.add(remapSourcesJar)
-		changelog = new File("${rootDir}/CHANGELOG.md").getText('UTF-8')
+		setUploadFile(remapJar)
+		additionalFiles.add(remapSourcesJar)
+
+		setChangelog(new File("${getRootDir()}/CHANGELOG.md").getText('UTF-8'))
 
 		gameVersions.addAll(compatible_minecraft_versions.split(", ").toList())
-		loaders.addAll(compatible_mod_loaders.split(", ").collect { String loader -> loader.toLowerCase(Locale.ROOT)})
+		loaders.addAll(compatible_mod_loaders.split(", ").collect { String loader -> loader.toLowerCase()})
 
 		dependencies {
-			required_dependencies.split(", ").each { String project -> required.project project }
-			optional_dependencies.split(", ").each { String project -> optional.project project }
+			required_dependencies.split(", ").each { String project -> required.project(project) }
+			optional_dependencies.split(", ").each { String project -> optional.project(project) }
 		}
 
 	}
@@ -214,18 +216,18 @@ modrinth {
 githubRelease {
 	if (System.getenv("GITHUB_TOKEN") != null) {
 
-		token = System.getenv("GITHUB_TOKEN")
+		setToken(System.getenv("GITHUB_TOKEN"))
 
-		owner = github_owner
-		repo = github_repo
+		setOwner(System.getenv("GITHUB_REPO_OWNER"))
+		setRepo(System.getenv("GITHUB_REPO"))
 
-		tagName = "v${version}-${github_commitish}"
-		targetCommitish = github_commitish
+		setTargetCommitish(System.getenv("GITHUB_COMMITISH"))
+		setTagName("v${version}-${getTargetCommitish()}")
 
-		releaseName = "${mod_name} v${mod_version} (${compatible_minecraft_versions})"
+		setReleaseName("${mod_name} v${mod_version}")
         releaseAssets(remapJar, remapSourcesJar)
 
-		body = new File("${rootDir}/CHANGELOG.md").getText('UTF-8')
+		setBody(new File("${getRootDir()}/CHANGELOG.md").getText('UTF-8'))
 
 	}
 }
