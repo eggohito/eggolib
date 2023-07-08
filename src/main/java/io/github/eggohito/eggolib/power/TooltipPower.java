@@ -122,7 +122,7 @@ public class TooltipPower extends io.github.apace100.apoli.power.TooltipPower {
 		List<Text> parsedTexts = new LinkedList<>();
 		List<Text> texts = ((TooltipPowerAccessor) this).getTexts();
 
-		if (texts.isEmpty() || entity.world.isClient) {
+		if (texts.isEmpty() || entity.getWorld().isClient) {
 			return parsedTexts;
 		}
 
@@ -130,11 +130,11 @@ public class TooltipPower extends io.github.apace100.apoli.power.TooltipPower {
 			CommandOutput.DUMMY,
 			entity.getPos(),
 			entity.getRotationClient(),
-			(ServerWorld) entity.world,
+			(ServerWorld) entity.getWorld(),
 			Apoli.config.executeCommand.permissionLevel,
 			entity.getEntityName(),
 			entity.getName(),
-			entity.world.getServer(),
+			entity.getServer(),
 			entity
 		);
 

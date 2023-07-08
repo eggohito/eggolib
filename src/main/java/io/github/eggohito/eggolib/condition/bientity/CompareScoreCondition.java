@@ -26,7 +26,7 @@ public class CompareScoreCondition {
 		String targetObjectiveName = data.getString("target_objective");
 
 		Comparison comparison = data.get("comparison");
-		Scoreboard scoreboard = actorAndTarget.getLeft().world.getScoreboard();
+		Scoreboard scoreboard = actorAndTarget.getLeft().getWorld().getScoreboard();
 
 		ScoreboardObjective actorObjective = scoreboard.getObjective(actorObjectiveName);
 		ScoreboardObjective targetObjective = scoreboard.getObjective(targetObjectiveName);

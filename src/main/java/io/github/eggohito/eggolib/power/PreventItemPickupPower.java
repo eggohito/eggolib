@@ -38,7 +38,7 @@ public class PreventItemPickupPower extends PrioritizedPower {
 
 	public void executeActions(ItemStack itemStack, Entity thrower) {
 		if (itemAction != null) {
-			itemAction.accept(new Pair<>(entity.world, itemStack));
+			itemAction.accept(new Pair<>(entity.getWorld(), itemStack));
 		}
 		if (biEntityAction != null) {
 			biEntityAction.accept(new Pair<>(thrower, entity));

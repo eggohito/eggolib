@@ -23,7 +23,7 @@ public class SetPerspectiveAction {
 		}
 
 		EggolibPerspective eggolibPerspective = data.get("perspective");
-		if (playerEntity.world.isClient) {
+		if (playerEntity.getWorld().isClient) {
 			MinecraftClient client = ((ClientPlayerEntityAccessor) playerEntity).getClient();
 			client.execute(() -> MiscUtilClient.setPerspective(client, eggolibPerspective));
 		} else {

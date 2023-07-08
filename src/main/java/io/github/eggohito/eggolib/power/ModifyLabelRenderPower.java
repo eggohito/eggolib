@@ -109,7 +109,7 @@ public class ModifyLabelRenderPower extends PrioritizedPower {
 
 	private Optional<Text> parseText() {
 
-		if (text == null || entity.world.isClient) {
+		if (text == null || entity.getWorld().isClient) {
 			return Optional.empty();
 		}
 
@@ -119,7 +119,7 @@ public class ModifyLabelRenderPower extends PrioritizedPower {
 				beforeParseAction.accept(entity);
 			}
 
-			ServerCommandSource source = new ServerCommandSource(CommandOutput.DUMMY, entity.getPos(), entity.getRotationClient(), (ServerWorld) entity.world, 2, entity.getEntityName(), entity.getName(), entity.world.getServer(), entity);
+			ServerCommandSource source = new ServerCommandSource(CommandOutput.DUMMY, entity.getPos(), entity.getRotationClient(), (ServerWorld) entity.getWorld(), 2, entity.getEntityName(), entity.getName(), entity.getWorld().getServer(), entity);
 			Text parsedText = Texts.parse(source, text, entity, 0);
 
 			return Optional.of(parsedText);

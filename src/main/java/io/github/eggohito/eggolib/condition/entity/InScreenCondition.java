@@ -43,7 +43,7 @@ public class InScreenCondition {
 
 	public static void initializeScreen(PlayerEntity playerEntity) {
 
-		if (playerEntity.world.isClient) {
+		if (playerEntity.getWorld().isClient) {
 			MinecraftClient client = ((ClientPlayerEntityAccessor) playerEntity).getClient();
 			client.execute(
 				() -> MiscUtilClient.getScreenState(client)

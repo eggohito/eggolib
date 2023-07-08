@@ -28,7 +28,7 @@ public class BreakingBlockCondition {
 		boolean usingEffectiveTool = data.getBoolean("using_effective_tool");
 		BlockPos breakingBlockPos;
 
-		if (playerEntity.world.isClient) {
+		if (playerEntity.getWorld().isClient) {
 			ClientPlayerInteractionManagerAccessor cpim = (ClientPlayerInteractionManagerAccessor) ((ClientPlayerEntityAccessor) playerEntity).getClient().interactionManager;
 			breakingBlockPos = cpim != null && cpim.breakingBlock() ? cpim.breakingBlockPos() : null;
 		} else {
@@ -41,9 +41,9 @@ public class BreakingBlockCondition {
 		}
 
 		if (usingEffectiveTool) {
-			return playerEntity.canHarvest(playerEntity.world.getBlockState(breakingBlockPos)) && (blockCondition == null || blockCondition.test(new CachedBlockPosition(entity.world, breakingBlockPos, true)));
+			return playerEntity.canHarvest(playerEntity.getWorld().getBlockState(breakingBlockPos)) && (blockCondition == null || blockCondition.test(new CachedBlockPosition(entity.getWorld(), breakingBlockPos, true)));
 		} else {
-			return blockCondition == null || blockCondition.test(new CachedBlockPosition(entity.world, breakingBlockPos, true));
+			return blockCondition == null || blockCondition.test(new CachedBlockPosition(entity.getWorld(), breakingBlockPos, true));
 		}
 
 	}

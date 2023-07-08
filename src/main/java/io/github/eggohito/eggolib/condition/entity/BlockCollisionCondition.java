@@ -35,7 +35,7 @@ public class BlockCollisionCondition {
 				for (int j = minBlockPos.getY(); j <= maxBlockPos.getY(); j++) {
 					for (int k = minBlockPos.getZ(); k <= maxBlockPos.getZ(); k++) {
 						mutBlockPos.set(i, j, k);
-						if (blockCondition.test(new CachedBlockPosition(entity.world, mutBlockPos, true))) {
+						if (blockCondition.test(new CachedBlockPosition(entity.getWorld(), mutBlockPos, true))) {
 							matchingBlocks++;
 						}
 					}
@@ -45,7 +45,7 @@ public class BlockCollisionCondition {
 			return matchingBlocks > 0;
 
 		} else {
-			return entity.world
+			return entity.getWorld()
 				.getBlockCollisions(entity, offsetEntityBoundingBox)
 				.iterator()
 				.hasNext();

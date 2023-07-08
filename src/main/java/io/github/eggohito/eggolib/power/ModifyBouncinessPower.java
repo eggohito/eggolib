@@ -53,7 +53,7 @@ public class ModifyBouncinessPower extends ValueModifyingPower {
 
 	public void executeActions() {
 		if (blockAction != null && landedOnBlockCache != null) {
-			blockAction.accept(Triple.of(entity.world, landedOnBlockCache.getBlockPos(), Direction.UP));
+			blockAction.accept(Triple.of(entity.getWorld(), landedOnBlockCache.getBlockPos(), Direction.UP));
 		}
 		if (entityAction != null) {
 			entityAction.accept(entity);

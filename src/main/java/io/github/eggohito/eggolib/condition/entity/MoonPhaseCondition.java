@@ -19,7 +19,7 @@ public class MoonPhaseCondition {
 		data.<MoonPhase>ifPresent("phase", moonPhases::add);
 		data.<List<MoonPhase>>ifPresent("phases", moonPhases::addAll);
 
-		return moonPhases.stream().anyMatch(moonPhase -> moonPhase.matches(entity.world.getMoonPhase()));
+		return moonPhases.stream().anyMatch(moonPhase -> moonPhase.matches(entity.getWorld().getMoonPhase()));
 
 	}
 

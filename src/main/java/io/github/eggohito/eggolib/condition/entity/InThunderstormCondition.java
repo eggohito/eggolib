@@ -14,7 +14,7 @@ public class InThunderstormCondition {
 		BlockPos downBlockPos = entity.getBlockPos();
 		BlockPos upBlockPos = BlockPos.ofFloored(downBlockPos.getX(), entity.getBoundingBox().maxY, downBlockPos.getZ());
 
-		return ((WeatherView) entity.world).inThunderstorm(downBlockPos, upBlockPos);
+		return ((WeatherView) entity.getWorld()).inThunderstorm(downBlockPos, upBlockPos);
 
 	}
 

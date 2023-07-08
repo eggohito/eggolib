@@ -8,9 +8,12 @@ import io.github.eggohito.eggolib.Eggolib;
 import io.github.eggohito.eggolib.loot.context.EggolibLootContextTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.loot.LootDataType;
 import net.minecraft.loot.context.LootContext;
+import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.function.LootFunction;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
@@ -29,28 +32,41 @@ public class ModifyAction {
 		}
 
 		Identifier itemModifierId = data.get("modifier");
-		LootFunction itemModifier = server.getItemModifierManager().get(itemModifierId);
+		LootFunction itemModifier = server.getLootManager().getElement(LootDataType.ITEM_MODIFIERS, itemModifierId);
 		if (itemModifier == null) {
-			Eggolib.LOGGER.error("Unknown item modifier (\"" + itemModifierId + "\") used in `modify` item action type!");
+			Eggolib.LOGGER.warn("Unknown item modifier (\"" + itemModifierId + "\") used in `modify` item action type!");
 			return;
 		}
 
-		ServerWorld world = server.getWorld(data.get("dimension"));
+		RegistryKey<World> dimension = data.get("dimension");
+		ServerWorld world = server.getWorld(dimension);
 		if (world == null) {
+			Eggolib.LOGGER.warn("Unknown dimension (\"" + dimension.getValue() + "\") used in `modify` item action type!");
+		}
+
+		ItemStack stack = worldAndStack.getRight();
+		Entity stackHolder = stack.getHolder();
+
+		if (stackHolder != null) {
+			Eggolib.LOGGER.warn("Using the dimension of the stack holder instead...");
+			world = (ServerWorld) stackHolder.getWorld();
+		} else {
+			Eggolib.LOGGER.warn("Using the `minecraft:overworld` instead...");
 			world = server.getOverworld();
 		}
 
 		Vec3d pos = data.isPresent("position") ? data.get("position") : world.getSpawnPos().toCenterPos();
 		BlockPos blockPos = BlockPos.ofFloored(pos);
-		ItemStack stack = worldAndStack.getRight();
-		Entity stackHolder = stack.getHolder();
-		LootContext lootContext = new LootContext.Builder(world)
-			.parameter(LootContextParameters.ORIGIN, pos)
-			.parameter(LootContextParameters.TOOL, stack)
-			.optionalParameter(LootContextParameters.THIS_ENTITY, stackHolder)
-			.optionalParameter(LootContextParameters.BLOCK_STATE, world.getBlockState(blockPos))
-			.optionalParameter(LootContextParameters.BLOCK_ENTITY, world.getBlockEntity(blockPos))
+
+		LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder(world)
+			.add(LootContextParameters.ORIGIN, pos)
+			.add(LootContextParameters.TOOL, stack)
+			.addOptional(LootContextParameters.THIS_ENTITY, stackHolder)
+			.addOptional(LootContextParameters.BLOCK_STATE, world.getBlockState(blockPos))
+			.addOptional(LootContextParameters.BLOCK_ENTITY, world.getBlockEntity(blockPos))
 			.build(EggolibLootContextTypes.ANY);
+		LootContext lootContext = new LootContext.Builder(lootContextParameterSet)
+			.build(null);
 
 		ItemStack newStack = itemModifier.apply(stack, lootContext);
 		((MutableItemStack) stack).setFrom(newStack);

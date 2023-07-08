@@ -23,7 +23,7 @@ public class PlaySoundAction {
 			soundCategory = entity.getSoundCategory();
 		}
 
-		entity.world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), soundEvent, soundCategory, volume, pitch);
+		entity.getWorld().playSound(null, entity.getX(), entity.getY(), entity.getZ(), soundEvent, soundCategory, volume, pitch);
 
 	}
 

@@ -60,18 +60,18 @@ public class ActionOnBlockPlacePower extends InteractionPower implements Priorit
 			return false;
 		}
 
-		return (placeToCondition == null || placeToCondition.test(new CachedBlockPosition(entity.world, placementPos, true)))
-			&& (placeOnCondition == null || placeOnCondition.test(new CachedBlockPosition(entity.world, hitPos, true)));
+		return (placeToCondition == null || placeToCondition.test(new CachedBlockPosition(entity.getWorld(), placementPos, true)))
+			&& (placeOnCondition == null || placeOnCondition.test(new CachedBlockPosition(entity.getWorld(), hitPos, true)));
 
 	}
 
 	public void executeBlockAndEntityActions(BlockPos hitPos, BlockPos placementPos, Direction direction) {
 
 		if (placeOnAction != null) {
-			placeOnAction.accept(Triple.of(entity.world, hitPos, direction));
+			placeOnAction.accept(Triple.of(entity.getWorld(), hitPos, direction));
 		}
 		if (placeToAction != null) {
-			placeToAction.accept(Triple.of(entity.world, placementPos, direction));
+			placeToAction.accept(Triple.of(entity.getWorld(), placementPos, direction));
 		}
 		if (entityAction != null) {
 			entityAction.accept(entity);

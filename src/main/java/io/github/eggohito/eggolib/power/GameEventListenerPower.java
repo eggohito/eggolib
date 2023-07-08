@@ -8,7 +8,6 @@ import io.github.apace100.apoli.util.HudRender;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.eggohito.eggolib.Eggolib;
-import io.github.eggohito.eggolib.access.VibrationListenerAccess;
 import io.github.eggohito.eggolib.data.EggolibDataTypes;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.entity.Entity;
@@ -22,9 +21,8 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.EntityPositionSource;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.event.PositionSource;
+import net.minecraft.world.event.Vibrations;
 import net.minecraft.world.event.listener.EntityGameEventHandler;
-import net.minecraft.world.event.listener.GameEventListener;
-import net.minecraft.world.event.listener.VibrationListener;
 import org.apache.commons.lang3.tuple.Triple;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,17 +31,19 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-public class GameEventListenerPower extends CooldownPower implements VibrationListener.Callback {
+public class GameEventListenerPower extends CooldownPower implements Vibrations {
 
 	private final Consumer<Triple<World, BlockPos, Direction>> blockAction;
 	private final Consumer<Pair<Entity, Entity>> biEntityAction;
 	private final Predicate<CachedBlockPosition> blockCondition;
 	private final Predicate<Pair<Entity, Entity>> biEntityCondition;
 
-	private final EntityGameEventHandler<VibrationListener> gameEventHandler;
+	private EntityGameEventHandler<VibrationListener> gameEventHandler;
+	private VibrationCallback vibrationCallback;
+	private ListenerData vibrationListenerData;
+
 	private final int range;
 	private final boolean showParticle;
-
 	private final List<GameEvent> acceptedGameEvents;
 	private final TagKey<GameEvent> acceptedGameEventTag;
 
@@ -56,7 +56,9 @@ public class GameEventListenerPower extends CooldownPower implements VibrationLi
 		this.blockCondition = blockCondition;
 		this.biEntityCondition = biEntityCondition;
 
-		this.gameEventHandler = new EntityGameEventHandler<>(null);
+		this.gameEventHandler = new EntityGameEventHandler<>(new VibrationListener(this));
+		this.vibrationCallback = new VibrationCallback();
+		this.vibrationListenerData = new ListenerData();
 		this.range = range;
 
 		this.acceptedGameEvents = new ArrayList<>();
@@ -78,77 +80,82 @@ public class GameEventListenerPower extends CooldownPower implements VibrationLi
 			&& gameEventHandler.getListener() != null;
 	}
 
-	public EntityGameEventHandler<VibrationListener> getGameEventHandler() {
-		return gameEventHandler;
-	}
-
-	private PositionSource getNewPositionSource() {
-		return new EntityPositionSource(this.entity, this.entity.getEyeHeight(this.entity.getPose()));
-	}
-
 	@Override
 	public void onAdded() {
-
-		VibrationListener vibrationListener = new VibrationListener(getNewPositionSource(), range, this);
-		((VibrationListenerAccess) vibrationListener).showParticle(showParticle);
-
-		this.gameEventHandler.setListener(vibrationListener, this.entity.world);
-		this.entity.updateEventHandler(EntityGameEventHandler::onEntitySetPos);
-
+		gameEventHandler = new EntityGameEventHandler<>(new VibrationListener(this));
+		if (entity.getWorld() instanceof ServerWorld serverWorld) {
+			gameEventHandler.onEntitySetPos(serverWorld);
+		}
 	}
 
 	@Override
 	public void onRemoved() {
-		this.entity.updateEventHandler(EntityGameEventHandler::onEntityRemoval);
+		if (entity.getWorld() instanceof ServerWorld serverWorld) {
+			gameEventHandler.onEntityRemoval(serverWorld);
+		}
 	}
 
 	@Override
 	public void tick() {
+		if (canListen() && canUse()) {
+			Ticker.tick(entity.getWorld(), getVibrationListenerData(), getVibrationCallback());
+		}
+	}
 
-		if (!(canListen() && canUse())) {
-			return;
+	@Override
+	public ListenerData getVibrationListenerData() {
+		return vibrationListenerData;
+	}
+
+	@Override
+	public Callback getVibrationCallback() {
+		return vibrationCallback;
+	}
+
+	private class VibrationCallback implements Callback {
+
+		@Override
+		public int getRange() {
+			return range;
 		}
 
-		VibrationListenerAccess vla = ((VibrationListenerAccess) gameEventHandler.getListener());
-		vla.tickWithPositionSource(entity.world, getNewPositionSource());
-
-	}
-
-	@Override
-	public TagKey<GameEvent> getTag() {
-		return this.acceptedGameEventTag != null ? this.acceptedGameEventTag : VibrationListener.Callback.super.getTag();
-	}
-
-	@Override
-	public boolean canAccept(GameEvent gameEvent, GameEvent.Emitter emitter) {
-		return this.canUse()
-			&& (acceptedGameEvents.isEmpty() || acceptedGameEvents.contains(gameEvent))
-			&& VibrationListener.Callback.super.canAccept(gameEvent, emitter);
-	}
-
-	@Override
-	public boolean accepts(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, GameEvent.Emitter emitter) {
-
-		if (this.entity.world != world) {
-			return false;
+		@Override
+		public PositionSource getPositionSource() {
+			return new EntityPositionSource(entity, entity.getEyeHeight(entity.getPose()));
 		}
 
-		Entity actor = emitter.sourceEntity();
-		return (blockCondition == null || blockCondition.test(new CachedBlockPosition(world, pos, true)))
-			&& (biEntityCondition == null || biEntityCondition.test(new Pair<>(actor, this.entity)));
-
-	}
-
-	@Override
-	public void accept(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable Entity entity, @Nullable Entity sourceEntity, float distance) {
-
-		this.use();
-
-		if (blockAction != null) {
-			blockAction.accept(Triple.of(world, pos, Direction.UP));
+		@Override
+		public boolean accepts(ServerWorld world, BlockPos pos, GameEvent event, GameEvent.Emitter emitter) {
+			Entity actor = emitter.sourceEntity();
+			return entity.getWorld() != world
+				&& (blockCondition == null || blockCondition.test(new CachedBlockPosition(world, pos, true)))
+				&& (biEntityCondition == null || biEntityCondition.test(new Pair<>(actor, entity)));
 		}
-		if (biEntityAction != null) {
-			biEntityAction.accept(new Pair<>(entity, this.entity));
+
+		@Override
+		public void accept(ServerWorld world, BlockPos pos, GameEvent event, @Nullable Entity sourceEntity, @Nullable Entity actor, float distance) {
+
+			use();
+
+			if (blockAction != null) {
+				blockAction.accept(Triple.of(world, pos, Direction.UP));
+			}
+			if (biEntityAction != null) {
+				biEntityAction.accept(new Pair<>(actor, entity));
+			}
+
+		}
+
+		@Override
+		public TagKey<GameEvent> getTag() {
+			return acceptedGameEventTag != null ? acceptedGameEventTag : Callback.super.getTag();
+		}
+
+		@Override
+		public boolean canAccept(GameEvent gameEvent, GameEvent.Emitter emitter) {
+			return canUse()
+				&& (acceptedGameEvents.isEmpty() || acceptedGameEvents.contains(gameEvent))
+				&& Callback.super.canAccept(gameEvent, emitter);
 		}
 
 	}

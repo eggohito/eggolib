@@ -41,8 +41,8 @@ public abstract class ProjectileEntityMixin extends Entity {
 		PowerHolderComponent.withPowers(
 			this.owner,
 			ActionOnBlockHitPower.class,
-			aobhp -> aobhp.doesApply(thisAsProjectileEntity.world, blockPos, direction, thisAsProjectileEntity),
-			aobhp -> aobhp.executeActions(thisAsProjectileEntity.world, blockPos, direction, thisAsProjectileEntity)
+			aobhp -> aobhp.doesApply(thisAsProjectileEntity.getWorld(), blockPos, direction, thisAsProjectileEntity),
+			aobhp -> aobhp.executeActions(thisAsProjectileEntity.getWorld(), blockPos, direction, thisAsProjectileEntity)
 		);
 
 	}

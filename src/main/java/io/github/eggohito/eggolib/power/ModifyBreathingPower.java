@@ -155,7 +155,7 @@ public class ModifyBreathingPower extends PrioritizedPower {
 	}
 
 	public boolean canBreatheIn(BlockPos blockPos) {
-		return breathableBlockCondition.test(new CachedBlockPosition(entity.world, blockPos, true));
+		return breathableBlockCondition.test(new CachedBlockPosition(entity.getWorld(), blockPos, true));
 	}
 
 	public static TypedActionResult<Optional<BreathingInfo>> integrateCallback(LivingEntity livingEntity) {

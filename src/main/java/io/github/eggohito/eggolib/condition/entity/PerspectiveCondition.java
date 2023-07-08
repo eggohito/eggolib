@@ -44,7 +44,7 @@ public class PerspectiveCondition {
 
 	private static void initializePerspective(PlayerEntity playerEntity) {
 
-		if (playerEntity.world.isClient) {
+		if (playerEntity.getWorld().isClient) {
 			MinecraftClient client = ((ClientPlayerEntityAccessor) playerEntity).getClient();
 			client.execute(() -> MiscUtilClient.getPerspective(client));
 		} else {

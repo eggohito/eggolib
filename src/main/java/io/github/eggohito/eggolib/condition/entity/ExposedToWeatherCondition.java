@@ -19,7 +19,7 @@ public class ExposedToWeatherCondition {
 		Boolean thundering = data.get("thundering");
 
 		return exposedToWeather(entity, precipitation)
-			&& (thundering == null || (thundering && entity.world.isThundering()));
+			&& (thundering == null || (thundering && entity.getWorld().isThundering()));
 
 	}
 
@@ -28,8 +28,8 @@ public class ExposedToWeatherCondition {
 		BlockPos downBlockPos = entity.getBlockPos();
 		BlockPos upBlockPos = BlockPos.ofFloored(downBlockPos.getX(), entity.getBoundingBox().maxY, downBlockPos.getZ());
 
-		return exposedToWeather(entity.world, downBlockPos, precipitation)
-			|| exposedToWeather(entity.world, upBlockPos, precipitation);
+		return exposedToWeather(entity.getWorld(), downBlockPos, precipitation)
+			|| exposedToWeather(entity.getWorld(), upBlockPos, precipitation);
 
 	}
 

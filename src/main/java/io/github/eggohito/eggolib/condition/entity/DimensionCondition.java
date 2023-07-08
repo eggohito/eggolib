@@ -27,8 +27,8 @@ public class DimensionCondition {
 		data.<Identifier>ifPresent("dimension", worldIds::add);
 		data.<List<Identifier>>ifPresent("dimensions", worldIds::addAll);
 
-		i += worldIds.stream().anyMatch(worldId -> entity.world.getRegistryKey() == RegistryKey.of(RegistryKeys.WORLD, worldId)) ? 1 : 0;
-		i += dimensionTypeCondition == null || dimensionTypeCondition.test(entity.world.getDimensionEntry()) ? 1 : 0;
+		i += worldIds.stream().anyMatch(worldId -> entity.getWorld().getRegistryKey() == RegistryKey.of(RegistryKeys.WORLD, worldId)) ? 1 : 0;
+		i += dimensionTypeCondition == null || dimensionTypeCondition.test(entity.getWorld().getDimensionEntry()) ? 1 : 0;
 
 		return i > 0;
 

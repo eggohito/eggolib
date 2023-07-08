@@ -21,7 +21,6 @@
     "ProjectileEntityMixin",
     "ServerPlayerEntityMixin",
     "ServerPlayerInteractionManagerAccessor",
-    "VibrationListenerMixin",
     "WorldMixin",
     "apace100.apoli.TooltipPowerAccessor",
     "apace100.calio.ClassDataRegistryAccessor",

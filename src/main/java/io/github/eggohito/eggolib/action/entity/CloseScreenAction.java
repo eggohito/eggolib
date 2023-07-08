@@ -19,7 +19,7 @@ public class CloseScreenAction {
 			return;
 		}
 
-		if (playerEntity.world.isClient) {
+		if (playerEntity.getWorld().isClient) {
 			MinecraftClient client = ((ClientPlayerEntityAccessor) playerEntity).getClient();
 			client.execute(() -> client.setScreen(null));
 		} else {

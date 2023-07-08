@@ -20,7 +20,7 @@ public class InBlockCondition {
 		BlockPos blockPos = entityOffset.getBlockPos(entity);
 		Predicate<CachedBlockPosition> blockCondition = data.get("block_condition");
 
-		return blockCondition.test(new CachedBlockPosition(entity.world, blockPos, true));
+		return blockCondition.test(new CachedBlockPosition(entity.getWorld(), blockPos, true));
 
 	}
 

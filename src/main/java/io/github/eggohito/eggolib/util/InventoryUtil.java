@@ -55,7 +55,7 @@ public class InventoryUtil {
 
 				int amount = processor.apply(stack);
 				for (int i = 0; i < amount; i++) {
-					itemAction.accept(new Pair<>(entity.world, stack));
+					itemAction.accept(new Pair<>(entity.getWorld(), stack));
 					if (++counter >= limit) {
 						break processInv;
 					}
@@ -80,7 +80,7 @@ public class InventoryUtil {
 
 				int amount = processor.apply(stack);
 				for (int i = 0; i < amount; i++) {
-					itemAction.accept(new Pair<>(entity.world, stack));
+					itemAction.accept(new Pair<>(entity.getWorld(), stack));
 					if (++counter >= limit) {
 						break processInvPower;
 					}
