@@ -8,6 +8,7 @@ import io.github.apace100.apoli.util.HudRender;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.eggohito.eggolib.Eggolib;
+import io.github.eggohito.eggolib.access.LinkableListenerData;
 import io.github.eggohito.eggolib.data.EggolibDataTypes;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.entity.Entity;
@@ -39,13 +40,14 @@ public class GameEventListenerPower extends CooldownPower implements Vibrations 
 	private final Predicate<Pair<Entity, Entity>> biEntityCondition;
 
 	private EntityGameEventHandler<VibrationListener> gameEventHandler;
-	private VibrationCallback vibrationCallback;
-	private ListenerData vibrationListenerData;
+	private final VibrationCallback vibrationCallback;
+	private final ListenerData vibrationListenerData;
 
-	private final int range;
-	private final boolean showParticle;
 	private final List<GameEvent> acceptedGameEvents;
 	private final TagKey<GameEvent> acceptedGameEventTag;
+
+	private final boolean showParticle;
+	private final int range;
 
 	public GameEventListenerPower(PowerType<?> powerType, LivingEntity livingEntity, Consumer<Triple<World, BlockPos, Direction>> blockAction, Consumer<Pair<Entity, Entity>> biEntityAction, Predicate<CachedBlockPosition> blockCondition, Predicate<Pair<Entity, Entity>> biEntityCondition, int cooldown, HudRender hudRender, int range, GameEvent gameEvent, List<GameEvent> gameEvents, TagKey<GameEvent> gameEventTag, boolean showParticle) {
 
@@ -56,9 +58,9 @@ public class GameEventListenerPower extends CooldownPower implements Vibrations 
 		this.blockCondition = blockCondition;
 		this.biEntityCondition = biEntityCondition;
 
-		this.gameEventHandler = new EntityGameEventHandler<>(new VibrationListener(this));
-		this.vibrationCallback = new VibrationCallback();
 		this.vibrationListenerData = new ListenerData();
+		this.vibrationCallback = new VibrationCallback();
+		this.gameEventHandler = null;
 		this.range = range;
 
 		this.acceptedGameEvents = new ArrayList<>();
@@ -75,23 +77,33 @@ public class GameEventListenerPower extends CooldownPower implements Vibrations 
 
 	}
 
+	public EntityGameEventHandler<VibrationListener> getGameEventHandler() {
+		if (!canListen()) {
+			gameEventHandler = new EntityGameEventHandler<>(new VibrationListener(this));
+		}
+		return gameEventHandler;
+	}
+
 	public boolean canListen() {
 		return gameEventHandler != null
 			&& gameEventHandler.getListener() != null;
 	}
 
+	public boolean shouldShowParticle() {
+		return showParticle;
+	}
+
 	@Override
 	public void onAdded() {
-		gameEventHandler = new EntityGameEventHandler<>(new VibrationListener(this));
-		if (entity.getWorld() instanceof ServerWorld serverWorld) {
-			gameEventHandler.onEntitySetPos(serverWorld);
+		if (entity.getWorld() instanceof ServerWorld) {
+			this.entity.updateEventHandler(EntityGameEventHandler::onEntitySetPos);
 		}
 	}
 
 	@Override
 	public void onRemoved() {
-		if (entity.getWorld() instanceof ServerWorld serverWorld) {
-			gameEventHandler.onEntityRemoval(serverWorld);
+		if (entity.getWorld() instanceof ServerWorld) {
+			this.entity.updateEventHandler(EntityGameEventHandler::onEntityRemoval);
 		}
 	}
 
@@ -104,6 +116,7 @@ public class GameEventListenerPower extends CooldownPower implements Vibrations 
 
 	@Override
 	public ListenerData getVibrationListenerData() {
+		((LinkableListenerData) vibrationListenerData).eggolib$linkPower(this);
 		return vibrationListenerData;
 	}
 
@@ -127,7 +140,7 @@ public class GameEventListenerPower extends CooldownPower implements Vibrations 
 		@Override
 		public boolean accepts(ServerWorld world, BlockPos pos, GameEvent event, GameEvent.Emitter emitter) {
 			Entity actor = emitter.sourceEntity();
-			return entity.getWorld() != world
+			return entity.getWorld() == world
 				&& (blockCondition == null || blockCondition.test(new CachedBlockPosition(world, pos, true)))
 				&& (biEntityCondition == null || biEntityCondition.test(new Pair<>(actor, entity)));
 		}
@@ -136,7 +149,6 @@ public class GameEventListenerPower extends CooldownPower implements Vibrations 
 		public void accept(ServerWorld world, BlockPos pos, GameEvent event, @Nullable Entity sourceEntity, @Nullable Entity actor, float distance) {
 
 			use();
-
 			if (blockAction != null) {
 				blockAction.accept(Triple.of(world, pos, Direction.UP));
 			}
