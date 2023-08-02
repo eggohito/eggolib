@@ -1,6 +1,6 @@
 package io.github.eggohito.eggolib.mixin;
 
-import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.eggohito.eggolib.component.EggolibComponents;
 import io.github.eggohito.eggolib.component.entity.IMiscComponent;
@@ -22,6 +22,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.Set;
 import java.util.function.BiConsumer;
 
+@SuppressWarnings("unused")
 @Mixin(Entity.class)
 public abstract class EntityMixin {
 
@@ -46,12 +47,12 @@ public abstract class EntityMixin {
 		}
 	}
 
-	@ModifyExpressionValue(method = "getCommandTags", at = @At(value = "HEAD"))
-	private Set<String> eggolib$syncAndGetCommandTags() {
+	@ModifyReturnValue(method = "getCommandTags", at = @At(value = "RETURN"))
+	private Set<String> eggolib$syncAndGetCommandTags(Set<String> original) {
 
 		IMiscComponent component = EggolibComponents.MISC.get(this);
 		if (!world.isClient) {
-			component.copyScoreboardTagsFrom(this.commandTags);
+			component.copyScoreboardTagsFrom(original);
 		}
 
 		return component.getScoreboardTags();
