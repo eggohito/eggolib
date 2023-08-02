@@ -7,25 +7,29 @@ import java.util.Objects;
 
 public abstract class TickerUtil<T> {
 
+	private boolean wasExecuted = false;
+
 	protected int remainingTicks = 0;
 	protected DataWrapper<T> dataWrapper = null;
 
 	public final void start(T data) {
 
-		if (dataWrapper == null || !Objects.equals(dataWrapper.wrappedData(), data)) {
-			remainingTicks = Eggolib.config.client.syncTickRate;
+		if (dataWrapper != null && Objects.equals(dataWrapper.wrappedData(), data)) {
+			return;
 		}
 
+		remainingTicks = Eggolib.config.client.syncTickRate;
 		dataWrapper = new DataWrapper<>(data);
+		wasExecuted = false;
 
 	}
 
 	public void tick() {
 		if (remainingTicks > 0) {
 			--remainingTicks;
-		} else if (dataWrapper != null) {
+		} else if (dataWrapper != null && !wasExecuted) {
 			execute();
-			dataWrapper = null;
+			wasExecuted = true;
 		}
 	}
 
