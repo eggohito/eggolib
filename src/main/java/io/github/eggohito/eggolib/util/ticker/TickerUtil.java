@@ -25,6 +25,7 @@ public abstract class TickerUtil<T> {
 			--remainingTicks;
 		} else if (dataWrapper != null) {
 			execute();
+			dataWrapper = null;
 		}
 	}
 
