@@ -4,35 +4,24 @@ import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.eggohito.eggolib.Eggolib;
-import io.github.eggohito.eggolib.component.EggolibComponents;
-import io.github.eggohito.eggolib.component.entity.IMiscComponent;
 import net.minecraft.entity.Entity;
 
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
 public class HasTagCondition {
 
 	public static boolean condition(SerializableData.Instance data, Entity entity) {
 
-		Optional<IMiscComponent> miscComponent = EggolibComponents.MISC.maybeGet(entity);
-		if (miscComponent.isEmpty()) {
-			return false;
-		}
-
 		Set<String> specifiedScoreboardTags = new HashSet<>();
-		Set<String> scoreboardTags = miscComponent.get().getScoreboardTags();
+		Set<String> scoreboardTags = entity.getCommandTags();
 
 		data.ifPresent("tag", specifiedScoreboardTags::add);
 		data.ifPresent("tags", specifiedScoreboardTags::addAll);
 
-		if (specifiedScoreboardTags.isEmpty()) {
-			return !scoreboardTags.isEmpty();
-		} else {
-			return !Collections.disjoint(scoreboardTags, specifiedScoreboardTags);
-		}
+		return specifiedScoreboardTags.isEmpty() ? !scoreboardTags.isEmpty() :
+		       Collections.disjoint(scoreboardTags, specifiedScoreboardTags);
 
 	}
 

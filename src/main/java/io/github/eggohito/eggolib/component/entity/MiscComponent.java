@@ -26,20 +26,28 @@ public class MiscComponent implements IMiscComponent {
 
 	@Override
 	public void copyScoreboardTagsFrom(Set<String> tags) {
+
+		if (scoreboardTags.equals(tags)) {
+			return;
+		}
+
 		this.scoreboardTags = tags;
 		sync();
+
 	}
 
 	@Override
 	public void removeScoreboardTag(String tag) {
-		this.scoreboardTags.remove(tag);
-		sync();
+		if (this.scoreboardTags.remove(tag)) {
+			sync();
+		}
 	}
 
 	@Override
 	public void addScoreboardTag(String tag) {
-		this.scoreboardTags.add(tag);
-		sync();
+		if (this.scoreboardTags.add(tag)) {
+			sync();
+		}
 	}
 
 	@Override
