@@ -1,17 +1,24 @@
 package io.github.eggohito.eggolib.power;
 
+import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.power.CooldownPower;
+import io.github.apace100.apoli.power.Power;
 import io.github.apace100.apoli.power.PowerType;
 import io.github.apace100.apoli.power.factory.PowerFactory;
 import io.github.apace100.apoli.util.HudRender;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.eggohito.eggolib.Eggolib;
+import io.github.eggohito.eggolib.EggolibClient;
 import io.github.eggohito.eggolib.data.EggolibDataTypes;
 import io.github.eggohito.eggolib.util.Key;
 import io.github.eggohito.eggolib.util.key.FunctionalKey;
 import io.github.eggohito.eggolib.util.key.TimedKey;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.option.KeyBinding;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -19,7 +26,9 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 /**
@@ -128,6 +137,50 @@ public class ActionOnKeySequencePower extends CooldownPower {
 			if (nbtElement instanceof NbtCompound keyNbtCompound) {
 				currentKeySequence.add(new Key(keyNbtCompound.getString("Key")));
 			}
+		}
+
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static void integrateCallback(MinecraftClient client) {
+
+		if (client.player == null) {
+			return;
+		}
+
+		List<ActionOnKeySequencePower> powers = PowerHolderComponent.getPowers(client.player, ActionOnKeySequencePower.class).stream()
+			.filter(Power::isActive)
+			.toList();
+		if (powers.isEmpty()) {
+			return;
+		}
+
+		Map<ActionOnKeySequencePower, FunctionalKey> triggeredPowers = new HashMap<>();
+		Map<String, Boolean> currentKeyBindingStates = new HashMap<>();
+
+		for (ActionOnKeySequencePower power : powers) {
+
+			List<FunctionalKey> keys = power.getKeys();
+			for (FunctionalKey key : keys) {
+
+				KeyBinding keyBinding = EggolibClient.getKeyBinding(key.key);
+				if (keyBinding == null) {
+					continue;
+				}
+
+				currentKeyBindingStates.put(key.key, keyBinding.isPressed());
+				if (currentKeyBindingStates.get(key.key) && (key.continuous || !EggolibClient.PREVIOUS_KEY_BINDING_STATES.getOrDefault(key.key, false))) {
+					triggeredPowers.put(power, key);
+				}
+
+			}
+
+		}
+
+		EggolibClient.PREVIOUS_KEY_BINDING_STATES.putAll(currentKeyBindingStates);
+		if (!triggeredPowers.isEmpty()) {
+			EggolibClient.syncKeyPresses(triggeredPowers);
+			EggolibClient.compareKeySequences(triggeredPowers);
 		}
 
 	}

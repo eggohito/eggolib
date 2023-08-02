@@ -28,6 +28,9 @@
 		"cardinal-components-entity": [
 			"io.github.eggohito.eggolib.registry.factory.EggolibEntityComponents"
 		],
+		"modmenu": [
+			"io.github.eggohito.eggolib.integration.EggolibModMenuIntegration"
+		],
 		"eggolib:compat/client": [
 			"io.github.eggohito.eggolib.compat.apace100.origins.OriginsCompatClient"
 		]

@@ -1,14 +1,15 @@
 package io.github.eggohito.eggolib;
 
-import io.github.apace100.apoli.component.PowerHolderComponent;
-import io.github.apace100.apoli.power.Power;
 import io.github.eggohito.eggolib.compat.EggolibModCompatClient;
 import io.github.eggohito.eggolib.data.EggolibClassDataClient;
+import io.github.eggohito.eggolib.integration.EggolibPowerIntegration;
 import io.github.eggohito.eggolib.networking.EggolibPacketsS2C;
 import io.github.eggohito.eggolib.networking.packet.c2s.EndKeySequencePacket;
 import io.github.eggohito.eggolib.networking.packet.c2s.SyncKeyPressPacket;
 import io.github.eggohito.eggolib.power.ActionOnKeySequencePower;
 import io.github.eggohito.eggolib.util.Key;
+import io.github.eggohito.eggolib.util.ticker.PerspectiveTickerUtil;
+import io.github.eggohito.eggolib.util.ticker.ScreenTickerUtil;
 import io.github.eggohito.eggolib.util.key.FunctionalKey;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
@@ -29,8 +30,13 @@ import java.util.Map;
 public class EggolibClient implements ClientModInitializer {
 
 	public static final Map<KeyBinding, Boolean> PREVENTED_KEY_BINDINGS = new HashMap<>();
-	private static final Map<String, Boolean> PREVIOUS_KEY_BINDING_STATES = new HashMap<>();
-	private static final Map<String, KeyBinding> ID_TO_KEYBINDING_MAP = new HashMap<>();
+
+	public static final Map<String, Boolean> PREVIOUS_KEY_BINDING_STATES = new HashMap<>();
+	public static final Map<String, KeyBinding> ID_TO_KEYBINDING_MAP = new HashMap<>();
+
+	public static final PerspectiveTickerUtil PERSPECTIVE_TICKER_UTIL = new PerspectiveTickerUtil();
+	public static final ScreenTickerUtil SCREEN_TICKER_UTIL = new ScreenTickerUtil();
+
 	private static boolean initializedKeyBindingMap = false;
 
 	@Override
@@ -40,6 +46,9 @@ public class EggolibClient implements ClientModInitializer {
 		EggolibPacketsS2C.register();
 		EggolibClassDataClient.register();
 
+		//  Register client callbacks used by some power types
+		EggolibPowerIntegration.registerClient();
+
 		//  Initialize client compat. stuff
 		FabricLoader.getInstance()
 			.getEntrypointContainers("eggolib:compat/client", EggolibModCompatClient.class)
@@ -47,47 +56,11 @@ public class EggolibClient implements ClientModInitializer {
 			.map(EntrypointContainer::getEntrypoint)
 			.forEach(EggolibModCompatClient::init);
 
-		//  Track which keybinds the player is pressing
+		//  Tick ticker utilities
 		ClientTickEvents.START_CLIENT_TICK.register(
 			minecraftClient -> {
-
-				if (minecraftClient.player == null) {
-					return;
-				}
-
-				List<ActionOnKeySequencePower> powers = PowerHolderComponent.getPowers(minecraftClient.player, ActionOnKeySequencePower.class).stream().filter(Power::isActive).toList();
-				if (powers.isEmpty()) {
-					return;
-				}
-
-				HashMap<ActionOnKeySequencePower, FunctionalKey> triggeredPowers = new HashMap<>();
-				HashMap<String, Boolean> currentKeyBindingStates = new HashMap<>();
-
-				for (ActionOnKeySequencePower power : powers) {
-
-					List<FunctionalKey> keys = power.getKeys();
-					for (FunctionalKey key : keys) {
-
-						KeyBinding keyBinding = getKeyBinding(key.key);
-						if (keyBinding == null) {
-							continue;
-						}
-
-						currentKeyBindingStates.put(key.key, keyBinding.isPressed());
-						if (currentKeyBindingStates.get(key.key) && (key.continuous || !PREVIOUS_KEY_BINDING_STATES.getOrDefault(key.key, false))) {
-							triggeredPowers.put(power, key);
-						}
-
-					}
-
-				}
-
-				PREVIOUS_KEY_BINDING_STATES.putAll(currentKeyBindingStates);
-				if (!triggeredPowers.isEmpty()) {
-					syncKeyPresses(triggeredPowers);
-					compareKeySequences(triggeredPowers);
-				}
-
+				PERSPECTIVE_TICKER_UTIL.tick();
+				SCREEN_TICKER_UTIL.tick();
 			}
 		);
 
@@ -97,7 +70,7 @@ public class EggolibClient implements ClientModInitializer {
 		ID_TO_KEYBINDING_MAP.put(keyName, keyBinding);
 	}
 
-	private void syncKeyPresses(Map<ActionOnKeySequencePower, FunctionalKey> powerAndKeyMap) {
+	public static void syncKeyPresses(Map<ActionOnKeySequencePower, FunctionalKey> powerAndKeyMap) {
 
 		Map<Identifier, String> powerIdAndKeyStringMap = new HashMap<>();
 		for (Map.Entry<ActionOnKeySequencePower, FunctionalKey> powerAndKey : powerAndKeyMap.entrySet()) {
@@ -116,7 +89,7 @@ public class EggolibClient implements ClientModInitializer {
 
 	}
 
-	private void compareKeySequences(Map<ActionOnKeySequencePower, FunctionalKey> powerAndKeyMap) {
+	public static void compareKeySequences(Map<ActionOnKeySequencePower, FunctionalKey> powerAndKeyMap) {
 
 		Map<Identifier, Boolean> powerIdAndMatchingSequenceMap = new HashMap<>();
 		for (ActionOnKeySequencePower power : powerAndKeyMap.keySet()) {
@@ -140,7 +113,7 @@ public class EggolibClient implements ClientModInitializer {
 
 	}
 
-	private KeyBinding getKeyBinding(String name) {
+	public static KeyBinding getKeyBinding(String name) {
 		if (ID_TO_KEYBINDING_MAP.containsKey(name)) {
 			return ID_TO_KEYBINDING_MAP.get(name);
 		} else if (initializedKeyBindingMap) {
