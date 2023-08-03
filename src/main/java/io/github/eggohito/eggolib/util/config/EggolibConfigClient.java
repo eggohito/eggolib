@@ -1,5 +1,6 @@
 package io.github.eggohito.eggolib.util.config;
 
+import io.github.eggohito.eggolib.integration.autoconfig.annotation.NonSliderBoundedDiscrete;
 import me.shedaniel.autoconfig.ConfigData;
 import me.shedaniel.autoconfig.annotation.Config;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
@@ -8,14 +9,7 @@ import me.shedaniel.autoconfig.annotation.ConfigEntry;
 public class EggolibConfigClient implements ConfigData {
 
 	@ConfigEntry.Gui.Tooltip
-	@ConfigEntry.BoundedDiscrete(min = 5, max = Integer.MAX_VALUE)
+	@NonSliderBoundedDiscrete.Integer(min = 5)
 	public int syncTickRate = 10;
-
-	@Override
-	public void validatePostLoad() throws ValidationException {
-		if (syncTickRate < 5) {
-			syncTickRate = 5;
-		}
-	}
 
 }
