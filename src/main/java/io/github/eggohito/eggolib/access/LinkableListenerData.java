@@ -1,10 +1,10 @@
 package io.github.eggohito.eggolib.access;
 
-import io.github.apace100.apoli.power.Power;
+import io.github.eggohito.eggolib.power.GameEventListenerPower;
 
 import java.util.Optional;
 
 public interface LinkableListenerData {
-	Optional<Power> eggolib$getLinkedPower();
-	void eggolib$linkPower(Power power);
+	Optional<GameEventListenerPower> eggolib$getLinkedPower();
+	void eggolib$linkPower(GameEventListenerPower power);
 }
