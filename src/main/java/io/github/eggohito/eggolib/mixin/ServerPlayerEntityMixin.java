@@ -2,8 +2,12 @@ package io.github.eggohito.eggolib.mixin;
 
 import com.mojang.authlib.GameProfile;
 import io.github.apace100.apoli.component.PowerHolderComponent;
+import io.github.eggohito.eggolib.access.InventoryHolder;
+import io.github.eggohito.eggolib.networking.packet.s2c.OpenInventoryPacket;
 import io.github.eggohito.eggolib.power.StatPower;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.stat.Stat;
 import net.minecraft.util.math.BlockPos;
@@ -14,10 +18,17 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerPlayerEntity.class)
-public abstract class ServerPlayerEntityMixin extends PlayerEntity {
+public abstract class ServerPlayerEntityMixin extends PlayerEntity implements InventoryHolder {
 
 	public ServerPlayerEntityMixin(World world, BlockPos pos, float yaw, GameProfile gameProfile) {
 		super(world, pos, yaw, gameProfile);
+	}
+
+	@Override
+	public void eggolib$openInventory() {
+		if (!(this.currentScreenHandler instanceof PlayerScreenHandler)) {
+			ServerPlayNetworking.send((ServerPlayerEntity) (Object) this, new OpenInventoryPacket(this.getId()));
+		}
 	}
 
 	@Inject(method = "increaseStat", at = @At("TAIL"))

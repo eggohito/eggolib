@@ -18,10 +18,7 @@
 package io.github.eggohito.eggolib.networking;
 
 import io.github.eggohito.eggolib.Eggolib;
-import io.github.eggohito.eggolib.networking.packet.s2c.CloseScreenPacket;
-import io.github.eggohito.eggolib.networking.packet.s2c.GetPerspectivePacket;
-import io.github.eggohito.eggolib.networking.packet.s2c.GetScreenStatePacket;
-import io.github.eggohito.eggolib.networking.packet.s2c.SetPerspectivePacket;
+import io.github.eggohito.eggolib.networking.packet.s2c.*;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import net.fabricmc.api.EnvType;
@@ -48,6 +45,7 @@ public class EggolibPacketsS2C {
 				ClientPlayNetworking.registerReceiver(GetScreenStatePacket.TYPE, GetScreenStatePacket::handle);
 				ClientPlayNetworking.registerReceiver(SetPerspectivePacket.TYPE, SetPerspectivePacket::handle);
 				ClientPlayNetworking.registerReceiver(GetPerspectivePacket.TYPE, GetPerspectivePacket::handle);
+				ClientPlayNetworking.registerReceiver(OpenInventoryPacket.TYPE, OpenInventoryPacket::handle);
 			}
 		);
 	}
