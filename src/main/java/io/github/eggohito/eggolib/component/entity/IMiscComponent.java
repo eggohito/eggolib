@@ -6,13 +6,11 @@ import java.util.Set;
 
 public interface IMiscComponent extends AutoSyncedComponent {
 
-	Set<String> getScoreboardTags();
+	Set<String> getCommandTags();
 
-	void copyScoreboardTagsFrom(Set<String> tags);
+	boolean removeCommandTag(String commandTag);
 
-	void removeScoreboardTag(String tag);
-
-	void addScoreboardTag(String tag);
+	boolean addCommandTag(String commandTag);
 
 	void sync();
 

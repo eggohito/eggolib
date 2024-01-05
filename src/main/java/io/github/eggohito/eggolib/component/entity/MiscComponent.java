@@ -12,42 +12,26 @@ import java.util.Set;
 
 public class MiscComponent implements IMiscComponent {
 
+	private final Set<String> commandTags = new HashSet<>();
 	private final Entity entity;
-	private Set<String> scoreboardTags = new HashSet<>();
 
 	public MiscComponent(Entity entity) {
 		this.entity = entity;
 	}
 
 	@Override
-	public Set<String> getScoreboardTags() {
-		return scoreboardTags;
+	public Set<String> getCommandTags() {
+		return commandTags;
 	}
 
 	@Override
-	public void copyScoreboardTagsFrom(Set<String> tags) {
-
-		if (scoreboardTags.equals(tags)) {
-			return;
-		}
-
-		this.scoreboardTags = tags;
-		sync();
-
+	public boolean removeCommandTag(String commandTag) {
+		return this.commandTags.remove(commandTag);
 	}
 
 	@Override
-	public void removeScoreboardTag(String tag) {
-		if (this.scoreboardTags.remove(tag)) {
-			sync();
-		}
-	}
-
-	@Override
-	public void addScoreboardTag(String tag) {
-		if (this.scoreboardTags.add(tag)) {
-			sync();
-		}
+	public boolean addCommandTag(String commandTag) {
+		return this.commandTags.add(commandTag);
 	}
 
 	@Override
@@ -57,18 +41,27 @@ public class MiscComponent implements IMiscComponent {
 
 	@Override
 	public void readFromNbt(NbtCompound tag) {
-		this.scoreboardTags.clear();
-		NbtList nbtList = tag.getList("Tags", NbtElement.STRING_TYPE);
-		for (int i = 0; i < nbtList.size(); i++) {
-			this.scoreboardTags.add(nbtList.getString(i));
+
+		NbtList commandTagsNbt = tag.getList("Tags", NbtElement.STRING_TYPE);
+		this.commandTags.clear();
+
+		for (int i = 0; i < commandTagsNbt.size(); i++) {
+			this.commandTags.add(commandTagsNbt.getString(i));
 		}
+
 	}
 
 	@Override
 	public void writeToNbt(NbtCompound tag) {
-		NbtList nbtList = new NbtList();
-		nbtList.addAll(this.scoreboardTags.stream().map(NbtString::of).toList());
-		tag.put("Tags", nbtList);
+
+		NbtList commandTagsNbt = new NbtList();
+		this.commandTags
+			.stream()
+			.map(NbtString::of)
+			.forEach(commandTagsNbt::add);
+
+		tag.put("Tags", commandTagsNbt);
+
 	}
 
 }
