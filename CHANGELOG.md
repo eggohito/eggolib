@@ -1,13 +1,12 @@
-##  Changelog
+#   Changelog
 
-* Added `tooltip` power type
-	* Similar to Apoli's `tooltip` power type, except it can resolve JSON text component on the server-side
-* Added these new entity action types:
-  * `grant_advancement`
-  * `revoke_advancement`
-    * Both are similar to Apoli's `*_advancement` entity action types, except it's more functionally similar to the `/advancement` command
-* Added these new item action types:
-  * `execute_command`
-  * `copy_to_storage`
-* Added `type` damage condition type
+##  Changes
 
+* The current screen and perspective is now only synced after a certain amount of ticks (controlled by the `syncTickRate` field in the client config.)
+* Simplified the attack distance scaling factor implementation of the `eggolib:invisibility` power type.
+* Optimized implementation of syncing command tags.
+
+##  Fixes
+
+* Fixed performance issue with setting the item stack's holder.
+* Fixed `open_inventory` entity action type not opening the entity's inventory if no `power` is specified.
