@@ -1,5 +1,6 @@
 package io.github.eggohito.eggolib.mixin;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.authlib.GameProfile;
@@ -11,27 +12,20 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.util.List;
 
 @Mixin(AbstractClientPlayerEntity.class)
 public abstract class AbstractClientPlayerEntityMixin extends PlayerEntity {
 
-	@Unique
-	private float eggolib$startingFovMultiplier;
-
 	public AbstractClientPlayerEntityMixin(World world, BlockPos pos, float yaw, GameProfile gameProfile) {
 		super(world, pos, yaw, gameProfile);
 	}
 
-	@Inject(method = "getFovMultiplier", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/AbstractClientPlayerEntity;getAbilities()Lnet/minecraft/entity/player/PlayerAbilities;", ordinal = 0), locals = LocalCapture.CAPTURE_FAILHARD)
-	private void eggolib$getStartingFov(CallbackInfoReturnable<Float> cir, float f) {
-		eggolib$startingFovMultiplier = f;
+	@ModifyExpressionValue(method = "getFovMultiplier", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/AbstractClientPlayerEntity;isUsingSpyglass()Z"))
+	private boolean eggolib$delegateSpyglassFovMultiplier(boolean original) {
+		return !PowerHolderComponent.hasPower(this, ModifyFovPower.class) && original;
 	}
 
 	@WrapOperation(method = "getFovMultiplier", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/MathHelper;lerp(FFF)F"))
@@ -42,9 +36,11 @@ public abstract class AbstractClientPlayerEntityMixin extends PlayerEntity {
 			return original.call(delta, start, end);
 		}
 
-		boolean affectedByFovEffectScale = mfps.stream().anyMatch(ModifyFovPower::isAffectedByFovEffectScale);
+		boolean affectedByFovEffectScale = mfps
+			.stream()
+			.anyMatch(ModifyFovPower::isAffectedByFovEffectScale);
 
-		float newEnd = PowerHolderComponent.modify(this, ModifyFovPower.class, (affectedByFovEffectScale ? end : eggolib$startingFovMultiplier));
+		float newEnd = PowerHolderComponent.modify(this, ModifyFovPower.class, end);
 		float newDelta = affectedByFovEffectScale ? delta : start;
 
 		return MathHelper.lerp(newDelta, start, newEnd);
