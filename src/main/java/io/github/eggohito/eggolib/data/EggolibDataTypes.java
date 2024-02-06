@@ -19,6 +19,7 @@ import io.github.eggohito.eggolib.util.nbt.NbtOperator;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.ScoreHolderArgumentType;
+import net.minecraft.entity.EntityPose;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -333,5 +334,7 @@ public class EggolibDataTypes {
 	);
 
 	public static final SerializableDataType<List<NbtOperation>> NBT_OPERATIONS = SerializableDataType.list(NBT_OPERATION);
+
+	public static final SerializableDataType<EntityPose> ENTITY_POSE = SerializableDataType.enumValue(EntityPose.class);
 
 }

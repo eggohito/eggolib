@@ -3,10 +3,7 @@ package io.github.eggohito.eggolib.mixin;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.power.Prioritized;
-import io.github.eggohito.eggolib.power.ActionOnCriticalHitPower;
-import io.github.eggohito.eggolib.power.CrawlingPower;
-import io.github.eggohito.eggolib.power.PreventCriticalHitPower;
-import io.github.eggohito.eggolib.power.PrioritizedPower;
+import io.github.eggohito.eggolib.power.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -22,6 +19,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Mixin(PlayerEntity.class)
@@ -100,10 +98,16 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Nameable
 	}
 
 	@Inject(method = "updatePose", at = @At("HEAD"), cancellable = true)
-	private void eggolib$forceCrawlPose(CallbackInfo ci) {
-		if (PowerHolderComponent.hasPower(this, CrawlingPower.class)) {
-			ci.cancel();
-		}
+	private void eggolib$forcePose(CallbackInfo ci) {
+
+		PowerHolderComponent.getPowers(this, PosePower.class)
+			.stream()
+			.max(Comparator.comparing(PosePower::getPriority))
+			.ifPresent(p -> {
+				this.setPose(p.getPose());
+				ci.cancel();
+			});
+
 	}
 
 }

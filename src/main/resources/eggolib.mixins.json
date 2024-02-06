@@ -30,6 +30,7 @@
         "LivingEntityRendererMixin",
         "MinecraftClientMixin",
         "MouseMixin",
+        "PlayerEntityRendererMixin",
         "apace100.apoli.ApoliClientMixin"
     ],
     "server": [],
