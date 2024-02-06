@@ -17,6 +17,7 @@ import io.github.eggohito.eggolib.util.key.TimedKey;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.ScoreHolderArgumentType;
+import net.minecraft.entity.EntityPose;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.function.CopyNbtLootFunction;
@@ -365,5 +366,7 @@ public class EggolibDataTypes {
 	public static final SerializableDataType<EnumSet<InventoryType>> INVENTORY_TYPE_SET = SerializableDataType.enumSet(InventoryType.class, INVENTORY_TYPE);
 
 	public static final SerializableDataType<ProcessMode> PROCESS_MODE = SerializableDataType.enumValue(ProcessMode.class);
+
+	public static final SerializableDataType<EntityPose> ENTITY_POSE = SerializableDataType.enumValue(EntityPose.class);
 
 }

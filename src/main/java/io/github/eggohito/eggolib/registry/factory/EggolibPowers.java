@@ -30,6 +30,7 @@ public class EggolibPowers {
 		register(PreventCriticalHitPower.getFactory());
 		register(PreventKeyUsePower.getFactory());
 		register(PreventItemPickupPower.getFactory());
+		register(PosePower.getFactory());
 	}
 
 	public static PowerFactory<?> register(PowerFactory<?> powerFactory) {
