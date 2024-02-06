@@ -28,10 +28,10 @@ public class CompareScoreCondition {
 		Comparison comparison = data.get("comparison");
 		Scoreboard scoreboard = actorAndTarget.getLeft().getWorld().getScoreboard();
 
-		ScoreboardObjective actorObjective = scoreboard.getObjective(actorObjectiveName);
-		ScoreboardObjective targetObjective = scoreboard.getObjective(targetObjectiveName);
+		ScoreboardObjective actorObjective = scoreboard.getNullableObjective(actorObjectiveName);
+		ScoreboardObjective targetObjective = scoreboard.getNullableObjective(targetObjectiveName);
 
-		if (scoreboard.playerHasObjective(actorName, actorObjective) && scoreboard.playerHasObjective(targetName, targetObjective)) {
+		if (actorObjective != null && scoreboard.playerHasObjective(actorName, actorObjective) && targetObjective != null && scoreboard.playerHasObjective(targetName, targetObjective)) {
 			return comparison.compare(scoreboard.getPlayerScore(actorName, actorObjective).getScore(), scoreboard.getPlayerScore(targetName, targetObjective).getScore());
 		} else {
 			return false;

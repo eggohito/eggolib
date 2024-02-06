@@ -26,7 +26,7 @@ public record SyncPreventedKeyPacket(String key, List<Identifier> powerIds) impl
 
 		String key = buf.readString();
 		List<Identifier> powerIds = new LinkedList<>();
-		
+
 		int powerIdsSize = buf.readInt();
 		for (int i = 0; i < powerIdsSize; i++) {
 			powerIds.add(buf.readIdentifier());

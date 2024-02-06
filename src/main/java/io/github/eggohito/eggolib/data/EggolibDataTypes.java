@@ -9,21 +9,20 @@ import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.apace100.calio.util.ArgumentWrapper;
-import io.github.eggohito.eggolib.condition.EggolibConditionTypes;
+import io.github.eggohito.eggolib.registry.EggolibRegistries;
 import io.github.eggohito.eggolib.util.*;
 import io.github.eggohito.eggolib.util.MathUtil.MathOperation;
 import io.github.eggohito.eggolib.util.key.FunctionalKey;
 import io.github.eggohito.eggolib.util.key.TimedKey;
+import io.github.eggohito.eggolib.util.nbt.NbtOperation;
+import io.github.eggohito.eggolib.util.nbt.NbtOperator;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.ScoreHolderArgumentType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.loot.function.CopyNbtLootFunction;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.scoreboard.AbstractTeam;
-import net.minecraft.server.command.AdvancementCommand;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Pair;
 import net.minecraft.world.dimension.DimensionType;
@@ -31,15 +30,9 @@ import net.minecraft.world.dimension.DimensionType;
 import java.util.EnumSet;
 import java.util.List;
 
-@SuppressWarnings("unused")
 public class EggolibDataTypes {
 
-	public static final SerializableDataType<ConditionFactory<RegistryEntry<DimensionType>>.Instance> DIMENSION_TYPE_CONDITION = new SerializableDataType<>(
-		ClassUtil.castClass(ConditionFactory.Instance.class),
-		EggolibConditionTypes.DIMENSION_TYPE::write,
-		EggolibConditionTypes.DIMENSION_TYPE::read,
-		EggolibConditionTypes.DIMENSION_TYPE::read
-	);
+	public static final SerializableDataType<ConditionFactory<RegistryEntry<DimensionType>>.Instance> DIMENSION_TYPE_CONDITION = ApoliDataTypes.condition(EggolibRegistries.DIMENSION_TYPE_CONDITION, "Dimension type condition");
 
 	public static final SerializableDataType<List<ConditionFactory<RegistryEntry<DimensionType>>.Instance>> DIMENSION_TYPE_CONDITIONS = SerializableDataType.list(DIMENSION_TYPE_CONDITION);
 
@@ -77,7 +70,7 @@ public class EggolibDataTypes {
 
 	public static final SerializableDataType<List<MoonPhase>> MOON_PHASES = SerializableDataType.list(MOON_PHASE);
 
-	public static final SerializableDataType<CopyNbtLootFunction.Operator> NBT_OPERATOR = SerializableDataType.enumValue(CopyNbtLootFunction.Operator.class);
+	public static final SerializableDataType<NbtOperator> NBT_OPERATOR = SerializableDataType.enumValue(NbtOperator.class);
 
 	public static final SerializableDataType<Pair<ArgumentWrapper<ScoreHolderArgumentType.ScoreHolder>, String>> SCOREBOARD = SerializableDataType.compound(
 		ClassUtil.castClass(Pair.class),
@@ -127,7 +120,8 @@ public class EggolibDataTypes {
 			} else {
 				return new Key(jsonPrimitive.getAsString());
 			}
-		}
+		},
+		KEY::write
 	);
 
 	public static final SerializableDataType<TimedKey> TIMED_KEY = SerializableDataType.compound(
@@ -169,7 +163,8 @@ public class EggolibDataTypes {
 				return timedKey;
 
 			}
-		}
+		},
+		TIMED_KEY::write
 	);
 
 	public static final SerializableDataType<FunctionalKey> FUNCTIONAL_KEY = SerializableDataType.compound(
@@ -206,7 +201,8 @@ public class EggolibDataTypes {
 			} else {
 				return new FunctionalKey(jsonElement.getAsString());
 			}
-		}
+		},
+		FUNCTIONAL_KEY::write
 	);
 
 	public static final SerializableDataType<List<TimedKey>> TIMED_KEYS = SerializableDataType.list(TIMED_KEY);
@@ -306,37 +302,19 @@ public class EggolibDataTypes {
 				eggolibTeam.setName(jsonPrimitive.getAsString());
 				return eggolibTeam;
 			}
-		}
+		},
+		TEAM::write
 	);
 
 	public static final SerializableDataType<List<EggolibTeam>> BACKWARDS_COMPATIBLE_TEAMS = SerializableDataType.list(BACKWARDS_COMPATIBLE_TEAM);
 
-	public static final SerializableDataType<Integer> POSITIVE_INT = new SerializableDataType<>(
-		Integer.class,
-		PacketByteBuf::writeInt,
-		PacketByteBuf::readInt,
-		jsonElement -> {
-
-			int value = jsonElement.getAsInt();
-
-			if (value <= 0) {
-				throw new IllegalArgumentException("'" + value + "' must be equal to or greater than 1!");
-			} else {
-				return value;
-			}
-
-		}
-	);
-
-	public static final SerializableDataType<List<Integer>> POSITIVE_INTS = SerializableDataType.list(POSITIVE_INT);
-
-	public static final SerializableDataType<CopyNbtLootFunction.Operation> NBT_OPERATION = SerializableDataType.compound(
-		CopyNbtLootFunction.Operation.class,
+	public static final SerializableDataType<NbtOperation> NBT_OPERATION = SerializableDataType.compound(
+		NbtOperation.class,
 		new SerializableData()
-			.add("source", SerializableDataTypes.STRING)
-			.add("target", SerializableDataTypes.STRING)
+			.add("source", SerializableDataTypes.NBT_PATH)
+			.add("target", SerializableDataTypes.NBT_PATH)
 			.add("op", EggolibDataTypes.NBT_OPERATOR),
-		data -> new CopyNbtLootFunction.Operation(
+		data -> new NbtOperation(
 			data.get("source"),
 			data.get("target"),
 			data.get("op")
@@ -345,25 +323,15 @@ public class EggolibDataTypes {
 
 			SerializableData.Instance data = serializableData.new Instance();
 
-			data.set("source", operation.sourcePath);
-			data.set("target", operation.targetPath);
-			data.set("op", operation.operator);
+			data.set("source", operation.parsedSourcePath());
+			data.set("target", operation.parsedTargetPath());
+			data.set("op", operation.operator());
 
 			return data;
 
 		}
 	);
 
-	public static final SerializableDataType<List<CopyNbtLootFunction.Operation>> NBT_OPERATIONS = SerializableDataType.list(NBT_OPERATION);
-
-	public static final SerializableDataType<AdvancementCommand.Operation> ADVANCEMENT_OPERATION = SerializableDataType.enumValue(AdvancementCommand.Operation.class);
-
-	public static final SerializableDataType<AdvancementCommand.Selection> ADVANCEMENT_SELECTION = SerializableDataType.enumValue(AdvancementCommand.Selection.class);
-
-	public static final SerializableDataType<InventoryType> INVENTORY_TYPE = SerializableDataType.enumValue(InventoryType.class);
-
-	public static final SerializableDataType<EnumSet<InventoryType>> INVENTORY_TYPE_SET = SerializableDataType.enumSet(InventoryType.class, INVENTORY_TYPE);
-
-	public static final SerializableDataType<ProcessMode> PROCESS_MODE = SerializableDataType.enumValue(ProcessMode.class);
+	public static final SerializableDataType<List<NbtOperation>> NBT_OPERATIONS = SerializableDataType.list(NBT_OPERATION);
 
 }

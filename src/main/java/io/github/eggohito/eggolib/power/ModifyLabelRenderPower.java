@@ -9,7 +9,6 @@ import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.eggohito.eggolib.Eggolib;
-import io.github.eggohito.eggolib.data.EggolibDataTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -139,7 +138,7 @@ public class ModifyLabelRenderPower extends PrioritizedPower {
 				.add("after_parse_action", ApoliDataTypes.ENTITY_ACTION, null)
 				.add("text", SerializableDataTypes.TEXT, null)
 				.add("render_mode", SerializableDataType.enumValue(RenderMode.class), RenderMode.DEFAULT)
-				.add("tick_rate", EggolibDataTypes.POSITIVE_INT, 20)
+				.add("tick_rate", SerializableDataTypes.POSITIVE_INT, 20)
 				.add("priority", SerializableDataTypes.INT, 0),
 			data -> (powerType, livingEntity) -> new ModifyLabelRenderPower(
 				powerType,

@@ -41,11 +41,11 @@ public class ScoreboardUtil {
 		);
 
 		Scoreboard scoreboard = Eggolib.minecraftServer.getScoreboard();
-		ScoreboardObjective scoreboardObjective = scoreboard.getObjective(objectiveName);
+		ScoreboardObjective scoreboardObjective = scoreboard.getNullableObjective(objectiveName);
 
 		try {
 			String name = scoreHolder.getNames(source, scoreboard::getKnownPlayers).iterator().next();
-			if (scoreboard.playerHasObjective(name, scoreboardObjective)) {
+			if (scoreboardObjective != null && scoreboard.playerHasObjective(name, scoreboardObjective)) {
 				return Optional.of(scoreboard.getPlayerScore(name, scoreboardObjective).getScore());
 			}
 		} catch (CommandSyntaxException ignored) {

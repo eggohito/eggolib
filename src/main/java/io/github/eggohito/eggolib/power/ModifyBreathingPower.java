@@ -12,7 +12,6 @@ import io.github.apace100.apoli.util.modifier.ModifierUtil;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.eggohito.eggolib.Eggolib;
-import io.github.eggohito.eggolib.data.EggolibDataTypes;
 import io.github.eggohito.eggolib.mixin.micalobia.breathinglib.BreathingInfoBuilderAccessor;
 import io.github.eggohito.eggolib.util.EntityOffset;
 import net.minecraft.block.pattern.CachedBlockPosition;
@@ -194,15 +193,15 @@ public class ModifyBreathingPower extends PrioritizedPower {
 				.add("breathing_status_effects", SerializableDataTypes.STATUS_EFFECTS, null)
 				.add("gain_air_modifier", Modifier.DATA_TYPE, null)
 				.add("gain_air_modifiers", Modifier.LIST_TYPE, null)
-				.add("gain_air_interval", EggolibDataTypes.POSITIVE_INT, null)
+				.add("gain_air_interval", SerializableDataTypes.POSITIVE_INT, null)
 				.add("lose_air_modifier", Modifier.DATA_TYPE, null)
 				.add("lose_air_modifiers", Modifier.LIST_TYPE, null)
-				.add("lose_air_interval", EggolibDataTypes.POSITIVE_INT, null)
+				.add("lose_air_interval", SerializableDataTypes.POSITIVE_INT, null)
 				.add("damage_source", ApoliDataTypes.DAMAGE_SOURCE_DESCRIPTION, null)
 				.add("damage_type", SerializableDataTypes.DAMAGE_TYPE, DamageTypes.DROWN)
 				.add("damage_modifier", Modifier.DATA_TYPE, null)
 				.add("damage_modifiers", Modifier.LIST_TYPE, null)
-				.add("damage_interval", EggolibDataTypes.POSITIVE_INT, null)
+				.add("damage_interval", SerializableDataTypes.POSITIVE_INT, null)
 				.add("particle", SerializableDataTypes.PARTICLE_EFFECT_OR_TYPE, null)
 				.add("ignore_respiration", SerializableDataTypes.BOOLEAN, false)
 				.add("priority", SerializableDataTypes.INT, 0),

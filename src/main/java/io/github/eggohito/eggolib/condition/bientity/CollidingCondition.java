@@ -20,9 +20,9 @@ public class CollidingCondition {
 		Box offsetActorBoundingBox = actorBoundingBox;
 		if (offset != null) {
 			offsetActorBoundingBox = actorBoundingBox.offset(
-				offset.getX() * actorBoundingBox.getXLength(),
-				offset.getY() * actorBoundingBox.getYLength(),
-				offset.getZ() * actorBoundingBox.getZLength()
+				offset.getX() * actorBoundingBox.getLengthX(),
+				offset.getY() * actorBoundingBox.getLengthY(),
+				offset.getZ() * actorBoundingBox.getLengthZ()
 			);
 		}
 

@@ -1,13 +1,13 @@
 package io.github.eggohito.eggolib;
 
-import io.github.apace100.apoli.util.NamespaceAlias;
+import io.github.apace100.apoli.util.IdentifierAlias;
 import io.github.eggohito.eggolib.compat.EggolibModCompat;
 import io.github.eggohito.eggolib.data.EggolibClassData;
 import io.github.eggohito.eggolib.integration.EggolibPowerIntegration;
 import io.github.eggohito.eggolib.networking.EggolibPacketsC2S;
 import io.github.eggohito.eggolib.registry.factory.*;
-import io.github.eggohito.eggolib.util.config.EggolibConfig;
 import io.github.eggohito.eggolib.util.ScreenState;
+import io.github.eggohito.eggolib.util.config.EggolibConfig;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import me.shedaniel.autoconfig.serializer.PartitioningSerializer;
@@ -72,7 +72,7 @@ public class Eggolib implements ModInitializer {
 		config = AutoConfig.getConfigHolder(EggolibConfig.class).getConfig();
 
 		//  Add "apoli" as a namespace alias
-		NamespaceAlias.addAlias(MOD_ID, "apoli");
+		IdentifierAlias.addNamespaceAlias(MOD_ID, "apoli");
 
 		//  Register the client-to-server packet receivers and class data registries
 		EggolibPacketsC2S.register();

@@ -3,7 +3,6 @@ package io.github.eggohito.eggolib.registry.factory;
 import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.power.factory.action.ActionFactory;
 import io.github.apace100.apoli.registry.ApoliRegistries;
-import io.github.eggohito.eggolib.action.block.AreaOfEffectAction;
 import io.github.eggohito.eggolib.action.meta.LoopAction;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.math.BlockPos;
@@ -14,7 +13,6 @@ import org.apache.commons.lang3.tuple.Triple;
 public class EggolibBlockActions {
 
 	public static void register() {
-		register(AreaOfEffectAction.getFactory());
 		register(LoopAction.getFactory(ApoliDataTypes.BLOCK_ACTION));
 	}
 

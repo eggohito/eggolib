@@ -6,12 +6,14 @@ import io.github.eggohito.eggolib.Eggolib;
 import io.github.eggohito.eggolib.data.EggolibDataTypes;
 import io.github.eggohito.eggolib.util.ToolType;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Pair;
+import net.minecraft.world.World;
 
 import java.util.EnumSet;
 
 public class ToolCondition {
 
-	public static boolean condition(SerializableData.Instance data, ItemStack itemStack) {
+	public static boolean condition(SerializableData.Instance data, Pair<World, ItemStack> worldAndStack) {
 
 		EnumSet<ToolType> toolTypes = EnumSet.noneOf(ToolType.class);
 
@@ -22,11 +24,11 @@ public class ToolCondition {
 			toolTypes.addAll(EnumSet.allOf(ToolType.class));
 		}
 
-		return toolTypes.stream().anyMatch(toolType -> toolType.matches(itemStack));
+		return toolTypes.stream().anyMatch(toolType -> toolType.matches(worldAndStack.getRight()));
 
 	}
 
-	public static ConditionFactory<ItemStack> getFactory() {
+	public static ConditionFactory<Pair<World, ItemStack>> getFactory() {
 		return new ConditionFactory<>(
 			Eggolib.identifier("tool"),
 			new SerializableData()
