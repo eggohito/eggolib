@@ -324,8 +324,8 @@ public class EggolibDataTypes {
 
 			SerializableData.Instance data = serializableData.new Instance();
 
-			data.set("source", operation.parsedSourcePath());
-			data.set("target", operation.parsedTargetPath());
+			data.set("source", operation.wrappedSourcePath());
+			data.set("target", operation.wrappedTargetPath());
 			data.set("op", operation.operator());
 
 			return data;
