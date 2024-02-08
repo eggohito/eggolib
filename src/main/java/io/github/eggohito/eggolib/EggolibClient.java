@@ -4,8 +4,8 @@ import io.github.eggohito.eggolib.compat.EggolibModCompatClient;
 import io.github.eggohito.eggolib.data.EggolibClassDataClient;
 import io.github.eggohito.eggolib.integration.EggolibPowerIntegration;
 import io.github.eggohito.eggolib.networking.EggolibPacketsS2C;
-import io.github.eggohito.eggolib.networking.packet.c2s.EndKeySequencePacket;
-import io.github.eggohito.eggolib.networking.packet.c2s.SyncKeyPressPacket;
+import io.github.eggohito.eggolib.networking.packet.c2s.EndKeySequenceC2SPacket;
+import io.github.eggohito.eggolib.networking.packet.c2s.SyncKeyPressC2SPacket;
 import io.github.eggohito.eggolib.power.ActionOnKeySequencePower;
 import io.github.eggohito.eggolib.util.Key;
 import io.github.eggohito.eggolib.util.ticker.PerspectiveTickerUtil;
@@ -87,7 +87,7 @@ public class EggolibClient implements ClientModInitializer {
 		}
 
 		if (!powerIdAndKeyStringMap.isEmpty()) {
-			ClientPlayNetworking.send(new SyncKeyPressPacket(powerIdAndKeyStringMap));
+			ClientPlayNetworking.send(new SyncKeyPressC2SPacket(powerIdAndKeyStringMap));
 		}
 
 	}
@@ -111,7 +111,7 @@ public class EggolibClient implements ClientModInitializer {
 		}
 
 		if (!powerIdAndMatchingSequenceMap.isEmpty()) {
-			ClientPlayNetworking.send(new EndKeySequencePacket(powerIdAndMatchingSequenceMap));
+			ClientPlayNetworking.send(new EndKeySequenceC2SPacket(powerIdAndMatchingSequenceMap));
 		}
 
 	}
