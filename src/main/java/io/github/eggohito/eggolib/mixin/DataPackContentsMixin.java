@@ -11,6 +11,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
@@ -19,7 +20,7 @@ public abstract class DataPackContentsMixin {
 
 	@Inject(method = "reload", at = @At("HEAD"))
 	private static void eggolib$cacheRegistryManager(ResourceManager manager, DynamicRegistryManager.Immutable dynamicRegistryManager, FeatureSet enabledFeatures, CommandManager.RegistrationEnvironment environment, int functionPermissionLevel, Executor prepareExecutor, Executor applyExecutor, CallbackInfoReturnable<CompletableFuture<DataPackContents>> cir) {
-		Eggolib.registryManager = () -> dynamicRegistryManager;
+		Eggolib.registryManager = () -> Optional.of(dynamicRegistryManager);
 	}
 
 }

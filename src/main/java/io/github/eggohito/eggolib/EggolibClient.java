@@ -26,6 +26,7 @@ import net.minecraft.util.Identifier;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Environment(EnvType.CLIENT)
 public class EggolibClient implements ClientModInitializer {
@@ -43,7 +44,7 @@ public class EggolibClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 
-		ClientPlayConnectionEvents.INIT.register((handler, client) -> Eggolib.registryManager = handler::getRegistryManager);
+		ClientPlayConnectionEvents.INIT.register((handler, client) -> Eggolib.registryManager = () -> Optional.of(handler.getRegistryManager()));
 
 		//  Register the packets and the class data registries
 		EggolibPacketsS2C.register();

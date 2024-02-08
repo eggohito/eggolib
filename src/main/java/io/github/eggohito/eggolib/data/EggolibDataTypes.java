@@ -30,7 +30,6 @@ import net.minecraft.entity.EntityPose;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.message.MessageType;
-import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
@@ -447,11 +446,9 @@ public class EggolibDataTypes {
 			id -> {
 
 				RegistryKey<T> registryKey = RegistryKey.of(registryRef, id);
-				DynamicRegistryManager registryManager = Eggolib.registryManager.get();
-
-				Registry<T> registry = registryManager != null
-					? registryManager.get(registryRef)
-					: null;
+				Registry<T> registry = Eggolib.registryManager.get()
+					.map(drm -> drm.get(registryRef))
+					.orElse(null);
 
 				if (registry != null && !registry.contains(registryKey)) {
 					throw new IllegalArgumentException("Type \"%s\" is not registered in registry \"%s\"".formatted(id, registry.getKey().getValue()));
