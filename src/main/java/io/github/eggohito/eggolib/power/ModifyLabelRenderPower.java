@@ -40,14 +40,19 @@ public class ModifyLabelRenderPower extends PrioritizedPower {
 	private Text replacementText;
 	private Integer initialTicks;
 
-	public ModifyLabelRenderPower(PowerType<?> powerType, LivingEntity livingEntity, Consumer<Entity> beforeParseAction, Consumer<Entity> afterParseAction, Text text, RenderMode renderMode, int tickRate, int priority) {
+	private boolean shouldResolve;
+
+	public ModifyLabelRenderPower(PowerType<?> powerType, LivingEntity livingEntity, Consumer<Entity> beforeParseAction, Consumer<Entity> afterParseAction, Text text, RenderMode renderMode, boolean shouldResolve, int tickRate, int priority) {
 		super(powerType, livingEntity, priority);
 		this.beforeParseAction = beforeParseAction;
 		this.afterParseAction = afterParseAction;
 		this.text = text;
 		this.renderMode = renderMode;
+		this.shouldResolve = shouldResolve;
 		this.tickRate = tickRate;
-		this.setTicking(true);
+		if (shouldResolve) {
+			this.setTicking(true);
+		}
 	}
 
 	@Override
@@ -84,18 +89,25 @@ public class ModifyLabelRenderPower extends PrioritizedPower {
 	@Override
 	public NbtElement toTag() {
 
-		NbtCompound nbtCompound = new NbtCompound();
-		nbtCompound.putString("ReplacementText", Text.Serializer.toJson(replacementText));
+		NbtCompound rootNbt = new NbtCompound();
 
-		return nbtCompound;
+		rootNbt.putString("ReplacementText", Text.Serializer.toJson(replacementText));
+		rootNbt.putBoolean("ShouldResolve", shouldResolve);
+
+		return rootNbt;
 
 	}
 
 	@Override
 	public void fromTag(NbtElement tag) {
-		if (tag instanceof NbtCompound nbtCompound) {
-			replacementText = Text.Serializer.fromJson(nbtCompound.getString("ReplacementText"));
+
+		if (!(tag instanceof NbtCompound rootNbt)) {
+			return;
 		}
+
+		this.replacementText = Text.Serializer.fromJson(rootNbt.getString("ReplacementText"));
+		this.shouldResolve = rootNbt.getBoolean("ShouldResolve");
+
 	}
 
 	public RenderMode getMode() {
@@ -103,7 +115,7 @@ public class ModifyLabelRenderPower extends PrioritizedPower {
 	}
 
 	public Text getReplacementText() {
-		return replacementText;
+		return shouldResolve ? replacementText : text;
 	}
 
 	private Optional<Text> parseText() {
@@ -138,6 +150,7 @@ public class ModifyLabelRenderPower extends PrioritizedPower {
 				.add("after_parse_action", ApoliDataTypes.ENTITY_ACTION, null)
 				.add("text", SerializableDataTypes.TEXT, null)
 				.add("render_mode", SerializableDataType.enumValue(RenderMode.class), RenderMode.DEFAULT)
+				.add("should_resolve", SerializableDataTypes.BOOLEAN, true)
 				.add("tick_rate", SerializableDataTypes.POSITIVE_INT, 20)
 				.add("priority", SerializableDataTypes.INT, 0),
 			data -> (powerType, livingEntity) -> new ModifyLabelRenderPower(
@@ -147,6 +160,7 @@ public class ModifyLabelRenderPower extends PrioritizedPower {
 				data.get("after_parse_action"),
 				data.get("text"),
 				data.get("render_mode"),
+				data.get("should_resolve"),
 				data.get("tick_rate"),
 				data.get("priority")
 			)
