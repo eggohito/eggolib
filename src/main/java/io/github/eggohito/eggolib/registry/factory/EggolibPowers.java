@@ -24,6 +24,9 @@ public class EggolibPowers {
 		register(PreventCriticalHitPower.getFactory());
 		register(PreventKeyUsePower.getFactory());
 		register(PosePower.getFactory());
+		register(ActionOnSendingMessagePower.getFactory());
+		register(PreventSendingMessagePower.getFactory());
+		register(ModifySentMessagePower.getFactory());
 	}
 
 	public static PowerFactory<?> register(PowerFactory<?> powerFactory) {

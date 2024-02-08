@@ -1,40 +1,41 @@
 {
-    "required": true,
-    "minVersion": "0.8",
-    "package": "io.github.eggohito.eggolib.mixin",
-    "compatibilityLevel": "JAVA_17",
-    "mixins": [
-        "BlockMixin",
-        "EntityAccessor",
-        "EntityMixin",
-        "FarmlandBlockMixin",
-        "ItemSlotArgumentTypeAccessor",
-        "ItemUsageContextAccessor",
-        "LivingEntityMixin",
-        "PlayerEntityMixin",
-        "ProjectileEntityMixin",
-        "ServerPlayerEntityMixin",
-        "ServerPlayerInteractionManagerAccessor",
-        "apace100.calio.ClassDataRegistryAccessor",
-        "micalobia.breathinglib.BreathingInfoBuilderAccessor"
-    ],
-    "client": [
-        "AbstractClientPlayerEntityMixin",
-        "ClientPlayerEntityAccessor",
-        "ClientPlayerEntityMixin",
-        "ClientPlayerInteractionManagerAccessor",
-        "EntityRendererMixin",
-        "GameOptionsMixin",
-        "KeyBindingAccessor",
-        "KeyboardMixin",
-        "LivingEntityRendererMixin",
-        "MinecraftClientMixin",
-        "MouseMixin",
-        "PlayerEntityRendererMixin",
-        "apace100.apoli.ApoliClientMixin"
-    ],
-    "server": [],
-    "injectors": {
-        "defaultRequire": 1
+	"required": true,
+	"minVersion": "0.8",
+	"package": "io.github.eggohito.eggolib.mixin",
+	"compatibilityLevel": "JAVA_17",
+	"mixins": [
+		"BlockMixin",
+		"EntityAccessor",
+		"EntityMixin",
+		"FarmlandBlockMixin",
+		"ItemSlotArgumentTypeAccessor",
+		"ItemUsageContextAccessor",
+		"LivingEntityMixin",
+		"DataPackContentsMixin",
+		"PlayerEntityMixin",
+		"ProjectileEntityMixin",
+		"ServerPlayerEntityMixin",
+		"ServerPlayerInteractionManagerAccessor",
+		"apace100.calio.ClassDataRegistryAccessor",
+		"micalobia.breathinglib.BreathingInfoBuilderAccessor"
+	],
+	"client": [
+		"AbstractClientPlayerEntityMixin",
+		"ClientPlayerEntityAccessor",
+		"ClientPlayerEntityMixin",
+		"ClientPlayerInteractionManagerAccessor",
+		"EntityRendererMixin",
+		"GameOptionsMixin",
+		"KeyBindingAccessor",
+		"KeyboardMixin",
+		"LivingEntityRendererMixin",
+		"MinecraftClientMixin",
+		"MouseMixin",
+		"PlayerEntityRendererMixin",
+		"apace100.apoli.ApoliClientMixin"
+	],
+	"server": [],
+	"injectors": {
+		"defaultRequire": 1
 	}
 }

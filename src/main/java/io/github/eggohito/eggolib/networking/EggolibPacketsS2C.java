@@ -46,6 +46,8 @@ public class EggolibPacketsS2C {
 				ClientPlayNetworking.registerReceiver(SetPerspectivePacket.TYPE, SetPerspectivePacket::handle);
 				ClientPlayNetworking.registerReceiver(GetPerspectivePacket.TYPE, GetPerspectivePacket::handle);
 				ClientPlayNetworking.registerReceiver(OpenInventoryPacket.TYPE, OpenInventoryPacket::handle);
+				ClientPlayNetworking.registerReceiver(PreventedChatMessagePacket.TYPE, PreventedChatMessagePacket::handle);
+				ClientPlayNetworking.registerReceiver(SentChatMessagePacket.TYPE, SentChatMessagePacket::handle);
 			}
 		);
 	}

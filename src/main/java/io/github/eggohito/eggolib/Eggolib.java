@@ -17,12 +17,14 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.entrypoint.EntrypointContainer;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
+import java.util.function.Supplier;
 
 public class Eggolib implements ModInitializer {
 
@@ -31,6 +33,8 @@ public class Eggolib implements ModInitializer {
 
 	public static EggolibConfig config;
 	public static MinecraftServer minecraftServer;
+
+	public static Supplier<DynamicRegistryManager> registryManager = () -> null;
 
 	public static final String MOD_ID = "eggolib";
 	public static final Logger LOGGER = LoggerFactory.getLogger(Eggolib.class);
