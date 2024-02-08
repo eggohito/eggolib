@@ -5,7 +5,7 @@ import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.eggohito.eggolib.Eggolib;
 import io.github.eggohito.eggolib.mixin.ClientPlayerEntityAccessor;
-import io.github.eggohito.eggolib.networking.packet.s2c.GetScreenStatePacket;
+import io.github.eggohito.eggolib.networking.packet.s2c.GetScreenStateS2CPacket;
 import io.github.eggohito.eggolib.util.MiscUtilClient;
 import io.github.eggohito.eggolib.util.ScreenState;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -51,7 +51,7 @@ public class InScreenCondition {
 		} else {
 			ServerPlayNetworking.send(
 				(ServerPlayerEntity) playerEntity,
-				new GetScreenStatePacket()
+				new GetScreenStateS2CPacket()
 			);
 		}
 

@@ -9,7 +9,7 @@ import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.eggohito.eggolib.Eggolib;
 import io.github.eggohito.eggolib.data.EggolibDataTypes;
-import io.github.eggohito.eggolib.networking.packet.c2s.ModifiedChatMessagePacket;
+import io.github.eggohito.eggolib.networking.packet.c2s.ModifyMessageC2SPacket;
 import io.github.eggohito.eggolib.util.chat.MessageReplacer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -86,7 +86,7 @@ public class ModifySentMessagePower extends Power implements Prioritized<ModifyS
 		}
 
 		if (!powersToSync.isEmpty()) {
-			ClientPlayNetworking.send(new ModifiedChatMessagePacket(powersToSync));
+			ClientPlayNetworking.send(new ModifyMessageC2SPacket(powersToSync));
 		}
 
 		return message;

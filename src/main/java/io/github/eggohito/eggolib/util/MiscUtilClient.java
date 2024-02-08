@@ -6,9 +6,9 @@ import io.github.apace100.calio.data.ClassDataRegistry;
 import io.github.eggohito.eggolib.Eggolib;
 import io.github.eggohito.eggolib.EggolibClient;
 import io.github.eggohito.eggolib.mixin.apace100.calio.ClassDataRegistryAccessor;
-import io.github.eggohito.eggolib.networking.packet.c2s.SyncPerspectivePacket;
-import io.github.eggohito.eggolib.networking.packet.c2s.SyncPreventedKeyPacket;
-import io.github.eggohito.eggolib.networking.packet.c2s.SyncScreenStatePacket;
+import io.github.eggohito.eggolib.networking.packet.c2s.SyncPerspectiveC2SPacket;
+import io.github.eggohito.eggolib.networking.packet.c2s.SyncPreventedKeyC2SPacket;
+import io.github.eggohito.eggolib.networking.packet.c2s.SyncScreenStateC2SPacket;
 import io.github.eggohito.eggolib.power.PreventKeyUsePower;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -17,7 +17,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.option.Perspective;
-import net.minecraft.util.Identifier;
 
 import java.util.List;
 import java.util.Optional;
@@ -59,7 +58,7 @@ public class MiscUtilClient {
 		}
 
 		Eggolib.PLAYERS_SCREEN.put(client.player, screenState);
-		ClientPlayNetworking.send(new SyncScreenStatePacket(screenState));
+		ClientPlayNetworking.send(new SyncScreenStateC2SPacket(screenState));
 
 	}
 
@@ -98,7 +97,7 @@ public class MiscUtilClient {
 		}
 
 		Eggolib.PLAYERS_PERSPECTIVE.put(minecraftClient.player, currentEggolibPerspective);
-		ClientPlayNetworking.send(new SyncPerspectivePacket(currentEggolibPerspective));
+		ClientPlayNetworking.send(new SyncPerspectiveC2SPacket(currentEggolibPerspective));
 
 	}
 
@@ -127,7 +126,7 @@ public class MiscUtilClient {
 
 		if (!powersToSync.isEmpty()) {
 			powersToSync.forEach(p -> p.executeActions(keyBindingName));
-			ClientPlayNetworking.send(new SyncPreventedKeyPacket(keyBindingName, powersToSync.stream().map(p -> p.getType().getIdentifier()).toList()));
+			ClientPlayNetworking.send(new SyncPreventedKeyC2SPacket(keyBindingName, powersToSync.stream().map(p -> p.getType().getIdentifier()).toList()));
 		}
 
 		return true;

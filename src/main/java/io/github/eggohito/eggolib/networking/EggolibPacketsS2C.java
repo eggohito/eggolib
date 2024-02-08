@@ -17,8 +17,17 @@
 
 package io.github.eggohito.eggolib.networking;
 
+import io.github.apace100.apoli.component.PowerHolderComponent;
+import io.github.apace100.apoli.power.PowerType;
+import io.github.apace100.apoli.power.PowerTypeRegistry;
 import io.github.eggohito.eggolib.Eggolib;
+import io.github.eggohito.eggolib.access.InventoryHolder;
+import io.github.eggohito.eggolib.mixin.ClientPlayerEntityAccessor;
 import io.github.eggohito.eggolib.networking.packet.s2c.*;
+import io.github.eggohito.eggolib.power.ActionOnSendingMessagePower;
+import io.github.eggohito.eggolib.power.PreventSendingMessagePower;
+import io.github.eggohito.eggolib.util.MiscUtilClient;
+import io.github.eggohito.eggolib.util.chat.MessagePhase;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import net.fabricmc.api.EnvType;
@@ -27,10 +36,15 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientLoginNetworking;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientLoginNetworkHandler;
+import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.entity.Entity;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.util.Identifier;
 
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
@@ -38,21 +52,81 @@ import java.util.function.Consumer;
 public class EggolibPacketsS2C {
 
 	public static void register() {
-		ClientLoginNetworking.registerGlobalReceiver(EggolibPackets.HANDSHAKE, EggolibPacketsS2C::handleHandshake);
-		ClientPlayConnectionEvents.INIT.register(
-			(clientPlayNetworkHandler, minecraftClient) -> {
-				ClientPlayNetworking.registerReceiver(CloseScreenPacket.TYPE, CloseScreenPacket::handle);
-				ClientPlayNetworking.registerReceiver(GetScreenStatePacket.TYPE, GetScreenStatePacket::handle);
-				ClientPlayNetworking.registerReceiver(SetPerspectivePacket.TYPE, SetPerspectivePacket::handle);
-				ClientPlayNetworking.registerReceiver(GetPerspectivePacket.TYPE, GetPerspectivePacket::handle);
-				ClientPlayNetworking.registerReceiver(OpenInventoryPacket.TYPE, OpenInventoryPacket::handle);
-				ClientPlayNetworking.registerReceiver(PreventedChatMessagePacket.TYPE, PreventedChatMessagePacket::handle);
-				ClientPlayNetworking.registerReceiver(SentChatMessagePacket.TYPE, SentChatMessagePacket::handle);
-			}
-		);
+
+		ClientLoginNetworking.registerGlobalReceiver(EggolibPackets.HANDSHAKE, EggolibPacketsS2C::onVersionHandshake);
+
+		ClientPlayConnectionEvents.INIT.register((handler, client) -> {
+			ClientPlayNetworking.registerReceiver(CloseScreenS2CPacket.TYPE, EggolibPacketsS2C::onScreenClose);
+			ClientPlayNetworking.registerReceiver(GetScreenStateS2CPacket.TYPE, EggolibPacketsS2C::onScreenStateQuery);
+			ClientPlayNetworking.registerReceiver(SetPerspectiveS2CPacket.TYPE, EggolibPacketsS2C::onPerspectiveSet);
+			ClientPlayNetworking.registerReceiver(GetPerspectiveS2CPacket.TYPE, EggolibPacketsS2C::onPerspectiveQuery);
+			ClientPlayNetworking.registerReceiver(OpenInventoryS2CPacket.TYPE, EggolibPacketsS2C::onInventoryOpen);
+			ClientPlayNetworking.registerReceiver(PreventSendMessageS2CPacket.TYPE, EggolibPacketsS2C::onMessagePrevent);
+			ClientPlayNetworking.registerReceiver(SendMessageS2CPacket.TYPE, EggolibPacketsS2C::onMessageSend);
+		});
+
 	}
 
-	private static CompletableFuture<PacketByteBuf> handleHandshake(MinecraftClient minecraftClient, ClientLoginNetworkHandler clientLoginNetworkHandler, PacketByteBuf packetByteBuf, Consumer<GenericFutureListener<? extends Future<? super Void>>> genericFutureListenerConsumer) {
+	private static void onMessageSend(SendMessageS2CPacket packet, ClientPlayerEntity player, PacketSender responseSender) {
+
+		PowerHolderComponent component = PowerHolderComponent.KEY.get(player);
+		for (Map.Entry<Identifier, MessagePhase> powerToInvoke : packet.powersToInvoke().entrySet()) {
+
+			PowerType<?> powerType = PowerTypeRegistry.get(powerToInvoke.getKey());
+
+			if (component.getPower(powerType) instanceof ActionOnSendingMessagePower aosmp) {
+				aosmp.executeActions(powerToInvoke.getValue());
+			}
+
+		}
+
+	}
+
+	private static void onMessagePrevent(PreventSendMessageS2CPacket packet, ClientPlayerEntity player, PacketSender responseSender) {
+
+		PowerHolderComponent component = PowerHolderComponent.KEY.get(player);
+		for (Identifier powerToInvoke : packet.powersToInvoke()) {
+
+			PowerType<?> powerType = PowerTypeRegistry.get(powerToInvoke);
+
+			if (component.getPower(powerType) instanceof PreventSendingMessagePower psmp) {
+				psmp.executeActions();
+			}
+
+		}
+
+	}
+
+	private static void onInventoryOpen(OpenInventoryS2CPacket packet, ClientPlayerEntity player, PacketSender responseSender) {
+
+		Entity entity = player.getWorld().getEntityById(packet.entityId());
+		if (entity instanceof InventoryHolder inventoryHolder) {
+			inventoryHolder.eggolib$openInventory();
+		}
+
+		else {
+			Eggolib.LOGGER.warn("Received packet for opening inventory of {}!", entity == null ? "unknown entity" : "entity without an inventory");
+		}
+
+	}
+
+	private static void onPerspectiveQuery(GetPerspectiveS2CPacket packet, ClientPlayerEntity player, PacketSender responseSender) {
+		MiscUtilClient.getPerspective(((ClientPlayerEntityAccessor) player).getClient());
+	}
+
+	private static void onPerspectiveSet(SetPerspectiveS2CPacket packet, ClientPlayerEntity player, PacketSender responseSender) {
+		MiscUtilClient.setPerspective(((ClientPlayerEntityAccessor) player).getClient(), packet.perspective());
+	}
+
+	private static void onScreenStateQuery(GetScreenStateS2CPacket packet, ClientPlayerEntity player, PacketSender responseSender) {
+		MiscUtilClient.getScreenState(((ClientPlayerEntityAccessor) player).getClient());
+	}
+
+	private static void onScreenClose(CloseScreenS2CPacket packet, ClientPlayerEntity player, PacketSender responseSender) {
+		((ClientPlayerEntityAccessor) player).getClient().setScreen(null);
+	}
+
+	private static CompletableFuture<PacketByteBuf> onVersionHandshake(MinecraftClient client, ClientLoginNetworkHandler handler, PacketByteBuf buf, Consumer<GenericFutureListener<? extends Future<? super Void>>> genericFutureListenerConsumer) {
 
 		PacketByteBuf buffer = PacketByteBufs.create();
 		buffer.writeInt(Eggolib.semanticVersion.length);

@@ -9,7 +9,7 @@ import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.eggohito.eggolib.Eggolib;
 import io.github.eggohito.eggolib.data.EggolibDataTypes;
-import io.github.eggohito.eggolib.networking.packet.s2c.SentChatMessagePacket;
+import io.github.eggohito.eggolib.networking.packet.s2c.SendMessageS2CPacket;
 import io.github.eggohito.eggolib.util.chat.MessageConsumer;
 import io.github.eggohito.eggolib.util.chat.MessagePhase;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -90,7 +90,7 @@ public class ActionOnSendingMessagePower extends Power implements Prioritized<Ac
 			.collect(Collectors.toMap(p -> p.getType().getIdentifier(), p -> MessagePhase.BEFORE, (o, o2) -> o2, LinkedHashMap::new));
 
 		if (!powersToSync.isEmpty()) {
-			ServerPlayNetworking.send(sender, new SentChatMessagePacket(powersToSync));
+			ServerPlayNetworking.send(sender, new SendMessageS2CPacket(powersToSync));
 		}
 
 		return true;
@@ -114,7 +114,7 @@ public class ActionOnSendingMessagePower extends Power implements Prioritized<Ac
 			.collect(Collectors.toMap(p -> p.getType().getIdentifier(), p -> MessagePhase.AFTER, (o, o2) -> o2, LinkedHashMap::new));
 
 		if (!powersToSync.isEmpty()) {
-			ServerPlayNetworking.send(sender, new SentChatMessagePacket(powersToSync));
+			ServerPlayNetworking.send(sender, new SendMessageS2CPacket(powersToSync));
 		}
 
 	}

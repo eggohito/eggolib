@@ -3,7 +3,7 @@ package io.github.eggohito.eggolib.mixin;
 import com.mojang.authlib.GameProfile;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.eggohito.eggolib.access.InventoryHolder;
-import io.github.eggohito.eggolib.networking.packet.s2c.OpenInventoryPacket;
+import io.github.eggohito.eggolib.networking.packet.s2c.OpenInventoryS2CPacket;
 import io.github.eggohito.eggolib.power.StatPower;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.player.PlayerEntity;
@@ -27,7 +27,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements In
 	@Override
 	public void eggolib$openInventory() {
 		if (!(this.currentScreenHandler instanceof PlayerScreenHandler)) {
-			ServerPlayNetworking.send((ServerPlayerEntity) (Object) this, new OpenInventoryPacket(this.getId()));
+			ServerPlayNetworking.send((ServerPlayerEntity) (Object) this, new OpenInventoryS2CPacket(this.getId()));
 		}
 	}
 
