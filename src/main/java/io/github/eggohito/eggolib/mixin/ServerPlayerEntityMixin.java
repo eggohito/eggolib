@@ -7,7 +7,6 @@ import io.github.eggohito.eggolib.networking.packet.s2c.OpenInventoryS2CPacket;
 import io.github.eggohito.eggolib.power.StatPower;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.stat.Stat;
 import net.minecraft.util.math.BlockPos;
@@ -26,9 +25,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements In
 
 	@Override
 	public void eggolib$openInventory() {
-		if (!(this.currentScreenHandler instanceof PlayerScreenHandler)) {
-			ServerPlayNetworking.send((ServerPlayerEntity) (Object) this, new OpenInventoryS2CPacket(this.getId()));
-		}
+		ServerPlayNetworking.send((ServerPlayerEntity) (Object) this, new OpenInventoryS2CPacket(this.getId()));
 	}
 
 	@Inject(method = "increaseStat", at = @At("TAIL"))
