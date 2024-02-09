@@ -61,7 +61,7 @@ public class EggolibClient implements ClientModInitializer {
 			.forEach(EggolibModCompatClient::init);
 
 		//  Tick ticker utilities
-		ClientTickEvents.START_CLIENT_TICK.register(
+		ClientTickEvents.END_CLIENT_TICK.register(
 			minecraftClient -> {
 				PERSPECTIVE_TICKER_UTIL.tick();
 				SCREEN_TICKER_UTIL.tick();

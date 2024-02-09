@@ -1,5 +1,6 @@
 package io.github.eggohito.eggolib.mixin;
 
+import io.github.eggohito.eggolib.Eggolib;
 import io.github.eggohito.eggolib.EggolibClient;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.GameOptions;
@@ -19,7 +20,7 @@ public abstract class GameOptionsMixin {
 	@Inject(method = "setPerspective", at = @At("HEAD"))
 	private void eggolib$getCurrentPerspective(Perspective perspective, CallbackInfo ci) {
 		if (this.client.player != null) {
-			EggolibClient.PERSPECTIVE_TICKER_UTIL.start(perspective);
+			EggolibClient.PERSPECTIVE_TICKER_UTIL.start(perspective, Eggolib.config.client.syncTickRate);
 		}
 	}
 
