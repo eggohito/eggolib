@@ -1,6 +1,5 @@
 package io.github.eggohito.eggolib.util.ticker;
 
-import io.github.eggohito.eggolib.Eggolib;
 import io.github.eggohito.eggolib.util.DataWrapper;
 
 import java.util.Objects;
@@ -10,14 +9,14 @@ public abstract class TickerUtil<T> {
 	protected int remainingTicks = 0;
 	protected DataWrapper<T> dataWrapper = null;
 
-	public final void start(T data) {
+	public final void start(T data, int ticks) {
 
 		if ((dataWrapper != null && Objects.deepEquals(dataWrapper.data(), data))) {
 			return;
 		}
 
-		remainingTicks = Eggolib.config.client.syncTickRate;
-		dataWrapper = new DataWrapper<>(data);
+		this.remainingTicks = ticks;
+		this.dataWrapper = new DataWrapper<>(data);
 
 	}
 
@@ -25,11 +24,12 @@ public abstract class TickerUtil<T> {
 		if (remainingTicks > 0) {
 			--remainingTicks;
 		} else if (dataWrapper != null) {
-			execute();
-			dataWrapper = null;
+			this.execute();
+			this.dataWrapper = null;
 		}
+
 	}
 
-	public void execute() {}
+	public abstract void execute();
 
 }

@@ -1,5 +1,6 @@
 package io.github.eggohito.eggolib.mixin;
 
+import io.github.eggohito.eggolib.Eggolib;
 import io.github.eggohito.eggolib.EggolibClient;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
@@ -21,7 +22,7 @@ public abstract class MinecraftClientMixin {
 	@Inject(method = "setScreen", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/BufferRenderer;reset()V"))
 	private void eggolib$syncScreen(Screen screen, CallbackInfo ci) {
 		if (this.player != null) {
-			EggolibClient.SCREEN_TICKER_UTIL.start(screen);
+			EggolibClient.SCREEN_TICKER_UTIL.start(screen, Eggolib.config.client.syncTickRate);
 		}
 	}
 
