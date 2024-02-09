@@ -21,6 +21,7 @@ public class EggolibEntityConditions {
 		register(MoonPhaseCondition.getFactory());
 		register(PermissionLevelCondition.getFactory());
 		register(PerspectiveCondition.getFactory());
+		register(InPoseCondition.getFactory());
 	}
 
 	public static ConditionFactory<Entity> register(ConditionFactory<Entity> conditionFactory) {
