@@ -7,6 +7,8 @@
 		"AdvancementCommandAccessor",
 		"BlockItemMixin",
 		"BlockMixin",
+		"DamageSourceMixin",
+		"DataPackContentsMixin",
 		"EntityAccessor",
 		"EntityMixin",
 		"FarmlandBlockMixin",

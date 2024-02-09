@@ -4,6 +4,7 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.util.modifier.ModifierUtil;
 import io.github.eggohito.eggolib.power.InvisibilityPower;
+import io.github.eggohito.eggolib.access.DamageVictim;
 import io.github.eggohito.eggolib.power.ModifyHurtTicksPower;
 import io.github.eggohito.eggolib.util.InventoryUtil;
 import net.minecraft.entity.Entity;
@@ -15,10 +16,11 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
 
-@Mixin(LivingEntity.class)
+@Mixin(value = LivingEntity.class, priority = 900)
 public abstract class LivingEntityMixin extends Entity {
 
 	public LivingEntityMixin(EntityType<?> type, World world) {
@@ -68,6 +70,11 @@ public abstract class LivingEntityMixin extends Entity {
 	@Inject(method = "baseTick", at = @At("TAIL"))
 	private void eggolib$setHolderOfStacks(CallbackInfo ci) {
 		InventoryUtil.forEachStack(this, stack -> stack.setHolder(this));
+	}
+
+	@Inject(method = "damage", at = @At("HEAD"))
+	private void eggolib$cacheVictim(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+		((DamageVictim) source).eggolib$set(this);
 	}
 
 }
