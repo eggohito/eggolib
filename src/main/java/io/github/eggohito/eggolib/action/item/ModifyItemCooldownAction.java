@@ -38,8 +38,12 @@ public class ModifyItemCooldownAction {
 		ItemCooldownManager cooldownManager = player.getItemCooldownManager();
 		Item item = stack.getItem();
 
-		double newCooldown = ModifierUtil.applyModifiers(player, modifiers, cooldownManager.getCooldownProgress(item, 0.0f));
-		cooldownManager.set(item, (int) Math.floor(newCooldown));
+		ItemCooldownManager.Entry cooldownEntry = cooldownManager.entries.get(item);
+
+		int oldCooldown = cooldownEntry != null ? cooldownEntry.endTick : 0;
+		int newCooldown = (int) ModifierUtil.applyModifiers(player, modifiers, oldCooldown);
+
+		cooldownManager.set(item, newCooldown);
 
 	}
 
