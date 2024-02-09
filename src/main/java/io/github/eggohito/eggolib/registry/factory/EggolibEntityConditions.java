@@ -28,6 +28,7 @@ public class EggolibEntityConditions {
 		register(PermissionLevelCondition.getFactory());
 		register(PerspectiveCondition.getFactory());
 		register(ScoreboardCondition.getFactory());
+		register(InPoseCondition.getFactory());
 	}
 
 	public static ConditionFactory<Entity> register(ConditionFactory<Entity> conditionFactory) {
