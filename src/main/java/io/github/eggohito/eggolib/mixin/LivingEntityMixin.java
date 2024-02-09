@@ -4,11 +4,14 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.apace100.apoli.util.modifier.ModifierUtil;
 import io.github.eggohito.eggolib.power.ModifyHurtTicksPower;
+import io.github.eggohito.eggolib.power.ModifyPassengerPositionPower;
+import io.github.eggohito.eggolib.power.ModifyRidingPositionPower;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.world.World;
+import org.joml.Vector3f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
@@ -54,5 +57,12 @@ public abstract class LivingEntityMixin extends Entity {
 		return (int) ModifierUtil.applyModifiers(thisAsLiving, mhtps.stream().flatMap(mhtp -> mhtp.getModifiers().stream()).toList(), original);
 
 	}
+
+	@ModifyExpressionValue(method = "getPassengerRidingPos", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;getPassengerAttachmentPos(Lnet/minecraft/entity/Entity;Lnet/minecraft/entity/EntityDimensions;F)Lorg/joml/Vector3f;"))
+	private Vector3f eggolib$modifyRidingPosition(Vector3f original, Entity passenger) {
+		Vector3f modified = ModifyPassengerPositionPower.modify(this, passenger, original);
+		return ModifyRidingPositionPower.modify(passenger, this, modified);
+	}
+
 
 }

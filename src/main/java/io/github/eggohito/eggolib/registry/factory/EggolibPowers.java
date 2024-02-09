@@ -27,6 +27,8 @@ public class EggolibPowers {
 		register(ActionOnSendingMessagePower.getFactory());
 		register(PreventSendingMessagePower.getFactory());
 		register(ModifySentMessagePower.getFactory());
+		register(ModifyPassengerPositionPower.getFactory());
+		register(ModifyRidingPositionPower.getFactory());
 	}
 
 	public static PowerFactory<?> register(PowerFactory<?> powerFactory) {
