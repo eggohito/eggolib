@@ -176,80 +176,110 @@ publishing {
 }
 
 curseforge {
-	if (System.getenv("CURSEFORGE_TOKEN") != null) {
 
-		apiKey = System.getenv("CURSEFORGE_TOKEN")
-		project {
+	var token = System.getenv("CURSEFORGE_TOKEN")
 
-			setId(curseforge_id)
-			setReleaseType('release')
+	if (token == null || token.isEmpty()) {
+		System.err.println("Cannot publish to CurseForge: missing token!")
+		return
+	}
 
-			setChangelog(new File("${rootDir}/CHANGELOG.md").getText('UTF-8'))
-			setChangelogType('markdown')
+	var compatibleMinecraftVersions = compatible_minecraft_versions.split(", ")
+	var minecraftVersionRange = compatibleMinecraftVersions.length > 1
+		? "(${compatibleMinecraftVersions.first()} - ${compatibleMinecraftVersions.last()})"
+		: "(${compatibleMinecraftVersions.first()})"
 
-			compatible_minecraft_versions.split(", ").each { String minecraftVersion -> addGameVersion(minecraftVersion) }
-			compatible_java_versions.split(", ").each {String javaVersion -> addGameVersion("Java " + javaVersion) }
-			compatible_mod_loaders.split(", ").each { String modLoader -> addGameVersion(modLoader) }
+	setApiKey(token)
+	project {
 
-			mainArtifact(remapJar) {
-				setDisplayName("${mod_name} v${mod_version}")
-				relations {
-					required_dependencies.split(", ").each { String project -> requiredDependency(project) }
-					optional_dependencies.split(", ").each { String project -> optionalDependency(project) }
-				}
+		setId(curseforge_id)
+		setReleaseType('release')
+
+		setChangelog(new File("${rootDir}/CHANGELOG.md").getText('UTF-8'))
+		setChangelogType('markdown')
+
+		compatibleMinecraftVersions.each { String minecraftVersion -> addGameVersion(minecraftVersion) }
+		compatible_java_versions.split(", ").each {String javaVersion -> addGameVersion("Java " + javaVersion) }
+		compatible_mod_loaders.split(", ").each { String modLoader -> addGameVersion(modLoader) }
+
+		mainArtifact(remapJar) {
+			setDisplayName("${mod_name} v${mod_version} ${minecraftVersionRange}")
+			relations {
+				required_dependencies.split(", ").each { String project -> requiredDependency(project) }
+				optional_dependencies.split(", ").each { String project -> optionalDependency(project) }
 			}
+		}
 
-			addArtifact(remapSourcesJar) {
-				setDisplayName("${mod_name} v${mod_version} (Sources)")
-			}
-
+		addArtifact(remapSourcesJar) {
+			setDisplayName("${mod_name} v${mod_version} ${minecraftVersionRange} [Sources]")
 		}
 
 	}
+
 }
 
 modrinth {
-	if (System.getenv("MODRINTH_TOKEN") != null) {
 
-		setToken(System.getenv("MODRINTH_TOKEN"))
-		setProjectId(modrinth_id)
+	var token = System.getenv("MODRINTH_TOKEN")
 
-		setVersionName("${mod_name} v${mod_version}")
-		setVersionNumber("v${mod_version}-${System.getenv("GITHUB_COMMITISH")}")
-		setVersionType("release")
-
-		setUploadFile(remapJar)
-		additionalFiles.add(remapSourcesJar)
-
-		setChangelog(new File("${getRootDir()}/CHANGELOG.md").getText('UTF-8'))
-
-		gameVersions.addAll(compatible_minecraft_versions.split(", ").toList())
-		loaders.addAll(compatible_mod_loaders.split(", ").collect { String loader -> loader.toLowerCase()})
-
-		dependencies {
-			required_dependencies.split(", ").each { String project -> required.project(project) }
-			optional_dependencies.split(", ").each { String project -> optional.project(project) }
-		}
-
+	if (token == null || token.isEmpty()) {
+		System.err.println("Cannot publish to Modrinth: missing token!")
+		return
 	}
+
+	var compatibleMinecraftVersions = compatible_minecraft_versions.split(", ")
+	var minecraftVersionRange = compatibleMinecraftVersions.length > 1
+		? "(${compatibleMinecraftVersions.first()} - ${compatibleMinecraftVersions.last()})"
+		: "(${compatibleMinecraftVersions.first()})"
+
+	setToken(token)
+	setProjectId(modrinth_id)
+
+	setVersionName("${mod_name} v${mod_version} ${minecraftVersionRange}")
+	setVersionNumber("v${mod_version}-${System.getenv("GITHUB_COMMITISH")}")
+	setVersionType("release")
+
+	setUploadFile(remapJar)
+	additionalFiles.add(remapSourcesJar)
+
+	setChangelog(new File("${getRootDir()}/CHANGELOG.md").getText('UTF-8'))
+
+	setGameVersions(compatibleMinecraftVersions)
+	setLoaders(compatible_mod_loaders.split(", "))
+
+	dependencies {
+		required_dependencies.split(", ").each { String project -> required.project(project) }
+		optional_dependencies.split(", ").each { String project -> optional.project(project) }
+	}
+
 }
 
 githubRelease {
-	if (System.getenv("GITHUB_TOKEN") != null) {
 
-		setToken(System.getenv("GITHUB_TOKEN"))
+	var token = System.getenv("GITHUB_TOKEN")
 
-		setOwner(System.getenv("GITHUB_REPO_OWNER"))
-		setRepo(System.getenv("GITHUB_REPO"))
-
-		var commitish = System.getenv("GITHUB_COMMITISH")
-		setTagName("v${mod_version}-${commitish}")
-		setTargetCommitish(commitish)
-
-		setReleaseName("${mod_name} v${mod_version}")
-        releaseAssets(remapJar, remapSourcesJar)
-
-		setBody(new File("${getRootDir()}/CHANGELOG.md").getText('UTF-8'))
-
+	if (token == null || token.isEmpty()) {
+		System.err.println("Cannot publish to GitHub: missing token!")
+		return
 	}
+
+	var compatibleMinecraftVersions = compatible_minecraft_versions.split(", ")
+	var minecraftVersionRange = compatibleMinecraftVersions.length > 1
+		? "(${compatibleMinecraftVersions.first()} - ${compatibleMinecraftVersions.last()})"
+		: "(${compatibleMinecraftVersions.first()})"
+
+	setToken(token)
+
+	setOwner(System.getenv("GITHUB_REPO_OWNER"))
+	setRepo(System.getenv("GITHUB_REPO"))
+
+	var commitish = System.getenv("GITHUB_COMMITISH")
+	setTagName("v${mod_version}-${commitish}")
+	setTargetCommitish(commitish)
+
+	setReleaseName("${mod_name} v${mod_version} ${minecraftVersionRange}")
+	releaseAssets(remapJar, remapSourcesJar)
+
+	setBody(new File("${getRootDir()}/CHANGELOG.md").getText('UTF-8'))
+
 }
