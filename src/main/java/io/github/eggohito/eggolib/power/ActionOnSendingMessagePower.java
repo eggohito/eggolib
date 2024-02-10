@@ -69,8 +69,11 @@ public class ActionOnSendingMessagePower extends Power implements Prioritized<Ac
 			&& this.doesApply(message);
 	}
 
-	public void executeActions(MessagePhase phase) {
-		this.messageFilters.forEach(filter -> filter.execute(phase, entity));
+	public void executeActions(MessagePhase phase, String message) {
+		this.messageFilters
+			.stream()
+			.filter(mf -> mf.matches(message))
+			.forEach(mf -> mf.execute(phase, entity));
 	}
 
 	public static boolean beforeSendingServerMessage(SignedMessage message, @Nullable ServerPlayerEntity sender, MessageType.Parameters params) {
@@ -82,11 +85,12 @@ public class ActionOnSendingMessagePower extends Power implements Prioritized<Ac
 		DynamicRegistryManager registryManager = sender.getWorld().getRegistryManager();
 		Registry<MessageType> messageTypeRegistry = registryManager.get(RegistryKeys.MESSAGE_TYPE);
 
+		String messageString = message.getContent().getString();
 		Map<Identifier, MessagePhase> powersToSync = PowerHolderComponent.getPowers(sender, ActionOnSendingMessagePower.class)
 			.stream()
-			.filter(p -> p.doesApply(message.getContent().getString(), params.type(), messageTypeRegistry))
+			.filter(p -> p.doesApply(messageString, params.type(), messageTypeRegistry))
 			.sorted(Comparator.comparing(ActionOnSendingMessagePower::getPriority))
-			.peek(p -> p.executeActions(MessagePhase.BEFORE))
+			.peek(p -> p.executeActions(MessagePhase.BEFORE, messageString))
 			.collect(Collectors.toMap(p -> p.getType().getIdentifier(), p -> MessagePhase.BEFORE, (o, o2) -> o2, LinkedHashMap::new));
 
 		if (!powersToSync.isEmpty()) {
@@ -106,11 +110,12 @@ public class ActionOnSendingMessagePower extends Power implements Prioritized<Ac
 		DynamicRegistryManager registryManager = sender.getWorld().getRegistryManager();
 		Registry<MessageType> messageTypeRegistry = registryManager.get(RegistryKeys.MESSAGE_TYPE);
 
+		String messageString = message.getContent().getString();
 		Map<Identifier, MessagePhase> powersToSync = PowerHolderComponent.getPowers(sender, ActionOnSendingMessagePower.class)
 			.stream()
-			.filter(p -> p.doesApply(message.getContent().getString(), params.type(), messageTypeRegistry))
+			.filter(p -> p.doesApply(messageString, params.type(), messageTypeRegistry))
 			.sorted(Comparator.comparing(ActionOnSendingMessagePower::getPriority))
-			.peek(p -> p.executeActions(MessagePhase.AFTER))
+			.peek(p -> p.executeActions(MessagePhase.AFTER, messageString))
 			.collect(Collectors.toMap(p -> p.getType().getIdentifier(), p -> MessagePhase.AFTER, (o, o2) -> o2, LinkedHashMap::new));
 
 		if (!powersToSync.isEmpty()) {
@@ -124,8 +129,8 @@ public class ActionOnSendingMessagePower extends Power implements Prioritized<Ac
 			Eggolib.identifier("action_on_sending_message"),
 			new SerializableData()
 				.add("message_type", EggolibDataTypes.MESSAGE_TYPE, MessageType.CHAT)
-				.add("filter", EggolibDataTypes.BACKWARDS_COMPATIBLE_FUNCTIONAL_MESSAGE_FILTER, null)
-				.add("filters", EggolibDataTypes.BACKWARDS_COMPATIBLE_FUNCTIONAL_MESSAGE_FILTERS, null)
+				.add("filter", EggolibDataTypes.BACKWARDS_COMPATIBLE_MESSAGE_CONSUMER, null)
+				.add("filters", EggolibDataTypes.BACKWARDS_COMPATIBLE_MESSAGE_CONSUMERS, null)
 				.add("priority", SerializableDataTypes.INT, 0),
 			data -> (powerType, livingEntity) -> new ActionOnSendingMessagePower(
 				powerType,
