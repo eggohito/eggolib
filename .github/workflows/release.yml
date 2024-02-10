@@ -4,15 +4,14 @@ run-name: Release artifacts
 on: workflow_dispatch
 
 env:
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
-  CURSEFORGE_TOKEN: ${{ secrets.CURSEFORGE_TOKEN }}
   GITHUB_REPO_OWNER: ${{ github.repository_owner }}
   GITHUB_COMMITISH: ${{ github.ref_name }}
   GITHUB_REPO: ${{ github.event.repository.name }}
 
 jobs:
   github-release:
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     name: Github Release
     runs-on: ubuntu-latest
     steps:
@@ -32,6 +31,8 @@ jobs:
         run: ./gradlew github --stacktrace
 
   modrinth-release:
+    env:
+      MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
     name: Modrinth Release
     runs-on: ubuntu-latest
     steps:
@@ -51,6 +52,8 @@ jobs:
         run: ./gradlew modrinth --stacktrace
 
   curseforge-release:
+    env:
+      CURSEFORGE_TOKEN: ${{ secrets.CURSEFORGE_TOKEN }}
     name: Curseforge Release
     runs-on: ubuntu-latest
     steps:

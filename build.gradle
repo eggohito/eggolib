@@ -244,8 +244,8 @@ modrinth {
 
 	setChangelog(new File("${getRootDir()}/CHANGELOG.md").getText('UTF-8'))
 
-	setGameVersions(compatibleMinecraftVersions)
-	setLoaders(compatible_mod_loaders.split(", "))
+	compatibleMinecraftVersions.each { String minecraftVersion -> gameVersions.add(minecraftVersion) }
+	compatible_mod_loaders.split(", ").each { String modLoader -> loaders.add(modLoader) }
 
 	dependencies {
 		required_dependencies.split(", ").each { String project -> required.project(project) }
