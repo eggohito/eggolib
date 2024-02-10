@@ -89,12 +89,12 @@ public class ActionOnSendingMessagePower extends Power implements Prioritized<Ac
 		Map<Identifier, MessagePhase> powersToSync = PowerHolderComponent.getPowers(sender, ActionOnSendingMessagePower.class)
 			.stream()
 			.filter(p -> p.doesApply(messageString, params.type(), messageTypeRegistry))
-			.sorted(Comparator.comparing(ActionOnSendingMessagePower::getPriority))
+			.sorted(Comparator.comparing(ActionOnSendingMessagePower::getPriority).reversed())
 			.peek(p -> p.executeActions(MessagePhase.BEFORE, messageString))
 			.collect(Collectors.toMap(p -> p.getType().getIdentifier(), p -> MessagePhase.BEFORE, (o, o2) -> o2, LinkedHashMap::new));
 
 		if (!powersToSync.isEmpty()) {
-			ServerPlayNetworking.send(sender, new SendMessageS2CPacket(powersToSync));
+			ServerPlayNetworking.send(sender, new SendMessageS2CPacket(powersToSync, messageString));
 		}
 
 		return true;
@@ -119,7 +119,7 @@ public class ActionOnSendingMessagePower extends Power implements Prioritized<Ac
 			.collect(Collectors.toMap(p -> p.getType().getIdentifier(), p -> MessagePhase.AFTER, (o, o2) -> o2, LinkedHashMap::new));
 
 		if (!powersToSync.isEmpty()) {
-			ServerPlayNetworking.send(sender, new SendMessageS2CPacket(powersToSync));
+			ServerPlayNetworking.send(sender, new SendMessageS2CPacket(powersToSync, messageString));
 		}
 
 	}

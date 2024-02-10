@@ -9,19 +9,23 @@ import net.minecraft.util.Identifier;
 import java.util.ArrayList;
 import java.util.List;
 
-public record PreventSendMessageS2CPacket(List<Identifier> powersToInvoke) implements FabricPacket {
+public record PreventSendMessageS2CPacket(List<Identifier> powersToInvoke, String message) implements FabricPacket {
 
 	public static final PacketType<PreventSendMessageS2CPacket> TYPE = PacketType.create(
 		Eggolib.identifier("s2c/prevent_chat_message"), PreventSendMessageS2CPacket::read
 	);
 
 	private static PreventSendMessageS2CPacket read(PacketByteBuf buf) {
-		return new PreventSendMessageS2CPacket(buf.readCollection(ArrayList::new, PacketByteBuf::readIdentifier));
+		return new PreventSendMessageS2CPacket(
+			buf.readCollection(ArrayList::new, PacketByteBuf::readIdentifier),
+			buf.readString()
+		);
 	}
 
 	@Override
 	public void write(PacketByteBuf buf) {
 		buf.writeCollection(powersToInvoke, PacketByteBuf::writeIdentifier);
+		buf.writeString(message);
 	}
 
 	@Override

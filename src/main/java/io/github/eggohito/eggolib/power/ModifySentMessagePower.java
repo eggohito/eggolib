@@ -71,7 +71,7 @@ public class ModifySentMessagePower extends Power implements Prioritized<ModifyS
 		Map<Identifier, String> powersToSync = new LinkedHashMap<>();
 		List<ModifySentMessagePower> powers = PowerHolderComponent.getPowers(player, ModifySentMessagePower.class)
 			.stream()
-			.sorted(Comparator.comparing(ModifySentMessagePower::getPriority))
+			.sorted(Comparator.comparing(ModifySentMessagePower::getPriority).reversed())
 			.toList();
 
 		for (ModifySentMessagePower power : powers) {

@@ -75,7 +75,7 @@ public class EggolibPacketsS2C {
 			PowerType<?> powerType = PowerTypeRegistry.get(powerToInvoke.getKey());
 
 			if (component.getPower(powerType) instanceof ActionOnSendingMessagePower aosmp) {
-				aosmp.executeActions(powerToInvoke.getValue());
+				aosmp.executeActions(powerToInvoke.getValue(), packet.message());
 			}
 
 		}
@@ -90,7 +90,7 @@ public class EggolibPacketsS2C {
 			PowerType<?> powerType = PowerTypeRegistry.get(powerToInvoke);
 
 			if (component.getPower(powerType) instanceof PreventSendingMessagePower psmp) {
-				psmp.executeActions();
+				psmp.executeActions(packet.message());
 			}
 
 		}
