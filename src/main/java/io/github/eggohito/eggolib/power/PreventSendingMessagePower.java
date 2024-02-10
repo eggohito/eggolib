@@ -90,13 +90,13 @@ public class PreventSendingMessagePower extends Power implements Prioritized<Pre
 		List<Identifier> powers = PowerHolderComponent.getPowers(sender, PreventSendingMessagePower.class)
 			.stream()
 			.filter(p -> p.doesApply(messageString, params.type(), messageTypeRegistry))
-			.sorted(Comparator.comparing(PreventSendingMessagePower::getPriority))
+			.sorted(Comparator.comparing(PreventSendingMessagePower::getPriority).reversed())
 			.peek(p -> p.executeActions(messageString))
 			.map(p -> p.getType().getIdentifier())
 			.toList();
 
 		if (!powers.isEmpty()) {
-			ServerPlayNetworking.send(sender, new PreventSendMessageS2CPacket(powers));
+			ServerPlayNetworking.send(sender, new PreventSendMessageS2CPacket(powers, messageString));
 			return false;
 		}
 
