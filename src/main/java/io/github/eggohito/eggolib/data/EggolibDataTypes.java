@@ -382,20 +382,27 @@ public class EggolibDataTypes {
 
 	public static final SerializableDataType<EntityPose> ENTITY_POSE = SerializableDataType.enumValue(EntityPose.class);
 
+	public static final SerializableDataType<Pattern> REGEX_PATTERN = SerializableDataType.wrap(
+		Pattern.class,
+		SerializableDataTypes.STRING,
+        Pattern::pattern,
+        Pattern::compile
+	);
+
 	public static final SerializableDataType<MessageFilter> MESSAGE_FILTER = SerializableDataType.compound(
 		MessageFilter.class,
 		new SerializableData()
-			.add("filter", SerializableDataTypes.STRING)
+			.add("filter", REGEX_PATTERN)
 			.add("entity_action", ApoliDataTypes.ENTITY_ACTION, null),
 		data -> new MessageFilter(
-			Pattern.compile(data.get("filter")),
+			data.get("filter"),
 			data.get("entity_action")
 		),
 		(serializableData, messageFilter) -> {
 
 			SerializableData.Instance data = serializableData.new Instance();
 
-			data.set("filter", messageFilter.getFilter().pattern());
+			data.set("filter", messageFilter.getFilter());
 			data.set("entity_action", messageFilter.getAction());
 
 			return data;
@@ -429,7 +436,7 @@ public class EggolibDataTypes {
 	public static final SerializableDataType<MessageConsumer> MESSAGE_CONSUMER = SerializableDataType.compound(
 		MessageConsumer.class,
 		new SerializableData()
-			.add("filter", SerializableDataTypes.STRING)
+			.add("filter", REGEX_PATTERN)
 			.add("before_action", ApoliDataTypes.ENTITY_ACTION, null)
 			.add("after_action", ApoliDataTypes.ENTITY_ACTION, null),
 		data -> new MessageConsumer(
@@ -441,7 +448,7 @@ public class EggolibDataTypes {
 
 			SerializableData.Instance data = serializableData.new Instance();
 
-			data.set("filter", messageConsumer.getFilter().pattern());
+			data.set("filter", messageConsumer.getFilter());
 			data.set("before_action", messageConsumer.getAction(MessagePhase.BEFORE));
 			data.set("after_action", messageConsumer.getAction(MessagePhase.AFTER));
 
@@ -463,7 +470,8 @@ public class EggolibDataTypes {
 			}
 
 			else if (jsonElement instanceof JsonPrimitive jsonPrimitive && jsonPrimitive.isString()) {
-				return new MessageConsumer(Pattern.compile(jsonPrimitive.getAsString()), null, null);
+				Pattern pattern = REGEX_PATTERN.read(jsonPrimitive);
+				return new MessageConsumer(pattern, null, null);
 			}
 
 			else {
@@ -478,7 +486,7 @@ public class EggolibDataTypes {
 	public static final SerializableDataType<MessageReplacer> MESSAGE_REPLACER = SerializableDataType.compound(
 		MessageReplacer.class,
 		new SerializableData()
-			.add("filter", SerializableDataTypes.STRING)
+			.add("filter", REGEX_PATTERN)
 			.add("replacement", SerializableDataTypes.STRING, null)
 			.add("before_action", ApoliDataTypes.ENTITY_ACTION, null)
 			.add("after_action", ApoliDataTypes.ENTITY_ACTION, null),
@@ -492,7 +500,7 @@ public class EggolibDataTypes {
 
 			SerializableData.Instance data = serializableData.new Instance();
 
-			data.set("filter", messageReplacer.getFilter().pattern());
+			data.set("filter", messageReplacer.getFilter());
 			data.set("replacement", messageReplacer.getReplacement());
 			data.set("before_action", messageReplacer.getAction(MessagePhase.BEFORE));
 			data.set("after_action", messageReplacer.getAction(MessagePhase.AFTER));
