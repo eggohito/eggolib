@@ -4,13 +4,14 @@ import net.minecraft.entity.Entity;
 
 import java.util.EnumMap;
 import java.util.function.Consumer;
+import java.util.regex.Pattern;
 
 public class MessageConsumer extends MessageFilter {
 
 	private final EnumMap<MessagePhase, Consumer<Entity>> actions;
 
-	public MessageConsumer(String filter, Consumer<Entity> beforeAction, Consumer<Entity> afterAction) {
-		super(filter);
+	public MessageConsumer(Pattern filter, Consumer<Entity> beforeAction, Consumer<Entity> afterAction) {
+		super(filter, beforeAction);
 		this.actions = new EnumMap<>(MessagePhase.class);
 
 		if (beforeAction != null) {

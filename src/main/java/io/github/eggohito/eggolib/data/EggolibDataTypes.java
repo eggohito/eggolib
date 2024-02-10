@@ -3,6 +3,7 @@ package io.github.eggohito.eggolib.data;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSyntaxException;
 import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
 import io.github.apace100.calio.ClassUtil;
@@ -41,6 +42,7 @@ import net.minecraft.world.dimension.DimensionType;
 
 import java.util.EnumSet;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class EggolibDataTypes {
 
@@ -348,16 +350,52 @@ public class EggolibDataTypes {
 
 	public static final SerializableDataType<EntityPose> ENTITY_POSE = SerializableDataType.enumValue(EntityPose.class);
 
-	public static final SerializableDataType<MessageFilter> MESSAGE_FILTER = SerializableDataType.wrap(
+	public static final SerializableDataType<MessageFilter> MESSAGE_FILTER = SerializableDataType.compound(
 		MessageFilter.class,
-		SerializableDataTypes.STRING,
-		messageFilter -> messageFilter.getFilter().pattern(),
-        MessageFilter::new
+		new SerializableData()
+			.add("filter", SerializableDataTypes.STRING)
+			.add("entity_action", ApoliDataTypes.ENTITY_ACTION, null),
+		data -> new MessageFilter(
+			Pattern.compile(data.get("filter")),
+			data.get("entity_action")
+		),
+		(serializableData, messageFilter) -> {
+
+			SerializableData.Instance data = serializableData.new Instance();
+
+			data.set("filter", messageFilter.getFilter().pattern());
+			data.set("entity_action", messageFilter.getAction());
+
+			return data;
+
+		}
 	);
 
 	public static final SerializableDataType<List<MessageFilter>> MESSAGE_FILTERS = SerializableDataType.list(MESSAGE_FILTER);
 
-	public static final SerializableDataType<MessageConsumer> FUNCTIONAL_MESSAGE_FILTER = SerializableDataType.compound(
+	public static final SerializableDataType<MessageFilter> BACKWARDS_COMPATIBLE_MESSAGE_FILTER = new SerializableDataType<>(
+		MessageFilter.class,
+		MESSAGE_FILTER::send,
+		MESSAGE_FILTER::receive,
+		jsonElement -> {
+
+			if (jsonElement instanceof JsonObject jsonObject) {
+				return MESSAGE_FILTER.read(jsonObject);
+			}
+
+			else if (jsonElement instanceof JsonPrimitive jsonPrimitive && jsonPrimitive.isString()) {
+				return new MessageFilter(Pattern.compile(jsonPrimitive.getAsString()), null);
+			}
+
+			throw new JsonSyntaxException("Expected a JSON object or a string!");
+
+		},
+		MESSAGE_FILTER::write
+	);
+
+	public static final SerializableDataType<List<MessageFilter>> BACKWARDS_COMPATIBLE_MESSAGE_FILTERS = SerializableDataType.list(BACKWARDS_COMPATIBLE_MESSAGE_FILTER);
+
+	public static final SerializableDataType<MessageConsumer> MESSAGE_CONSUMER = SerializableDataType.compound(
 		MessageConsumer.class,
 		new SerializableData()
 			.add("filter", SerializableDataTypes.STRING)
@@ -381,20 +419,20 @@ public class EggolibDataTypes {
 		}
 	);
 
-	public static final SerializableDataType<List<MessageConsumer>> FUNCTIONAL_MESSAGE_FILTERS = SerializableDataType.list(FUNCTIONAL_MESSAGE_FILTER);
+	public static final SerializableDataType<List<MessageConsumer>> MESSAGE_CONSUMERS = SerializableDataType.list(MESSAGE_CONSUMER);
 
-	public static final SerializableDataType<MessageConsumer> BACKWARDS_COMPATIBLE_FUNCTIONAL_MESSAGE_FILTER = new SerializableDataType<>(
+	public static final SerializableDataType<MessageConsumer> BACKWARDS_COMPATIBLE_MESSAGE_CONSUMER = new SerializableDataType<>(
 		MessageConsumer.class,
-		FUNCTIONAL_MESSAGE_FILTER::send,
-		FUNCTIONAL_MESSAGE_FILTER::receive,
+		MESSAGE_CONSUMER::send,
+		MESSAGE_CONSUMER::receive,
 		jsonElement -> {
 
 			if (jsonElement instanceof JsonObject jsonObject) {
-				return FUNCTIONAL_MESSAGE_FILTER.read(jsonObject);
+				return MESSAGE_CONSUMER.read(jsonObject);
 			}
 
 			else if (jsonElement instanceof JsonPrimitive jsonPrimitive && jsonPrimitive.isString()) {
-				return new MessageConsumer(jsonPrimitive.getAsString(), null, null);
+				return new MessageConsumer(Pattern.compile(jsonPrimitive.getAsString()), null, null);
 			}
 
 			else {
@@ -402,10 +440,10 @@ public class EggolibDataTypes {
 			}
 
 		},
-		FUNCTIONAL_MESSAGE_FILTER::write
+		MESSAGE_CONSUMER::write
 	);
 
-	public static final SerializableDataType<List<MessageConsumer>> BACKWARDS_COMPATIBLE_FUNCTIONAL_MESSAGE_FILTERS = SerializableDataType.list(BACKWARDS_COMPATIBLE_FUNCTIONAL_MESSAGE_FILTER);
+	public static final SerializableDataType<List<MessageConsumer>> BACKWARDS_COMPATIBLE_MESSAGE_CONSUMERS = SerializableDataType.list(BACKWARDS_COMPATIBLE_MESSAGE_CONSUMER);
 
 	public static final SerializableDataType<MessageReplacer> MESSAGE_REPLACER = SerializableDataType.compound(
 		MessageReplacer.class,
