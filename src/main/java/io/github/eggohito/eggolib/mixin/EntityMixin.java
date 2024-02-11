@@ -1,6 +1,5 @@
 package io.github.eggohito.eggolib.mixin;
 
-import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import io.github.apace100.apoli.component.PowerHolderComponent;
 import io.github.eggohito.eggolib.component.EggolibComponents;
 import io.github.eggohito.eggolib.power.GameEventListenerPower;
@@ -10,10 +9,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.event.listener.EntityGameEventHandler;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -22,48 +19,35 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.Set;
 import java.util.function.BiConsumer;
 
-@SuppressWarnings("unused")
 @Mixin(Entity.class)
 public abstract class EntityMixin {
 
 	@Shadow
 	private World world;
 
-	@Shadow
-	@Final
-	private Set<String> commandTags;
-
-	@Unique
-	private boolean eggolib$syncCommandTags;
-
 	@Inject(method = "addCommandTag", at = @At("TAIL"))
-	private void eggolib$addAndSyncCommandTag(String tag, CallbackInfoReturnable<Boolean> cir) {
-		if (cir.getReturnValue() && EggolibComponents.MISC.get(this).addCommandTag(tag)) {
-			eggolib$syncCommandTags = true;
+	private void eggolib$onAddCommandTag(String tag, CallbackInfoReturnable<Boolean> cir) {
+		if (cir.getReturnValue()) {
+			EggolibComponents.MISC.get(this).addCommandTag(tag);
 		}
 	}
 
 	@Inject(method = "removeScoreboardTag", at = @At("TAIL"))
-	private void eggolib$removeAndSyncCommandTag(String tag, CallbackInfoReturnable<Boolean> cir) {
-		if (EggolibComponents.MISC.get(this).removeCommandTag(tag)) {
-			eggolib$syncCommandTags = true;
-		}
+	private void eggolib$onRemoveCommandTag(String tag, CallbackInfoReturnable<Boolean> cir) {
+		EggolibComponents.MISC.get(this).removeCommandTag(tag);
 	}
 
-	@ModifyReturnValue(method = "getCommandTags", at = @At(value = "RETURN"))
-	private Set<String> eggolib$overrideGetCommandTags(Set<String> original) {
-		return EggolibComponents.MISC.get(this).getCommandTags();
+	@Inject(method = "getCommandTags", at = @At("RETURN"))
+	private void eggolib$onGetCommandTag(CallbackInfoReturnable<Set<String>> cir) {
+		EggolibComponents.MISC.get(this).setCommandTags(cir.getReturnValue());
 	}
 
 	@Inject(method = "baseTick", at = @At("TAIL"))
 	private void eggolib$syncCommandTags(CallbackInfo ci) {
 
-		if (this.world.isClient || !eggolib$syncCommandTags) {
-			return;
+		if (!this.world.isClient) {
+			EggolibComponents.MISC.get(this).sync(false);
 		}
-
-		EggolibComponents.MISC.get(this).sync();
-		eggolib$syncCommandTags = false;
 
 	}
 

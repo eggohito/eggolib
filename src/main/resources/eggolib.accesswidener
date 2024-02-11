@@ -15,3 +15,4 @@ extendable class net/minecraft/world/event/Vibrations$ListenerData
 accessible field net/minecraft/entity/player/ItemCooldownManager entries Ljava/util/Map;
 accessible class net/minecraft/entity/player/ItemCooldownManager$Entry
 accessible field net/minecraft/entity/player/ItemCooldownManager$Entry endTick I
+accessible field net/minecraft/entity/Entity commandTags Ljava/util/Set;

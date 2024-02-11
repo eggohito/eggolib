@@ -2,6 +2,7 @@ package io.github.eggohito.eggolib.loot.condition;
 
 import com.google.gson.*;
 import io.github.eggohito.eggolib.Eggolib;
+import io.github.eggohito.eggolib.component.EggolibComponents;
 import net.minecraft.entity.Entity;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.condition.LootConditionType;
@@ -14,31 +15,18 @@ import net.minecraft.util.Pair;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
+@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public class HasTagLootCondition implements LootCondition {
 
-	private final String scoreboardTag;
-	private final Set<String> scoreboardTags;
+	private final Optional<String> commandTag;
+	private final Optional<Set<String>> commandTags;
 
-	public HasTagLootCondition() {
-		this.scoreboardTag = null;
-		this.scoreboardTags = null;
-	}
-
-	public HasTagLootCondition(String scoreboardTag) {
-		this.scoreboardTag = scoreboardTag;
-		this.scoreboardTags = null;
-	}
-
-	public HasTagLootCondition(Set<String> scoreboardTags) {
-		this.scoreboardTag = null;
-		this.scoreboardTags = scoreboardTags;
-	}
-
-	public HasTagLootCondition(String scoreboardTag, Set<String> scoreboardTags) {
-		this.scoreboardTag = scoreboardTag;
-		this.scoreboardTags = scoreboardTags;
+	public HasTagLootCondition(Optional<String> commandTag, Optional<Set<String>> commandTags) {
+		this.commandTag = commandTag;
+		this.commandTags = commandTags;
 	}
 
 	@Override
@@ -54,21 +42,16 @@ public class HasTagLootCondition implements LootCondition {
 			return false;
 		}
 
-		Set<String> scoreboardTags = entity.getCommandTags();
+		Set<String> scoreboardTags = EggolibComponents.MISC.get(entity).getCommandTags();
 		Set<String> specifiedScoreboardTags = new HashSet<>();
 
-		if (this.scoreboardTag != null) {
-			specifiedScoreboardTags.add(this.scoreboardTag);
-		}
-		if (this.scoreboardTags != null) {
-			specifiedScoreboardTags.addAll(this.scoreboardTags);
-		}
 
-		if (specifiedScoreboardTags.isEmpty()) {
-			return !scoreboardTags.isEmpty();
-		} else {
-			return !Collections.disjoint(scoreboardTags, specifiedScoreboardTags);
-		}
+		this.commandTag.ifPresent(specifiedScoreboardTags::add);
+		this.commandTags.ifPresent(specifiedScoreboardTags::addAll);
+
+		return specifiedScoreboardTags.isEmpty()
+			? !scoreboardTags.isEmpty()
+			: !Collections.disjoint(scoreboardTags, specifiedScoreboardTags);
 
 	}
 
@@ -77,50 +60,53 @@ public class HasTagLootCondition implements LootCondition {
 		@Override
 		public void toJson(JsonObject jsonObject, HasTagLootCondition hasTagLootCondition, JsonSerializationContext jsonSerializationContext) {
 
-			if (hasTagLootCondition.scoreboardTag != null) {
-				jsonObject.addProperty("tag", hasTagLootCondition.scoreboardTag);
-			}
-			if (hasTagLootCondition.scoreboardTags != null) {
+			hasTagLootCondition.commandTag.ifPresent(commandTag ->
+				jsonObject.addProperty("tag", commandTag)
+			);
+
+			hasTagLootCondition.commandTags.ifPresent(commandTags -> {
 
 				JsonArray jsonArray = new JsonArray();
-				for (String tag : hasTagLootCondition.scoreboardTags) {
-					jsonArray.add(tag);
-				}
+				commandTags.forEach(jsonArray::add);
 
 				jsonObject.add("tags", jsonArray);
 
-			}
+			});
 
 		}
 
 		@Override
 		public HasTagLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 
-			String tag = null;
-			Set<String> tags = new HashSet<>();
+			String commandTag = null;
+			Set<String> commandTags = null;
 
 			if (jsonObject.has("tag")) {
-				tag = JsonHelper.getString(jsonObject, "tag");
-			}
-			if (jsonObject.has("tags")) {
-				JsonArray groupsArray = jsonObject.getAsJsonArray("tags");
-				for (int i = 0; i < groupsArray.size(); i++) {
-					JsonElement jsonElement = groupsArray.get(i);
-					if (jsonElement.isJsonPrimitive() && jsonElement.getAsJsonPrimitive().isString()) {
-						tags.add(jsonElement.getAsString());
-					}
-				}
+				commandTag = JsonHelper.getString(jsonObject, "tag");
 			}
 
-			if (tag != null && !tags.isEmpty()) {
-				return new HasTagLootCondition(tag, tags);
-			} else if (tag == null && !tags.isEmpty()) {
-				return new HasTagLootCondition(tags);
-			} else if (tag != null) {
-				return new HasTagLootCondition(tag);
-			} else {
-				return new HasTagLootCondition();
+			if (jsonObject.has("tags")) {
+
+				JsonArray jsonArray = JsonHelper.getArray(jsonObject, "tags");
+				commandTags = new HashSet<>();
+
+				for (int i = 0; i < jsonArray.size(); i++) {
+
+					JsonElement jsonElement = jsonArray.get(i);
+
+					if (jsonElement instanceof JsonPrimitive jsonPrimitive && jsonPrimitive.isString()) {
+						commandTags.add(jsonPrimitive.getAsString());
+					}
+
+				}
+
 			}
+
+			//noinspection OptionalOfNullableMisuse
+			return new HasTagLootCondition(
+				Optional.ofNullable(commandTag),
+				Optional.ofNullable(commandTags)
+			);
 
 		}
 
