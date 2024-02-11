@@ -3,6 +3,7 @@ package io.github.eggohito.eggolib.loot.condition;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eggohito.eggolib.Eggolib;
+import io.github.eggohito.eggolib.component.EggolibComponents;
 import net.minecraft.entity.Entity;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.condition.LootConditionType;
@@ -34,7 +35,7 @@ public record HasTagLootCondition(Optional<String> commandTag, Optional<List<Str
 			return false;
 		}
 
-		Set<String> commandTags = entity.getCommandTags();
+		Set<String> commandTags = EggolibComponents.MISC.get(entity).getCommandTags();
 		Set<String> specifiedCommandTags = new HashSet<>();
 
 		this.commandTag.ifPresent(specifiedCommandTags::add);

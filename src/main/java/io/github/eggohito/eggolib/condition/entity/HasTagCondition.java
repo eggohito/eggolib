@@ -4,6 +4,7 @@ import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
 import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.eggohito.eggolib.Eggolib;
+import io.github.eggohito.eggolib.component.EggolibComponents;
 import net.minecraft.entity.Entity;
 
 import java.util.Collections;
@@ -14,14 +15,15 @@ public class HasTagCondition {
 
 	public static boolean condition(SerializableData.Instance data, Entity entity) {
 
-		Set<String> specifiedScoreboardTags = new HashSet<>();
-		Set<String> scoreboardTags = entity.getCommandTags();
+		Set<String> specifiedCommandTags = new HashSet<>();
+		Set<String> commandTags = EggolibComponents.MISC.get(entity).getCommandTags();
 
-		data.ifPresent("tag", specifiedScoreboardTags::add);
-		data.ifPresent("tags", specifiedScoreboardTags::addAll);
+		data.ifPresent("tag", specifiedCommandTags::add);
+		data.ifPresent("tags", specifiedCommandTags::addAll);
 
-		return specifiedScoreboardTags.isEmpty() ? !scoreboardTags.isEmpty() :
-		       Collections.disjoint(scoreboardTags, specifiedScoreboardTags);
+		return specifiedCommandTags.isEmpty()
+			? !commandTags.isEmpty()
+			: !Collections.disjoint(commandTags, specifiedCommandTags);
 
 	}
 
