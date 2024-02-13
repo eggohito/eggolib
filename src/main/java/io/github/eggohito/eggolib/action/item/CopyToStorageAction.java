@@ -9,7 +9,7 @@ import net.minecraft.command.DataCommandStorage;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.function.CopyNbtLootFunction;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.Registries;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
@@ -33,18 +33,19 @@ public class CopyToStorageAction {
 		List<CopyNbtLootFunction.Operation> operations = data.get("ops");
 		DataCommandStorage commandStorage = server.getDataCommandStorage();
 
-		NbtCompound stackNbt = new NbtCompound();
+		NbtCompound stackNbt = ItemStack.CODEC.encodeStart(NbtOps.INSTANCE, stack)
+			.result()
+			.filter(nbt -> nbt instanceof NbtCompound)
+			.map(nbt -> (NbtCompound) nbt)
+			.orElse(new NbtCompound());
+
 		NbtCompound itemNbt = new NbtCompound();
-
-		stackNbt.putString("id", Registries.ITEM.getId(stack.getItem()).toString());
-		stackNbt.putByte("Count", (byte) stack.getCount());
-		stackNbt.put("tag", stack.getOrCreateNbt());
-
 		itemNbt.put("Item", stackNbt);
 
-		NbtCompound storageNbt = commandStorage.get(storageId);
-		operations.forEach(op -> op.execute(() -> storageNbt, itemNbt));
-		commandStorage.set(storageId, storageNbt);
+		NbtCompound commandStorageNbt = commandStorage.get(storageId);
+		operations.forEach(op -> op.execute(() -> commandStorageNbt, itemNbt));
+
+		commandStorage.set(storageId, commandStorageNbt);
 
 	}
 
