@@ -1,0 +1,21 @@
+name: publish
+run-name: Publish ${{ github.ref }} to Modrinth and CurseForge
+
+on: release
+
+jobs:
+    build:
+        permissions:
+            contents: write
+        runs-on: ubuntu-latest
+        steps:
+            - uses: Kir-Antipov/mc-publish@v3.3
+              with:
+                  java: 17
+
+                  modrinth-id: uFJODQCA
+                  modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+                  modrinth-featured: false
+
+                  curseforge-id: 645296
+                  curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
