@@ -6,6 +6,7 @@ import io.github.apace100.apoli.registry.ApoliRegistries;
 import io.github.eggohito.eggolib.action.item.CopyToStorageAction;
 import io.github.eggohito.eggolib.action.item.ExecuteCommandAction;
 import io.github.eggohito.eggolib.action.item.ModifyAction;
+import io.github.eggohito.eggolib.action.item.ModifyItemCooldownAction;
 import io.github.eggohito.eggolib.action.meta.LoopAction;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registry;
@@ -19,6 +20,7 @@ public class EggolibItemActions {
 		register(CopyToStorageAction.getFactory());
 		register(ExecuteCommandAction.getFactory());
 		register(ModifyAction.getFactory());
+		register(ModifyItemCooldownAction.getFactory());
 	}
 
 	public static ActionFactory<Pair<World, ItemStack>> register(ActionFactory<Pair<World, ItemStack>> actionFactory) {

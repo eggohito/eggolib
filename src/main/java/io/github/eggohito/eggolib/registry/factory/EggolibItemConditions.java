@@ -5,6 +5,7 @@ import io.github.apace100.apoli.registry.ApoliRegistries;
 import io.github.eggohito.eggolib.condition.item.BlockItemCondition;
 import io.github.eggohito.eggolib.condition.item.EnchantmentCondition;
 import io.github.eggohito.eggolib.condition.item.FuelCondition;
+import io.github.eggohito.eggolib.condition.item.ItemCooldownCondition;
 import io.github.eggohito.eggolib.condition.item.ToolCondition;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registry;
@@ -16,6 +17,7 @@ public class EggolibItemConditions {
 		register(EnchantmentCondition.getFactory());
 		register(FuelCondition.getFactory());
 		register(ToolCondition.getFactory());
+		register(ItemCooldownCondition.getFactory());
 	}
 
 	public static ConditionFactory<ItemStack> register(ConditionFactory<ItemStack> conditionFactory) {
