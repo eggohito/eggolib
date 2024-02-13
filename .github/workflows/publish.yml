@@ -1,15 +1,25 @@
 name: publish
-run-name: Publish ${{ github.ref }} to Modrinth and CurseForge
+run-name: Publish ${{ github.ref_name }} to Modrinth and CurseForge
 
-on: release
+on:
+    workflow_dispatch:
+
+    release:
+        types:
+            - published
 
 jobs:
-    build:
+    publish:
         permissions:
             contents: write
         runs-on: ubuntu-latest
         steps:
-            - uses: Kir-Antipov/mc-publish@v3.3
+            - name: Download release assets
+              run: gh release download ${{ github.ref_name }} --repo ${{ github.repository }} --pattern '*.jar' --dir 'build/libs/'
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            - name: Publish release assets to Modrinth and CurseForge
+              uses: Kir-Antipov/mc-publish@v3.3
               with:
                   java: 17
 
