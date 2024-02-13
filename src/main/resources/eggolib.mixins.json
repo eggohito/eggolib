@@ -16,6 +16,7 @@
 		"ItemStackMixin",
 		"ItemUsageContextAccessor",
 		"LivingEntityMixin",
+		"DataPackContentsMixin",
 		"LootContextTypesAccessor",
 		"PlayerEntityMixin",
 		"ProjectileEntityMixin",

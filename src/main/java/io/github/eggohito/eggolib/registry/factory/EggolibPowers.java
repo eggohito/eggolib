@@ -31,6 +31,9 @@ public class EggolibPowers {
 		register(PreventKeyUsePower.getFactory());
 		register(PreventItemPickupPower.getFactory());
 		register(PosePower.getFactory());
+		register(ActionOnSendingMessagePower.getFactory());
+		register(PreventSendingMessagePower.getFactory());
+		register(ModifySentMessagePower.getFactory());
 	}
 
 	public static PowerFactory<?> register(PowerFactory<?> powerFactory) {

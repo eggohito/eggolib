@@ -15,6 +15,7 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.entrypoint.EntrypointContainer;
@@ -25,6 +26,7 @@ import net.minecraft.util.Identifier;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Environment(EnvType.CLIENT)
 public class EggolibClient implements ClientModInitializer {
@@ -41,6 +43,8 @@ public class EggolibClient implements ClientModInitializer {
 
 	@Override
 	public void onInitializeClient() {
+
+		ClientPlayConnectionEvents.INIT.register((handler, client) -> Eggolib.registryManager = () -> Optional.of(handler.getRegistryManager()));
 
 		//  Register the packets and the class data registries
 		EggolibPacketsS2C.register();

@@ -1,5 +1,7 @@
 package io.github.eggohito.eggolib.data;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import io.github.apace100.apoli.data.ApoliDataTypes;
 import io.github.apace100.apoli.power.factory.condition.ConditionFactory;
@@ -9,9 +11,15 @@ import io.github.apace100.calio.data.SerializableData;
 import io.github.apace100.calio.data.SerializableDataType;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.apace100.calio.util.ArgumentWrapper;
+import io.github.eggohito.eggolib.Eggolib;
+import io.github.eggohito.eggolib.registry.EggolibRegistries;
 import io.github.eggohito.eggolib.condition.EggolibConditionTypes;
 import io.github.eggohito.eggolib.util.*;
 import io.github.eggohito.eggolib.util.MathUtil.MathOperation;
+import io.github.eggohito.eggolib.util.chat.MessageConsumer;
+import io.github.eggohito.eggolib.util.chat.MessageFilter;
+import io.github.eggohito.eggolib.util.chat.MessagePhase;
+import io.github.eggohito.eggolib.util.chat.MessageReplacer;
 import io.github.eggohito.eggolib.util.key.FunctionalKey;
 import io.github.eggohito.eggolib.util.key.TimedKey;
 import net.minecraft.command.EntitySelector;
@@ -22,6 +30,11 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.function.CopyNbtLootFunction;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.message.MessageType;
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.server.command.AdvancementCommand;
@@ -368,5 +381,116 @@ public class EggolibDataTypes {
 	public static final SerializableDataType<ProcessMode> PROCESS_MODE = SerializableDataType.enumValue(ProcessMode.class);
 
 	public static final SerializableDataType<EntityPose> ENTITY_POSE = SerializableDataType.enumValue(EntityPose.class);
+
+	public static final SerializableDataType<MessageFilter> MESSAGE_FILTER = SerializableDataType.wrap(
+		MessageFilter.class,
+		SerializableDataTypes.STRING,
+		messageFilter -> messageFilter.getFilter().pattern(),
+        MessageFilter::new
+	);
+
+	public static final SerializableDataType<List<MessageFilter>> MESSAGE_FILTERS = SerializableDataType.list(MESSAGE_FILTER);
+
+	public static final SerializableDataType<MessageConsumer> FUNCTIONAL_MESSAGE_FILTER = SerializableDataType.compound(
+		MessageConsumer.class,
+		new SerializableData()
+			.add("filter", SerializableDataTypes.STRING)
+			.add("before_action", ApoliDataTypes.ENTITY_ACTION, null)
+			.add("after_action", ApoliDataTypes.ENTITY_ACTION, null),
+		data -> new MessageConsumer(
+			data.get("filter"),
+			data.get("before_action"),
+			data.get("after_action")
+		),
+		(serializableData, messageConsumer) -> {
+
+			SerializableData.Instance data = serializableData.new Instance();
+
+			data.set("filter", messageConsumer.getFilter().pattern());
+			data.set("before_action", messageConsumer.getAction(MessagePhase.BEFORE));
+			data.set("after_action", messageConsumer.getAction(MessagePhase.AFTER));
+
+			return data;
+
+		}
+	);
+
+	public static final SerializableDataType<List<MessageConsumer>> FUNCTIONAL_MESSAGE_FILTERS = SerializableDataType.list(FUNCTIONAL_MESSAGE_FILTER);
+
+	public static final SerializableDataType<MessageConsumer> BACKWARDS_COMPATIBLE_FUNCTIONAL_MESSAGE_FILTER = new SerializableDataType<>(
+		MessageConsumer.class,
+		FUNCTIONAL_MESSAGE_FILTER::send,
+		FUNCTIONAL_MESSAGE_FILTER::receive,
+		jsonElement -> {
+
+			if (jsonElement instanceof JsonObject jsonObject) {
+				return FUNCTIONAL_MESSAGE_FILTER.read(jsonObject);
+			}
+
+			else if (jsonElement instanceof JsonPrimitive jsonPrimitive && jsonPrimitive.isString()) {
+				return new MessageConsumer(jsonPrimitive.getAsString(), null, null);
+			}
+
+			else {
+				throw new JsonParseException("Expected a JSON object or a string!");
+			}
+
+		}
+	);
+
+	public static final SerializableDataType<List<MessageConsumer>> BACKWARDS_COMPATIBLE_FUNCTIONAL_MESSAGE_FILTERS = SerializableDataType.list(BACKWARDS_COMPATIBLE_FUNCTIONAL_MESSAGE_FILTER);
+
+	public static final SerializableDataType<MessageReplacer> MESSAGE_REPLACER = SerializableDataType.compound(
+		MessageReplacer.class,
+		new SerializableData()
+			.add("filter", SerializableDataTypes.STRING)
+			.add("replacement", SerializableDataTypes.STRING, null)
+			.add("before_action", ApoliDataTypes.ENTITY_ACTION, null)
+			.add("after_action", ApoliDataTypes.ENTITY_ACTION, null),
+		data -> new MessageReplacer(
+			data.get("filter"),
+			data.get("replacement"),
+			data.get("before_action"),
+			data.get("after_action")
+		),
+		(serializableData, messageReplacer) -> {
+
+			SerializableData.Instance data = serializableData.new Instance();
+
+			data.set("filter", messageReplacer.getFilter().pattern());
+			data.set("replacement", messageReplacer.getReplacement());
+			data.set("before_action", messageReplacer.getAction(MessagePhase.BEFORE));
+			data.set("after_action", messageReplacer.getAction(MessagePhase.AFTER));
+
+			return data;
+
+		}
+	);
+
+	public static final SerializableDataType<List<MessageReplacer>> MESSAGE_REPLACERS = SerializableDataType.list(MESSAGE_REPLACER);
+
+	public static final SerializableDataType<RegistryKey<MessageType>> MESSAGE_TYPE = registryKey(RegistryKeys.MESSAGE_TYPE);
+
+	public static <T> SerializableDataType<RegistryKey<T>> registryKey(RegistryKey<Registry<T>> registryRef) {
+		return SerializableDataType.wrap(
+			ClassUtil.castClass(RegistryKey.class),
+			SerializableDataTypes.IDENTIFIER,
+			RegistryKey::getValue,
+			id -> {
+
+				RegistryKey<T> registryKey = RegistryKey.of(registryRef, id);
+				Registry<T> registry = Eggolib.registryManager.get()
+					.map(drm -> drm.get(registryRef))
+					.orElse(null);
+
+				if (registry != null && !registry.contains(registryKey)) {
+					throw new IllegalArgumentException("Type \"%s\" is not registered in registry \"%s\"".formatted(id, registry.getKey().getValue()));
+				}
+
+				return registryKey;
+
+			}
+		);
+	}
 
 }
