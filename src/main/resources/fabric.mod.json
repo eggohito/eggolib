@@ -22,9 +22,6 @@
 		"client": [
 			"io.github.eggohito.eggolib.EggolibClient"
 		],
-		"preLaunch": [
-			"com.llamalad7.mixinextras.MixinExtrasBootstrap::init"
-		],
 		"cardinal-components-entity": [
 			"io.github.eggohito.eggolib.registry.factory.EggolibEntityComponents"
 		],
@@ -49,10 +46,13 @@
 		}
 	},
 	"depends": {
-		"fabricloader": ">=0.14.21",
-		"fabric": ">=0.82.0",
-		"minecraft": ">=1.19.4",
+		"fabricloader": "~0.15.6",
+		"fabric": "~0.91.1",
+		"minecraft": ">=1.20 <1.20.2",
 		"java": ">=17"
+	},
+	"suggests": {
+		"origins": "*"
 	},
 	"accessWidener": "eggolib.accesswidener"
 }
